@@ -135,36 +135,41 @@ function initReveal() {
 
 
 /* ── Barras de habilidades ────────────────────────────────────
-   Se llenan al entrar en pantalla y el porcentaje sube contando,
-   para que el número acompañe a la barra en vez de aparecer hecho. */
+   La barra existe, pero no muestra un porcentaje: un «87%» no lo
+   determina nadie. Se declaran tres niveles y cada uno ocupa una
+   fracción fija, así que la barra compara entre sí y el texto dice
+   el nivel con palabras. Quien usa lector de pantalla oye el nivel,
+   no el número, porque el número no significa nada.                */
+const SKILL_TIERS = {
+  solido:     { fill: 92, label: 'Sólido' },
+  practica:   { fill: 66, label: 'En práctica' },
+  explorando: { fill: 38, label: 'Explorando' }
+};
+
 function initSkills() {
   const skills = $$('.skill');
   if (!skills.length) return;
 
   const fill = (skill) => {
-    const level = Number(skill.dataset.level) || 0;
+    const tier = SKILL_TIERS[skill.dataset.tier] || SKILL_TIERS.explorando;
     const bar = $('.bar', skill);
     const fillEl = $('i', bar);
-    const label = $('.skill-pct', skill);
+    const label = $('.skill-tier', skill);
 
-    bar.setAttribute('aria-valuenow', String(level));
-    fillEl.style.width = `${level}%`;
+    bar.setAttribute('aria-valuetext', tier.label);
+    fillEl.style.width = `${tier.fill}%`;
+
+    if (!label) return;
 
     if (prefersReducedMotion) {
-      label.textContent = `${level}%`;
+      label.textContent = tier.label;
       return;
     }
 
-    const duration = 1100;
-    const start = performance.now();
-
-    const tick = (now) => {
-      const t = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - t, 3);       // desacelera al final
-      label.textContent = `${Math.round(level * eased)}%`;
-      if (t < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
+    // El texto entra cuando la barra ya recorrió lo suyo, para que se lea
+    // como consecuencia del llenado y no como dos cosas a la vez.
+    label.textContent = tier.label;
+    label.classList.add('is-in');
   };
 
   const observer = new IntersectionObserver(

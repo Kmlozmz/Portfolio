@@ -173,30 +173,35 @@
           <p class="eyebrow">02 — Habilidades</p>
           <h2>Con qué trabajo</h2>
           <p class="section-lede">
-            Las barras se llenan cuando la sección entra en pantalla. El nivel es una
-            autoevaluación, no una medida objetiva.
+            Sin porcentajes: nadie puede decidir que algo se sabe «un 87%». El nivel va en
+            palabras y es mi propia valoración. Lo comprobable son las cifras de debajo,
+            medidas del repositorio.
           </p>
         </header>
 
         <div class="skills-grid">
           <article class="skill-group reveal">
             <h3>Android</h3>
-            <ul class="skills" id="skillsAndroid">
-              <li class="skill" data-level="90">
-                <div class="skill-head"><span>Kotlin</span><span class="skill-pct">0%</span></div>
-                <div class="bar" role="progressbar" aria-label="Kotlin" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div>
+            <ul class="skills">
+              <li class="skill" data-tier="solido">
+                <div class="skill-head"><span>Kotlin</span><span class="skill-tier"></span></div>
+                <div class="bar" role="progressbar" aria-label="Kotlin"><i></i></div>
+                <p class="skill-metric">47.217 líneas en UniStack</p>
               </li>
-              <li class="skill" data-level="85">
-                <div class="skill-head"><span>Jetpack Compose</span><span class="skill-pct">0%</span></div>
-                <div class="bar" role="progressbar" aria-label="Jetpack Compose" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div>
+              <li class="skill" data-tier="solido">
+                <div class="skill-head"><span>Jetpack Compose</span><span class="skill-tier"></span></div>
+                <div class="bar" role="progressbar" aria-label="Jetpack Compose"><i></i></div>
+                <p class="skill-metric">563 composables · 31 pantallas</p>
               </li>
-              <li class="skill" data-level="78">
-                <div class="skill-head"><span>Material 3 Expressive</span><span class="skill-pct">0%</span></div>
-                <div class="bar" role="progressbar" aria-label="Material 3 Expressive" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div>
+              <li class="skill" data-tier="practica">
+                <div class="skill-head"><span>Material 3 Expressive</span><span class="skill-tier"></span></div>
+                <div class="bar" role="progressbar" aria-label="Material 3 Expressive"><i></i></div>
+                <p class="skill-metric">Color dinámico y tokens en toda la app</p>
               </li>
-              <li class="skill" data-level="72">
-                <div class="skill-head"><span>Room · DataStore</span><span class="skill-pct">0%</span></div>
-                <div class="bar" role="progressbar" aria-label="Room y DataStore" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div>
+              <li class="skill" data-tier="practica">
+                <div class="skill-head"><span>Room · DataStore</span><span class="skill-tier"></span></div>
+                <div class="bar" role="progressbar" aria-label="Room y DataStore"><i></i></div>
+                <p class="skill-metric">Persistencia local del semestre completo</p>
               </li>
             </ul>
           </article>
@@ -204,25 +209,35 @@
           <article class="skill-group reveal">
             <h3>Web y herramientas</h3>
             <ul class="skills">
-              <li class="skill" data-level="80">
-                <div class="skill-head"><span>HTML y CSS</span><span class="skill-pct">0%</span></div>
-                <div class="bar" role="progressbar" aria-label="HTML y CSS" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div>
+              <li class="skill" data-tier="practica">
+                <div class="skill-head"><span>HTML y CSS</span><span class="skill-tier"></span></div>
+                <div class="bar" role="progressbar" aria-label="HTML y CSS"><i></i></div>
+                <p class="skill-metric">Este sitio, sin frameworks</p>
               </li>
-              <li class="skill" data-level="70">
-                <div class="skill-head"><span>JavaScript</span><span class="skill-pct">0%</span></div>
-                <div class="bar" role="progressbar" aria-label="JavaScript" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div>
+              <li class="skill" data-tier="practica">
+                <div class="skill-head"><span>JavaScript</span><span class="skill-tier"></span></div>
+                <div class="bar" role="progressbar" aria-label="JavaScript"><i></i></div>
+                <p class="skill-metric">Sin dependencias externas</p>
               </li>
-              <li class="skill" data-level="75">
-                <div class="skill-head"><span>Git y control de versiones</span><span class="skill-pct">0%</span></div>
-                <div class="bar" role="progressbar" aria-label="Git" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div>
+              <li class="skill" data-tier="solido">
+                <div class="skill-head"><span>Git</span><span class="skill-tier"></span></div>
+                <div class="bar" role="progressbar" aria-label="Git"><i></i></div>
+                <p class="skill-metric">129 commits en UniStack</p>
               </li>
-              <li class="skill" data-level="65">
-                <div class="skill-head"><span>Gradle</span><span class="skill-pct">0%</span></div>
-                <div class="bar" role="progressbar" aria-label="Gradle" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div>
+              <li class="skill" data-tier="explorando">
+                <div class="skill-head"><span>Gradle</span><span class="skill-tier"></span></div>
+                <div class="bar" role="progressbar" aria-label="Gradle"><i></i></div>
+                <p class="skill-metric">Verificador propio que falla el build</p>
               </li>
             </ul>
           </article>
         </div>
+
+        <p class="skills-note reveal">
+          Cifras medidas del repositorio de UniStack el 9 de agosto de 2026. Los tres niveles
+          posibles son <strong>Sólido</strong>, <strong>En práctica</strong> y
+          <strong>Explorando</strong>.
+        </p>
       </div>
     </section>
 

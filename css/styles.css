@@ -402,8 +402,39 @@ a { color: inherit; text-decoration: none; }
 .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--sp-5); }
 .skill-group h3 { margin-bottom: var(--sp-3); }
 .skills { display: grid; gap: var(--sp-3); }
-.skill-head { display: flex; justify-content: space-between; font-size: var(--step--1); font-weight: 600; margin-bottom: .45rem; }
-.skill-pct { color: var(--violet-600); font-variant-numeric: tabular-nums; }
+.skill-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-2); font-size: var(--step--1); font-weight: 600; margin-bottom: .45rem; }
+
+/* El nivel entra con un desplazamiento corto, después de que la barra arranque */
+.skill-tier {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--violet-600);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 420ms var(--ease) 320ms, transform 420ms var(--ease) 320ms;
+}
+.skill-tier.is-in { opacity: 1; transform: none; }
+
+.skill-metric {
+  margin-top: .4rem;
+  font-size: 12.5px;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.skills-note {
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--line);
+  font-size: 12.5px;
+  color: var(--ink-3);
+  max-width: 70ch;
+}
+.skills-note strong { color: var(--ink-2); font-weight: 600; }
 
 .bar { height: 9px; border-radius: 999px; background: var(--paper-3); overflow: hidden; }
 .section-alt .bar { background: #e3e0ee; }
