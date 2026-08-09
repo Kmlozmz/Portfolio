@@ -1,8 +1,7 @@
-# Portafolio · Camilo Andrés Pineda Cueto
+# Portafolio · Camilo Pineda
 
 Sitio personal construido con HTML, CSS y JavaScript sin dependencias ni
-frameworks. El acento visual hereda los violetas reales del símbolo de
-[UniStack](https://github.com/Kmlozmz/UniStack), muestreados del PNG original.
+frameworks.
 
 ## Estructura
 
@@ -16,14 +15,7 @@ assets/           Símbolo de marca en SVG
 
 ## Verlo
 
-Al abrir `index.html` directamente con doble clic algunos navegadores
-restringen recursos locales. Lo más cómodo es servirlo:
-
-```bash
-python -m http.server 8000
-```
-
-Y abrir <http://localhost:8000>.
+Abrir `index.html` directamente con doble clic
 
 ## Qué hace el JavaScript
 

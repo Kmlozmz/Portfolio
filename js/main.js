@@ -1,69 +1,64 @@
-/* ═══════════════════════════════════════════════════════════════
-   Portafolio · Pineda
-   JavaScript sin dependencias. Cada bloque se inicializa por su
-   cuenta y comprueba que su nodo exista, así que si una sección se
-   quita del HTML el resto sigue funcionando.
-   ═══════════════════════════════════════════════════════════════ */
-'use strict';
+"use strict";
 
-const $  = (sel, root = document) => root.querySelector(sel);
+const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-/** El usuario puede haber pedido menos movimiento: se respeta en todo. */
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const prefersReducedMotion = window.matchMedia(
+  "(prefers-reduced-motion: reduce)",
+).matches;
 
-
-/* ── Menú hamburguesa ─────────────────────────────────────────
-   Accesible: el botón informa su estado con aria-expanded, el menú
-   se cierra con Escape, al tocar fuera y al elegir un enlace.      */
+/* -- Menú hamburguesa --*/
 function initMenu() {
-  const burger = $('#burger');
-  const nav = $('#primaryNav');
+  const burger = $("#burger");
+  const nav = $("#primaryNav");
   if (!burger || !nav) return;
 
   const setOpen = (open) => {
-    nav.classList.toggle('is-open', open);
-    burger.setAttribute('aria-expanded', String(open));
-    burger.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+    nav.classList.toggle("is-open", open);
+    burger.setAttribute("aria-expanded", String(open));
+    burger.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
     // Bloquear el fondo solo en móvil, que es donde el menú lo tapa
-    document.body.classList.toggle('is-locked', open && window.innerWidth <= 760);
+    document.body.classList.toggle(
+      "is-locked",
+      open && window.innerWidth <= 760,
+    );
   };
 
-  const isOpen = () => nav.classList.contains('is-open');
+  const isOpen = () => nav.classList.contains("is-open");
 
-  burger.addEventListener('click', () => setOpen(!isOpen()));
+  burger.addEventListener("click", () => setOpen(!isOpen()));
 
   // Al elegir destino, el menú estorba
-  nav.addEventListener('click', (e) => {
-    if (e.target.closest('a')) setOpen(false);
+  nav.addEventListener("click", (e) => {
+    if (e.target.closest("a")) setOpen(false);
   });
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && isOpen()) {
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && isOpen()) {
       setOpen(false);
-      burger.focus();           // el foco vuelve a quien abrió
+      burger.focus(); // el foco vuelve a quien abrió
     }
   });
 
-  document.addEventListener('click', (e) => {
-    if (isOpen() && !nav.contains(e.target) && !burger.contains(e.target)) setOpen(false);
+  document.addEventListener("click", (e) => {
+    if (isOpen() && !nav.contains(e.target) && !burger.contains(e.target))
+      setOpen(false);
   });
 
   // Al pasar a escritorio el panel deja de existir: hay que soltar el bloqueo
-  window.addEventListener('resize', () => {
+  window.addEventListener("resize", () => {
     if (window.innerWidth > 760 && isOpen()) setOpen(false);
   });
 }
 
-
-/* ── Cabecera: sombra al desplazar y barra de progreso ───────── */
+/* -- Cabecera: sombra al desplazar y barra de progreso -- */
 function initHeader() {
-  const header = $('#siteHeader');
-  const progress = $('#scrollProgress');
+  const header = $("#siteHeader");
+  const progress = $("#scrollProgress");
   if (!header) return;
 
   const onScroll = () => {
-    header.classList.toggle('is-stuck', window.scrollY > 8);
+    header.classList.toggle("is-stuck", window.scrollY > 8);
 
     if (progress) {
       const max = document.documentElement.scrollHeight - window.innerHeight;
@@ -73,22 +68,24 @@ function initHeader() {
   };
 
   // passive: el navegador no espera a este manejador para desplazar
-  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 }
 
-
-/* ── Enlace activo según la sección visible ──────────────────── */
+/* -- Enlace activo según la sección visible -- */
 function initScrollSpy() {
-  const links = $$('.nav-link');
+  const links = $$(".nav-link");
   const sections = links
-    .map((link) => $(link.getAttribute('href')))
+    .map((link) => $(link.getAttribute("href")))
     .filter(Boolean);
   if (!sections.length) return;
 
   const mark = (id) => {
     links.forEach((link) => {
-      link.classList.toggle('is-current', link.getAttribute('href') === `#${id}`);
+      link.classList.toggle(
+        "is-current",
+        link.getAttribute("href") === `#${id}`,
+      );
     });
   };
 
@@ -100,20 +97,19 @@ function initScrollSpy() {
         .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
       if (visible) mark(visible.target.id);
     },
-    { rootMargin: '-45% 0px -45% 0px', threshold: [0, 0.25, 0.5, 1] }
+    { rootMargin: "-45% 0px -45% 0px", threshold: [0, 0.25, 0.5, 1] },
   );
 
   sections.forEach((section) => observer.observe(section));
 }
 
-
-/* ── Revelado de bloques al entrar en pantalla ───────────────── */
+/* -- Revelado de bloques al entrar en pantalla -- */
 function initReveal() {
-  const items = $$('.reveal');
+  const items = $$(".reveal");
   if (!items.length) return;
 
   if (prefersReducedMotion) {
-    items.forEach((el) => el.classList.add('is-visible'));
+    items.forEach((el) => el.classList.add("is-visible"));
     return;
   }
 
@@ -123,40 +119,39 @@ function initReveal() {
         if (!entry.isIntersecting) return;
         // Escalonado corto: se lee como una secuencia, no como un parpadeo
         entry.target.style.transitionDelay = `${Math.min(i, 4) * 70}ms`;
-        entry.target.classList.add('is-visible');
-        obs.unobserve(entry.target);   // una vez revelado, deja de observarse
+        entry.target.classList.add("is-visible");
+        obs.unobserve(entry.target); // una vez revelado, deja de observarse
       });
     },
-    { threshold: 0.12, rootMargin: '0px 0px -60px 0px' }
+    { threshold: 0.12, rootMargin: "0px 0px -60px 0px" },
   );
 
   items.forEach((el) => observer.observe(el));
 }
 
-
-/* ── Barras de habilidades ────────────────────────────────────
+/* -- Barras de habilidades --
    La barra existe, pero no muestra un porcentaje: un «87%» no lo
    determina nadie. Se declaran tres niveles y cada uno ocupa una
    fracción fija, así que la barra compara entre sí y el texto dice
    el nivel con palabras. Quien usa lector de pantalla oye el nivel,
    no el número, porque el número no significa nada.                */
 const SKILL_TIERS = {
-  solido:     { fill: 92, label: 'Sólido' },
-  practica:   { fill: 66, label: 'En práctica' },
-  explorando: { fill: 38, label: 'Explorando' }
+  solido: { fill: 92, label: "Sólido" },
+  practica: { fill: 66, label: "En práctica" },
+  explorando: { fill: 38, label: "Explorando" },
 };
 
 function initSkills() {
-  const skills = $$('.skill');
+  const skills = $$(".skill");
   if (!skills.length) return;
 
   const fill = (skill) => {
     const tier = SKILL_TIERS[skill.dataset.tier] || SKILL_TIERS.explorando;
-    const bar = $('.bar', skill);
-    const fillEl = $('i', bar);
-    const label = $('.skill-tier', skill);
+    const bar = $(".bar", skill);
+    const fillEl = $("i", bar);
+    const label = $(".skill-tier", skill);
 
-    bar.setAttribute('aria-valuetext', tier.label);
+    bar.setAttribute("aria-valuetext", tier.label);
     fillEl.style.width = `${tier.fill}%`;
 
     if (!label) return;
@@ -169,7 +164,7 @@ function initSkills() {
     // El texto entra cuando la barra ya recorrió lo suyo, para que se lea
     // como consecuencia del llenado y no como dos cosas a la vez.
     label.textContent = tier.label;
-    label.classList.add('is-in');
+    label.classList.add("is-in");
   };
 
   const observer = new IntersectionObserver(
@@ -180,21 +175,20 @@ function initSkills() {
         obs.unobserve(entry.target);
       });
     },
-    { threshold: 0.4 }
+    { threshold: 0.4 },
   );
 
   skills.forEach((skill) => observer.observe(skill));
 }
 
-
-/* ── Cifras de la portada ────────────────────────────────────── */
+/* -- Cifras de la portada -- */
 function initCounters() {
-  const counters = $$('[data-count]');
+  const counters = $$("[data-count]");
   if (!counters.length) return;
 
   const run = (el) => {
     const target = Number(el.dataset.count) || 0;
-    const suffix = el.dataset.suffix || '';
+    const suffix = el.dataset.suffix || "";
 
     if (prefersReducedMotion) {
       el.textContent = `${target}${suffix}`;
@@ -221,89 +215,87 @@ function initCounters() {
         obs.unobserve(entry.target);
       });
     },
-    { threshold: 0.6 }
+    { threshold: 0.6 },
   );
 
   counters.forEach((el) => observer.observe(el));
 }
 
-
-/* ── Filtros de proyectos ─────────────────────────────────────
+/* -- Filtros de proyectos --
    Manipulación directa del DOM: se ocultan las tarjetas que no
    coinciden y se anuncia el recuento por región viva.              */
 function initFilters() {
-  const buttons = $$('.chip-btn');
-  const cards = $$('#projects .card');
-  const count = $('#filterCount');
+  const buttons = $$(".chip-btn");
+  const cards = $$("#projects .card");
+  const count = $("#filterCount");
   if (!buttons.length || !cards.length) return;
 
   const apply = (filter) => {
     let shown = 0;
 
     cards.forEach((card) => {
-      const tags = (card.dataset.tags || '').split(' ');
-      const match = filter === 'todos' || tags.includes(filter);
-      card.classList.toggle('is-hidden', !match);
+      const tags = (card.dataset.tags || "").split(" ");
+      const match = filter === "todos" || tags.includes(filter);
+      card.classList.toggle("is-hidden", !match);
       if (match) shown += 1;
     });
 
     if (count) {
-      count.textContent = shown === cards.length
-        ? `Mostrando los ${shown} proyectos`
-        : `Mostrando ${shown} de ${cards.length} proyectos`;
+      count.textContent =
+        shown === cards.length
+          ? `Mostrando los ${shown} proyectos`
+          : `Mostrando ${shown} de ${cards.length} proyectos`;
     }
   };
 
   buttons.forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener("click", () => {
       buttons.forEach((other) => {
         const active = other === btn;
-        other.classList.toggle('is-active', active);
-        other.setAttribute('aria-pressed', String(active));
+        other.classList.toggle("is-active", active);
+        other.setAttribute("aria-pressed", String(active));
       });
       apply(btn.dataset.filter);
     });
   });
 
-  apply('todos');
+  apply("todos");
 }
 
-
-/* ── Formulario de contacto ───────────────────────────────────
-   Reglas en un solo sitio para que añadir un campo no obligue a
-   tocar la lógica. Se valida al salir del campo y, una vez que un
-   campo ya falló, también mientras se escribe: así se ve corregirse
-   sin regañar al usuario en la primera letra.                      */
+/* -- Formulario de contacto -- */
 function initForm() {
-  const form = $('#contactForm');
+  const form = $("#contactForm");
   if (!form) return;
 
-  const status = $('#formStatus');
-  const submitBtn = $('#submitBtn');
+  const status = $("#formStatus");
+  const submitBtn = $("#submitBtn");
 
   const rules = {
     nombre: (value) => {
-      if (!value.trim()) return 'Escribe tu nombre.';
-      if (value.trim().length < 2) return 'Al menos 2 caracteres.';
-      if (!/^[\p{L}\s'’-]+$/u.test(value.trim())) return 'Solo letras, espacios y guiones.';
-      return '';
+      if (!value.trim()) return "Escribe tu nombre.";
+      if (value.trim().length < 2) return "Al menos 2 caracteres.";
+      if (!/^[\p{L}\s'’-]+$/u.test(value.trim()))
+        return "Solo letras, espacios y guiones.";
+      return "";
     },
     correo: (value) => {
-      if (!value.trim()) return 'Escribe tu correo.';
+      if (!value.trim()) return "Escribe tu correo.";
       // Suficiente para atajar erratas; la comprobación real es enviar el correo
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim())) return 'Ese correo no parece válido.';
-      return '';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim()))
+        return "Ese correo no parece válido.";
+      return "";
     },
-    asunto: (value) => (value ? '' : 'Elige un asunto.'),
+    asunto: (value) => (value ? "" : "Elige un asunto."),
     mensaje: (value) => {
       const text = value.trim();
-      if (!text) return 'Cuéntame algo.';
-      if (text.length < 15) return `Un poco más: faltan ${15 - text.length} caracteres.`;
-      return '';
-    }
+      if (!text) return "Cuéntame algo.";
+      if (text.length < 15)
+        return `Un poco más: faltan ${15 - text.length} caracteres.`;
+      return "";
+    },
   };
 
-  const fieldOf = (input) => input.closest('.field');
+  const fieldOf = (input) => input.closest(".field");
   const errorOf = (input) => $(`#err-${input.name}`);
 
   const validate = (input, { silent = false } = {}) => {
@@ -316,52 +308,55 @@ function initForm() {
 
     if (message) {
       if (!silent) {
-        field.classList.add('is-invalid');
-        field.classList.remove('is-valid');
+        field.classList.add("is-invalid");
+        field.classList.remove("is-valid");
         if (errorEl) errorEl.textContent = message;
-        input.setAttribute('aria-invalid', 'true');
+        input.setAttribute("aria-invalid", "true");
       }
       return false;
     }
 
-    field.classList.remove('is-invalid');
-    field.classList.add('is-valid');
-    if (errorEl) errorEl.textContent = '';
-    input.removeAttribute('aria-invalid');
+    field.classList.remove("is-invalid");
+    field.classList.add("is-valid");
+    if (errorEl) errorEl.textContent = "";
+    input.removeAttribute("aria-invalid");
     return true;
   };
 
-  const inputs = $$('input, select, textarea', form);
+  const inputs = $$("input, select, textarea", form);
 
   inputs.forEach((input) => {
     // Al salir del campo: es el momento en que el usuario dio por terminado
-    input.addEventListener('blur', () => validate(input));
+    input.addEventListener("blur", () => validate(input));
 
     // Mientras escribe: solo si ya había un error, para verlo desaparecer
-    input.addEventListener('input', () => {
-      if (fieldOf(input).classList.contains('is-invalid')) validate(input);
-      if (status) { status.textContent = ''; status.className = 'form-status'; }
+    input.addEventListener("input", () => {
+      if (fieldOf(input).classList.contains("is-invalid")) validate(input);
+      if (status) {
+        status.textContent = "";
+        status.className = "form-status";
+      }
     });
 
     // Los desplegables no tienen «escribir»: cuentan al cambiar
-    if (input.tagName === 'SELECT') {
-      input.addEventListener('change', () => validate(input));
+    if (input.tagName === "SELECT") {
+      input.addEventListener("change", () => validate(input));
     }
   });
 
   // Contador de caracteres
-  const message = $('#mensaje');
-  const charCount = $('#charCount');
+  const message = $("#mensaje");
+  const charCount = $("#charCount");
   if (message && charCount) {
-    const max = Number(message.getAttribute('maxlength')) || 600;
-    message.addEventListener('input', () => {
+    const max = Number(message.getAttribute("maxlength")) || 600;
+    message.addEventListener("input", () => {
       const used = message.value.length;
       charCount.textContent = String(used);
-      charCount.parentElement.classList.toggle('is-near', used > max * 0.9);
+      charCount.parentElement.classList.toggle("is-near", used > max * 0.9);
     });
   }
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
 
     const results = inputs.map((input) => validate(input));
@@ -369,44 +364,105 @@ function initForm() {
 
     if (firstInvalid) {
       if (status) {
-        status.textContent = 'Revisa los campos marcados.';
-        status.className = 'form-status is-err';
+        status.textContent = "Revisa los campos marcados.";
+        status.className = "form-status is-err";
       }
-      firstInvalid.focus();                        // llevar al usuario al problema
-      firstInvalid.scrollIntoView({ block: 'center', behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+      firstInvalid.focus(); // llevar al usuario al problema
+      firstInvalid.scrollIntoView({
+        block: "center",
+        behavior: prefersReducedMotion ? "auto" : "smooth",
+      });
       return;
     }
 
     // No hay servidor detrás: se simula el envío para que el estado sea honesto
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Enviando…';
-    if (status) { status.textContent = ''; status.className = 'form-status'; }
+    submitBtn.textContent = "Enviando…";
+    if (status) {
+      status.textContent = "";
+      status.className = "form-status";
+    }
 
     window.setTimeout(() => {
-      const nombre = $('#nombre').value.trim().split(' ')[0];
+      const nombre = $("#nombre").value.trim().split(" ")[0];
       if (status) {
         status.textContent = `¡Gracias, ${nombre}! Te respondo pronto.`;
-        status.className = 'form-status is-ok';
+        status.className = "form-status is-ok";
       }
       form.reset();
-      $$('.field', form).forEach((field) => field.classList.remove('is-valid', 'is-invalid'));
-      if (charCount) charCount.textContent = '0';
+      $$(".field", form).forEach((field) =>
+        field.classList.remove("is-valid", "is-invalid"),
+      );
+      if (charCount) charCount.textContent = "0";
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Enviar mensaje';
+      submitBtn.textContent = "Enviar mensaje";
     }, 900);
   });
 }
 
+/* -- Tema claro / oscuro --
+   Tres estados, no dos: elegido claro, elegido oscuro, y sin elegir. Mientras
+   no se toque el botón manda el sistema, así que si cambia de tema por la
+   noche la página cambia con él. En cuanto se pulsa, la elección gana y se
+   guarda; el CSS lo resuelve con :root[data-theme] contra la media query.     */
+function initTheme() {
+  const btn = $("#themeToggle");
+  const root = document.documentElement;
+  const KEY = "tema";
+  const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
 
-/* ── Año del pie ─────────────────────────────────────────────── */
+  const isDark = () => {
+    const chosen = root.getAttribute("data-theme");
+    return chosen ? chosen === "dark" : systemDark.matches;
+  };
+
+  const syncButton = () => {
+    if (!btn) return;
+    const dark = isDark();
+    btn.setAttribute("aria-pressed", String(dark));
+    btn.setAttribute(
+      "aria-label",
+      dark ? "Cambiar a tema claro" : "Cambiar a tema oscuro"
+    );
+  };
+
+  // Lo guardado se aplica antes de nada
+  let stored = null;
+  try {
+    stored = localStorage.getItem(KEY);
+  } catch {
+    stored = null; // modo privado: se sigue sin persistencia
+  }
+  if (stored === "dark" || stored === "light") root.setAttribute("data-theme", stored);
+  syncButton();
+
+  // Sin elección propia, se sigue al sistema
+  systemDark.addEventListener("change", () => {
+    if (!root.getAttribute("data-theme")) syncButton();
+  });
+
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    const next = isDark() ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try {
+      localStorage.setItem(KEY, next);
+    } catch {
+      /* sin persistencia, pero el cambio se aplica igual */
+    }
+    syncButton();
+  });
+}
+
+/* -- Año del pie -- */
 function initYear() {
-  const year = $('#year');
+  const year = $("#year");
   if (year) year.textContent = String(new Date().getFullYear());
 }
 
-
-/* ── Arranque ────────────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', () => {
+/* -- Arranque -- */
+document.addEventListener("DOMContentLoaded", () => {
+  initTheme();
   initMenu();
   initHeader();
   initScrollSpy();
