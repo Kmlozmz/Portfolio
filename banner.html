@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UniStack · Banner</title>
+<link rel="icon" type="image/svg+xml" href="assets/unistack-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /*
+    Banner independiente, pensado para capturarlo. No forma parte del
+    portafolio: vive aparte para poder cambiarle la proporción sin tocar
+    el sitio. Los tamaños salen de --w, así que la pieza entera escala
+    con un solo número.
+  */
+  :root {
+    --w: 1280px;
+    --ratio: 40 / 13;              /* franja ancha, tipo cabecera de tienda */
+    --violet-600: #5b46e0;
+    --violet-500: #7456f7;
+    --indigo-700: #3e219f;
+    --ink: #0f1b33;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    gap: 1rem;
+    padding: 2rem 1rem;
+    background: #eef1f7;
+    font-family: 'Archivo', system-ui, sans-serif;
+  }
+
+  .stage {
+    width: min(var(--w), 100%);
+    aspect-ratio: var(--ratio);
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px;
+    background: linear-gradient(108deg, #f4f8ff 0%, #e9f0ff 38%, #cfe0ff 100%);
+    box-shadow: 0 30px 70px -40px rgba(15, 27, 51, .5);
+    container-type: inline-size;
+  }
+
+  .copy {
+    position: absolute;
+    left: 5.5%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 46%;
+  }
+
+  .mark { width: 9cqw; max-width: 92px; margin-bottom: 4cqh; }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(28px, 7.2cqw, 92px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--ink);
+  }
+  h1 span { color: var(--violet-600); }
+
+  p {
+    margin: 2.5cqh 0 0;
+    font-size: clamp(13px, 2.1cqw, 26px);
+    color: #3d4d68;
+    letter-spacing: -0.01em;
+  }
+
+  /* Baraja diagonal de pantallas, insinuadas y no dibujadas al detalle:
+     a este tamaño el detalle se convierte en ruido. */
+  .deck { position: absolute; inset: 0; pointer-events: none; }
+
+  .card {
+    position: absolute;
+    width: 17cqw;
+    padding: 1.5cqw;
+    border-radius: 1.5cqw;
+    background: #fff;
+    box-shadow: 0 3cqw 6cqw -3cqw rgba(15, 27, 51, .42);
+    transform: rotate(-15deg);
+    display: grid;
+    gap: 1cqh;
+  }
+  .card b { font-size: clamp(8px, 1.3cqw, 16px); color: var(--ink); }
+  .card i { display: block; height: 0.9cqh; min-height: 4px; border-radius: 99px; background: #e6ecf7; }
+  .card i:nth-of-type(2) { width: 82%; }
+  .card i:nth-of-type(3) { width: 58%; }
+
+  .c1 { top: -6%;  left: 52%; }
+  .c2 { top: 30%;  left: 62%; background: linear-gradient(150deg, var(--violet-600), var(--indigo-700)); }
+  .c2 b { color: #fff; }
+  .c2 i { background: rgba(255,255,255,.3); }
+  .c3 { top: -14%; left: 76%; }
+  .c4 { top: 42%;  left: 86%; }
+  .c5 { top: 78%;  left: 68%; }
+
+  .hint { font-size: 13px; color: #5b6478; text-align: center; max-width: 60ch; line-height: 1.6; }
+  .sizes { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: center; }
+  .sizes button {
+    font: inherit; font-size: 13px; font-weight: 600;
+    padding: .5rem 1rem; border: 1px solid #d3d9e6; border-radius: 99px;
+    background: #fff; color: #3d4d68; cursor: pointer;
+  }
+  .sizes button:hover { border-color: var(--violet-500); color: var(--violet-600); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+  <div class="stage" id="stage">
+    <div class="copy">
+      <img class="mark" src="assets/unistack-mark.svg" alt="UniStack">
+      <h1>UniStack <span>2.0</span></h1>
+      <p>Tu semestre entero, en una sola app</p>
+    </div>
+
+    <div class="deck" aria-hidden="true">
+      <div class="card c1"><b>Materias</b><i></i><i></i><i></i></div>
+      <div class="card c2"><b>Tu prioridad</b><i></i><i></i></div>
+      <div class="card c3"><b>Horario</b><i></i><i></i><i></i></div>
+      <div class="card c4"><b>Gastos</b><i></i><i></i></div>
+      <div class="card c5"><b>Promedio</b><i></i><i></i></div>
+    </div>
+  </div>
+
+  <div class="sizes">
+    <button type="button" data-ratio="40 / 13">Franja ancha</button>
+    <button type="button" data-ratio="16 / 9">16:9</button>
+    <button type="button" data-ratio="3 / 1">3:1 · cabecera</button>
+    <button type="button" data-ratio="1 / 1">Cuadrado</button>
+  </div>
+
+  <p class="hint">
+    Cambia la proporción y captura la franja. Todo escala con el ancho, así que
+    la pieza se ve igual de proporcionada en cualquier tamaño.
+  </p>
+
+<script>
+  document.querySelectorAll('.sizes button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.getElementById('stage').style.aspectRatio = btn.dataset.ratio;
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1120" role="img" aria-labelledby="usmark-title">
+  <title id="usmark-title">Símbolo de UniStack</title>
+  <!--
+    Geometría medida del símbolo original (unistack_option_a_symbol.png, 1200x1120)
+    escaneando su canal alfa: las tres píldoras son idénticas, 768x288, y sus filas
+    están separadas siempre 304px. Lo único que las distingue es el desplazamiento
+    horizontal y el degradado.
+  -->
+  <defs>
+    <linearGradient id="usTop" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7456F7"/>
+      <stop offset="1" stop-color="#C0AFFE"/>
+    </linearGradient>
+    <linearGradient id="usMid" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#3E219F"/>
+      <stop offset="1" stop-color="#684AEF"/>
+    </linearGradient>
+    <linearGradient id="usBot" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#5C87F0"/>
+      <stop offset="1" stop-color="#6B52F5"/>
+    </linearGradient>
+  </defs>
+  <rect x="328" y="112" width="768" height="288" rx="144" fill="url(#usTop)"/>
+  <rect x="104" y="416" width="768" height="288" rx="144" fill="url(#usMid)"/>
+  <rect x="256" y="720" width="768" height="288" rx="144" fill="url(#usBot)"/>
+</svg>
