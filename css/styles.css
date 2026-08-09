@@ -82,30 +82,38 @@
    Los violetas se aclaran: el mismo #5b46e0 que funciona sobre
    papel blanco se hunde contra un fondo oscuro y deja de leerse.  */
 :root[data-theme="dark"] {
-  --violet-600: #a394ff;
-  --violet-500: #b9a7fe;
-  --violet-300: #6b5bd6;
-  --violet-100: #241f45;
-  --indigo-700: #cbbcff;
-  --blue-500: #8fb0ff;
+  /* Oscuro de verdad: grises neutros, sin tinte de color en las superficies.
+     Teñir el fondo de violeta es lo que hace que un modo oscuro se lea como
+     plantilla. Aquí la jerarquía la da el brillo y el color queda reservado
+     para lo que se puede pulsar.
 
-  --ink: #f0eef8;
-  --ink-2: #b3aecb;
-  --ink-3: #8781a3;
-  --paper: #0f0e16;
-  --paper-2: #16141f;
-  --paper-3: #1e1b2b;
-  --line: #2b2739;
+     El acento baja mucho de saturación: un violeta vivo sobre negro grita, y
+     además es exactamente el tono que uno espera encontrarse. Desaturado se
+     convierte en un lavanda ceniza que acompaña en vez de competir. */
+  --violet-600: #b9b6cf;
+  --violet-500: #d2cfe2;
+  --violet-300: #46434f;
+  --violet-100: #1b1a21;
+  --indigo-700: #8e8ba3;
+  --blue-500: #9aa3bd;
 
-  --ok: #58c497;
-  --ok-bg: #143024;
-  --err: #f4899c;
-  --err-bg: #3a1620;
+  --ink: #e9e8ed;
+  --ink-2: #a3a1ac;
+  --ink-3: #716f7a;
+  --paper: #0e0e11;
+  --paper-2: #151519;
+  --paper-3: #1c1c21;
+  --line: #292930;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 8px 24px -12px rgba(0, 0, 0, 0.6);
-  --shadow-lg: 0 30px 60px -30px rgba(0, 0, 0, 0.8);
-  --on-accent: #14121c;
+  --ok: #7bbf9c;
+  --ok-bg: #17261e;
+  --err: #e08a97;
+  --err-bg: #2c1a1e;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 8px 24px -12px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 30px 60px -30px rgba(0, 0, 0, 0.9);
+  --on-accent: #16151a;
 
   color-scheme: dark;
 }
@@ -113,30 +121,38 @@
 /* Quien no ha tocado el interruptor hereda la preferencia del sistema */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --violet-600: #a394ff;
-    --violet-500: #b9a7fe;
-    --violet-300: #6b5bd6;
-    --violet-100: #241f45;
-    --indigo-700: #cbbcff;
-    --blue-500: #8fb0ff;
+    /* Oscuro de verdad: grises neutros, sin tinte de color en las superficies.
+       Teñir el fondo de violeta es lo que hace que un modo oscuro se lea como
+       plantilla. Aquí la jerarquía la da el brillo y el color queda reservado
+       para lo que se puede pulsar.
 
-    --ink: #f0eef8;
-    --ink-2: #b3aecb;
-    --ink-3: #8781a3;
-    --paper: #0f0e16;
-    --paper-2: #16141f;
-    --paper-3: #1e1b2b;
-    --line: #2b2739;
+       El acento baja mucho de saturación: un violeta vivo sobre negro grita, y
+       además es exactamente el tono que uno espera encontrarse. Desaturado se
+       convierte en un lavanda ceniza que acompaña en vez de competir. */
+    --violet-600: #b9b6cf;
+    --violet-500: #d2cfe2;
+    --violet-300: #46434f;
+    --violet-100: #1b1a21;
+    --indigo-700: #8e8ba3;
+    --blue-500: #9aa3bd;
 
-    --ok: #58c497;
-    --ok-bg: #143024;
-    --err: #f4899c;
-    --err-bg: #3a1620;
+    --ink: #e9e8ed;
+    --ink-2: #a3a1ac;
+    --ink-3: #716f7a;
+    --paper: #0e0e11;
+    --paper-2: #151519;
+    --paper-3: #1c1c21;
+    --line: #292930;
 
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 8px 24px -12px rgba(0, 0, 0, 0.6);
-    --shadow-lg: 0 30px 60px -30px rgba(0, 0, 0, 0.8);
-    --on-accent: #14121c;
+    --ok: #7bbf9c;
+    --ok-bg: #17261e;
+    --err: #e08a97;
+    --err-bg: #2c1a1e;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 8px 24px -12px rgba(0, 0, 0, 0.7);
+    --shadow-lg: 0 30px 60px -30px rgba(0, 0, 0, 0.9);
+    --on-accent: #16151a;
 
     color-scheme: dark;
   }
@@ -1445,6 +1461,36 @@ a {
   .deck-4 {
     display: none;
   }
+}
+
+/* ── Transición circular del tema ─────────────────────────────
+   El navegador toma una foto del antes y del después; el JS recorta
+   una de las dos con un círculo que crece o mengua desde el botón.
+   Hay que anular la animación por defecto —un fundido cruzado— o se
+   mezclaría con el recorte y se vería sucio.
+
+   Los dos fotogramas se pintan opacos y sin mezcla: con mix-blend-mode
+   activo, durante el recorte se transparentarían el uno contra el otro
+   y aparecería un halo gris en el borde del círculo.                   */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Al ir a oscuro crece el nuevo por encima; al volver a claro mengua el
+   viejo, que es lo que da la sensación de retracción. */
+::view-transition-old(root) {
+  z-index: 1;
+}
+::view-transition-new(root) {
+  z-index: 2;
+}
+:root.theme-retracting::view-transition-old(root) {
+  z-index: 2;
+}
+:root.theme-retracting::view-transition-new(root) {
+  z-index: 1;
 }
 
 /* ── Movimiento reducido ─────────────────────────────────────── */

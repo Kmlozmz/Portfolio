@@ -442,8 +442,8 @@ function initTheme() {
   });
 
   if (!btn) return;
-  btn.addEventListener("click", () => {
-    const next = isDark() ? "light" : "dark";
+
+  const apply = (next) => {
     root.setAttribute("data-theme", next);
     try {
       localStorage.setItem(KEY, next);
@@ -451,6 +451,61 @@ function initTheme() {
       /* sin persistencia, pero el cambio se aplica igual */
     }
     syncButton();
+  };
+
+  btn.addEventListener("click", () => {
+    const next = isDark() ? "light" : "dark";
+
+    // Sin soporte o con el movimiento reducido, el cambio es directo. La
+    // transición es un adorno: nunca puede ser la condición para que el
+    // tema cambie.
+    if (!document.startViewTransition || prefersReducedMotion) {
+      apply(next);
+      return;
+    }
+
+    // El círculo nace en el centro del botón, no donde cayó el cursor: así
+    // sale del mismo sitio tanto con ratón como con teclado.
+    const box = btn.getBoundingClientRect();
+    const x = box.left + box.width / 2;
+    const y = box.top + box.height / 2;
+
+    // Radio hasta la esquina más lejana, para que llegue a cubrirlo todo
+    const radius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y)
+    );
+
+    // Al oscuro crece el círculo; al claro se retrae. Se marca en la raíz
+    // porque de ese orden de apilamiento depende cuál de los dos fotogramas
+    // queda encima, y eso lo decide el CSS.
+    const retracting = next === "light";
+    root.classList.toggle("theme-retracting", retracting);
+
+    const transition = document.startViewTransition(() => apply(next));
+
+    transition.ready
+      .then(() => {
+        const closed = `circle(0px at ${x}px ${y}px)`;
+        const open = `circle(${radius}px at ${x}px ${y}px)`;
+        root.animate(
+          { clipPath: retracting ? [open, closed] : [closed, open] },
+          {
+            duration: 620,
+            easing: "cubic-bezier(.2,.7,.3,1)",
+            pseudoElement: retracting
+              ? "::view-transition-old(root)"
+              : "::view-transition-new(root)",
+          }
+        );
+      })
+      .catch(() => {
+        /* si el navegador aborta la transición, el tema ya está aplicado */
+      });
+
+    transition.finished.finally(() => {
+      root.classList.remove("theme-retracting");
+    });
   });
 }
 
