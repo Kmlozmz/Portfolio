@@ -1,4 +1,4 @@
-# Portafolio · Pineda
+# Portafolio · Camilo Andrés Pineda Cueto
 
 Sitio personal construido con HTML, CSS y JavaScript sin dependencias ni
 frameworks. El acento visual hereda los violetas reales del símbolo de
