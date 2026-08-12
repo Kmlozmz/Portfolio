@@ -1143,47 +1143,35 @@ a {
   }
 }
 
-/* ─ Transición circular del tema -
-   El navegador toma una foto del antes y del después; el JS recorta
-   una de las dos con un círculo que crece o mengua desde el botón.
-   Hay que anular la animación por defecto —un fundido cruzado— o se
-   mezclaría con el recorte y se vería sucio.
+/* ─ Transición circular del tema ─
+   El navegador toma una foto del antes y del después; la nueva capa se
+   recorta con un círculo que crece desde el botón. Hay que anular la
+   animación por defecto —un fundido cruzado— o se mezclaría con el
+   recorte y se vería sucio.
 
    Los dos fotogramas se pintan opacos y sin mezcla: con mix-blend-mode
    activo, durante el recorte se transparentarían el uno contra el otro
-   y aparecería un halo gris en el borde del círculo.                   */
+   y aparecería un halo gris en el borde del círculo.
+
+   El recorte lo mueve una transición CSS normal, no Element.animate()
+   sobre el pseudo-elemento: esa vía dependía de una parte de la API más
+   nueva y menos extendida, y seguía dando un salto visible según el
+   navegador. Cambiar solo el valor de --reveal-r es más simple y usa el
+   mismo mecanismo de transición que el resto del sitio. */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
 }
-
-/* Al ir a oscuro crece el nuevo por encima; al volver a claro mengua el
-   viejo, que es lo que da la sensación de retracción.
-
-   El recorte de partida se fija aquí y no solo en la animación de JS.
-   Entre que empieza la transición y el script llega a llamar a animate()
-   dentro de transition.ready, el navegador puede pintar algún fotograma
-   con la capa todavía sin recortar; si el primer fotograma de la
-   animación no coincide con eso, hay un salto visible de golpe. Fijando
-   el mismo valor por CSS de entrada, animate() continúa desde donde ya
-   estaba en vez de saltar hasta ahí. Eso era el parpadeo. */
 ::view-transition-old(root) {
   z-index: 1;
 }
 ::view-transition-new(root) {
   z-index: 2;
-  clip-path: circle(0px at var(--reveal-x, 50%) var(--reveal-y, 50%));
-}
-:root.theme-retracting::view-transition-old(root) {
-  z-index: 2;
   clip-path: circle(
-    var(--reveal-r, 150%) at var(--reveal-x, 50%) var(--reveal-y, 50%)
+    var(--reveal-r, 0px) at var(--reveal-x, 50%) var(--reveal-y, 50%)
   );
-}
-:root.theme-retracting::view-transition-new(root) {
-  z-index: 1;
-  clip-path: none;
+  transition: clip-path 620ms var(--ease);
 }
 
 /* Movimiento reducido */

@@ -476,44 +476,34 @@ function initTheme() {
       Math.max(y, window.innerHeight - y)
     );
 
-    // Al oscuro crece el círculo; al claro se retrae. Se marca en la raíz
-    // porque de ese orden de apilamiento depende cuál de los dos fotogramas
-    // queda encima, y eso lo decide el CSS.
-    const retracting = next === "light";
-
-    // Estas variables las lee el CSS para fijar, sin esperar al JS, el
-    // recorte con el que nace la capa que se va a animar. Se ponen antes
-    // de arrancar la transición para que ese punto de partida ya esté
-    // aplicado desde el primer fotograma; era el hueco entre este punto y
-    // el animate() de más abajo lo que producía el parpadeo.
+    // El punto de partida se fija antes de arrancar la transición: la capa
+    // nueva nace ya recortada a 0px, así que no hay fotograma sin recortar
+    // que enseñar entre que empieza la transición y que se dispara el
+    // crecimiento. --reveal-r vale 0 aquí a propósito, igual que el valor
+    // por defecto que ya trae la regla en el CSS.
     root.style.setProperty("--reveal-x", `${x}px`);
     root.style.setProperty("--reveal-y", `${y}px`);
-    root.style.setProperty("--reveal-r", `${radius}px`);
-    root.classList.toggle("theme-retracting", retracting);
+    root.style.setProperty("--reveal-r", "0px");
 
     const transition = document.startViewTransition(() => apply(next));
 
     transition.ready
       .then(() => {
-        const closed = `circle(0px at ${x}px ${y}px)`;
-        const open = `circle(${radius}px at ${x}px ${y}px)`;
-        root.animate(
-          { clipPath: retracting ? [open, closed] : [closed, open] },
-          {
-            duration: 620,
-            easing: "cubic-bezier(.2,.7,.3,1)",
-            pseudoElement: retracting
-              ? "::view-transition-old(root)"
-              : "::view-transition-new(root)",
-          }
-        );
+        // El doble fotograma es a propósito: hace falta que el navegador
+        // llegue a pintar el 0px de arriba como un valor ya asentado antes
+        // de cambiarlo, o no hay «antes» del que partir y la transición de
+        // clip-path del CSS no tiene nada que interpolar.
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            root.style.setProperty("--reveal-r", `${radius}px`);
+          });
+        });
       })
       .catch(() => {
         /* si el navegador aborta la transición, el tema ya está aplicado */
       });
 
     transition.finished.finally(() => {
-      root.classList.remove("theme-retracting");
       root.style.removeProperty("--reveal-x");
       root.style.removeProperty("--reveal-y");
       root.style.removeProperty("--reveal-r");
