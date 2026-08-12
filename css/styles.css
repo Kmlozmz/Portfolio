@@ -1,11 +1,8 @@
 /* ═══════════════════════════════════════════════════════════════
    Portafolio · Pineda
-   Acento heredado del símbolo de UniStack: los tres violetas son los
-   colores reales del logo, muestreados del PNG original. La base es
-   monocroma para que el color solo aparezca donde significa algo.
    ═══════════════════════════════════════════════════════════════ */
 
-/* ── Tokens ──────────────────────────────────────────────────── */
+/* Tokens */
 :root {
   /* Marca */
   --violet-600: #5b46e0;
@@ -74,22 +71,13 @@
   color-scheme: light;
 }
 
-/* ── Tema oscuro ──────────────────────────────────────────────
+/* - Tema oscuro -
    Solo se redefinen los tokens; ninguna regla de más abajo sabe
    qué tema está activo. Así el tema es un cambio de valores y no
    una segunda hoja de estilos que mantener en paralelo.
-
-   Los violetas se aclaran: el mismo #5b46e0 que funciona sobre
-   papel blanco se hunde contra un fondo oscuro y deja de leerse.  */
+*/
 :root[data-theme="dark"] {
-  /* Oscuro de verdad: grises neutros, sin tinte de color en las superficies.
-     Teñir el fondo de violeta es lo que hace que un modo oscuro se lea como
-     plantilla. Aquí la jerarquía la da el brillo y el color queda reservado
-     para lo que se puede pulsar.
 
-     El acento baja mucho de saturación: un violeta vivo sobre negro grita, y
-     además es exactamente el tono que uno espera encontrarse. Desaturado se
-     convierte en un lavanda ceniza que acompaña en vez de competir. */
   --violet-600: #b9b6cf;
   --violet-500: #d2cfe2;
   --violet-300: #46434f;
@@ -121,14 +109,7 @@
 /* Quien no ha tocado el interruptor hereda la preferencia del sistema */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    /* Oscuro de verdad: grises neutros, sin tinte de color en las superficies.
-       Teñir el fondo de violeta es lo que hace que un modo oscuro se lea como
-       plantilla. Aquí la jerarquía la da el brillo y el color queda reservado
-       para lo que se puede pulsar.
 
-       El acento baja mucho de saturación: un violeta vivo sobre negro grita, y
-       además es exactamente el tono que uno espera encontrarse. Desaturado se
-       convierte en un lavanda ceniza que acompaña en vez de competir. */
     --violet-600: #b9b6cf;
     --violet-500: #d2cfe2;
     --violet-300: #46434f;
@@ -158,7 +139,7 @@
   }
 }
 
-/* ── Base ────────────────────────────────────────────────────── */
+/* Base */
 *,
 *::before,
 *::after {
@@ -274,7 +255,7 @@ a {
   color: transparent;
 }
 
-/* ── Botones ─────────────────────────────────────────────────── */
+/* Botones */
 .btn {
   --btn-bg: transparent;
   --btn-fg: var(--ink);
@@ -322,19 +303,11 @@ a {
   background: var(--violet-100);
 }
 
-.btn-dark {
-  --btn-bg: var(--ink);
-  --btn-fg: var(--paper);
-}
-.btn-dark:hover {
-  --btn-bg: color-mix(in srgb, var(--ink) 88%, var(--violet-500));
-}
-
 .btn-block {
   width: 100%;
 }
 
-/* ── Cabecera ────────────────────────────────────────────────── */
+/* Cabecera */
 .site-header {
   position: sticky;
   top: 0;
@@ -362,15 +335,14 @@ a {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.3rem;
   font-weight: 700;
 }
-.brand-name1 {
+.name1 {
   letter-spacing: -0.02em;
 }
-.brand-name2 {
+.name2 {
   letter-spacing: -0.02em;
-  color: var(--violet-600);
 }
 .nav-list {
   display: flex;
@@ -538,7 +510,7 @@ a {
   }
 }
 
-/* ── Portada ─────────────────────────────────────────────────── */
+/* Portada */
 .hero {
   position: relative;
   padding-block: var(--sp-6) var(--sp-7);
@@ -548,14 +520,20 @@ a {
       var(--violet-100),
       transparent 60%
     ),
-    radial-gradient(40rem 24rem at 5% 10%, color-mix(in srgb, var(--blue-500) 16%, var(--paper)), transparent 65%);
+    radial-gradient(
+      40rem 24rem at 5% 10%,
+      color-mix(in srgb, var(--blue-500) 16%, var(--paper)),
+      transparent 65%
+    );
 }
 
+/* Una sola columna: el móvil que ocupaba la segunda se fue a la landing de
+   UniStack, y el texto no tiene por qué seguir comprimido al 55% del ancho
+   por una columna que ya no existe. */
 .hero-inner {
-  display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: var(--sp-5);
-  align-items: center;
+  max-width: 62ch;
+  margin-inline: auto;
+  text-align: center;
 }
 
 .hero-title {
@@ -569,6 +547,7 @@ a {
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.75rem;
   margin-bottom: var(--sp-5);
 }
@@ -576,6 +555,7 @@ a {
 .stats {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: var(--sp-4);
 }
 .stat dt {
@@ -591,195 +571,10 @@ a {
 }
 
 /* Teléfono dibujado en CSS */
-.hero-visual {
-  position: relative;
-  display: grid;
-  place-items: center;
-}
-.glow {
-  position: absolute;
-  inset: 12% 6%;
-  background: radial-gradient(
-    circle at 50% 40%,
-    rgba(116, 86, 247, 0.3),
-    transparent 68%
-  );
-  filter: blur(28px);
-}
-.phone {
-  position: relative;
-  width: min(290px, 78vw);
-  aspect-ratio: 9 / 18.4;
-  padding: 9px;
-  border-radius: 40px;
-  background: linear-gradient(160deg, #2c2740, #14121c);
-  box-shadow: var(--shadow-lg);
-  animation: float 7s var(--ease) infinite alternate;
-}
-@keyframes float {
-  from {
-    transform: translateY(-8px);
-  }
-  to {
-    transform: translateY(8px);
-  }
-}
+/* El móvil de la portada, con las pantallas de UniStack dentro, se fue a
+   unistack-landing_page junto con el resto del contenido de producto. */
 
-.phone-screen {
-  height: 100%;
-  border-radius: 32px;
-  background: #0c111d;
-  padding: 12px 12px 0;
-  overflow: hidden;
-  color: #e9e7f5;
-  font-size: 11px;
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-}
-.ph-status {
-  display: flex;
-  justify-content: space-between;
-  font-size: 9px;
-  color: #8d88a8;
-}
-.ph-dots {
-  width: 26px;
-  height: 5px;
-  border-radius: 3px;
-  background: #2a3145;
-}
-.ph-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.ph-burger {
-  width: 15px;
-  height: 2px;
-  background: #cfcbe4;
-  box-shadow:
-    0 5px 0 #cfcbe4,
-    0 -5px 0 #cfcbe4;
-}
-.ph-brand {
-  font-weight: 800;
-  color: var(--violet-300);
-}
-.ph-avatar {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--violet-600);
-  color: #fff;
-  display: grid;
-  place-items: center;
-  font-size: 9px;
-  font-weight: 700;
-}
-.ph-greet {
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-.ph-sub {
-  color: #8d88a8;
-  font-size: 10px;
-  margin-top: -6px;
-}
-
-.ph-hero {
-  position: relative;
-  border-radius: 14px;
-  padding: 11px 12px 13px;
-  background: linear-gradient(140deg, var(--violet-600), #3f2fae);
-  overflow: hidden;
-  display: grid;
-  gap: 3px;
-}
-.ph-eyebrow {
-  font-family: var(--font-mono);
-  font-size: 8px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #cfc6ff;
-}
-.ph-hero strong {
-  font-size: 12.5px;
-}
-.ph-desc {
-  font-size: 9.5px;
-  color: #d5cffb;
-}
-.ph-btn {
-  justify-self: start;
-  margin-top: 7px;
-  background: #cfc6ff;
-  color: #241a58;
-  font-size: 9.5px;
-  font-weight: 700;
-  padding: 5px 11px;
-  border-radius: 999px;
-}
-.ph-orb {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-}
-.ph-orb-a {
-  width: 84px;
-  height: 84px;
-  top: -34px;
-  right: -22px;
-}
-.ph-orb-b {
-  width: 52px;
-  height: 52px;
-  bottom: -26px;
-  right: 18px;
-}
-
-.ph-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 7px;
-}
-.ph-tile {
-  background: #171c2c;
-  border: 1px solid #232a3d;
-  border-radius: 11px;
-  padding: 9px;
-  display: grid;
-  gap: 5px;
-}
-.ph-tile b {
-  font-size: 15px;
-  font-variant-numeric: tabular-nums;
-}
-.ph-tile span {
-  font-size: 8.5px;
-  color: #8d88a8;
-}
-.chip {
-  width: 22px;
-  height: 22px;
-  border-radius: 7px;
-  display: block;
-}
-.chip-violet {
-  background: rgba(163, 148, 255, 0.24);
-}
-.chip-teal {
-  background: rgba(45, 200, 160, 0.22);
-}
-.chip-amber {
-  background: rgba(224, 168, 60, 0.22);
-}
-.chip-coral {
-  background: rgba(240, 128, 143, 0.22);
-}
-
-/* ── Secciones ───────────────────────────────────────────────── */
+/* Secciones */
 .section {
   padding-block: var(--sp-7);
 }
@@ -948,103 +743,11 @@ a {
   transition: width 1.1s var(--ease);
 }
 
-/* ── Banner destacado ────────────────────────────────────────── */
-.banner {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--sp-3);
-  align-items: center;
-  overflow: hidden;
-  border-radius: var(--radius-xl);
-  padding: var(--sp-5);
-  margin-bottom: var(--sp-5);
-  background: linear-gradient(
-    115deg,
-    color-mix(in srgb, var(--blue-500) 8%, var(--paper)) 0%,
-    color-mix(in srgb, var(--blue-500) 14%, var(--paper)) 45%,
-    color-mix(in srgb, var(--violet-500) 20%, var(--paper)) 100%
-  );
-}
-.banner-mark {
-  margin-bottom: var(--sp-3);
-}
-.banner-title {
-  font-size: var(--step-3);
-  font-weight: 800;
-  color: var(--ink);
-  letter-spacing: -0.035em;
-}
-.banner-title span {
-  color: var(--violet-600);
-}
-.banner-sub {
-  color: var(--ink-2);
-  margin: 0.4rem 0 var(--sp-3);
-}
+/* El banner de producto y la baraja de pantallas se fueron a
+   unistack-landing_page, junto con el resto del contenido que hablaba
+   de UniStack como producto en vez de como proyecto de este portafolio. */
 
-/* Baraja diagonal de tarjetas, como una portada de producto */
-.banner-deck {
-  position: relative;
-  height: 260px;
-}
-.deck-card {
-  position: absolute;
-  width: 150px;
-  padding: 12px;
-  border-radius: 16px;
-  background: var(--paper);
-  box-shadow: 0 18px 40px -22px rgba(18, 34, 71, 0.45);
-  transform: rotate(-14deg);
-  display: grid;
-  gap: 7px;
-  transition: transform 420ms var(--ease);
-}
-.deck-card .dc-t {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--ink);
-}
-.deck-card i {
-  display: block;
-  height: 7px;
-  border-radius: 4px;
-  background: var(--paper-3);
-}
-.deck-card i:nth-child(2) {
-  width: 85%;
-}
-.deck-card i:nth-child(3) {
-  width: 60%;
-}
-.deck-1 {
-  top: 6px;
-  left: 2%;
-}
-.deck-2 {
-  top: 62px;
-  left: 27%;
-  background: linear-gradient(150deg, var(--violet-600), #3f2fae);
-}
-.deck-2 .dc-t {
-  color: #fff;
-}
-.deck-2 i {
-  background: rgba(255, 255, 255, 0.28);
-}
-.deck-3 {
-  top: 22px;
-  left: 54%;
-}
-.deck-4 {
-  top: 130px;
-  left: 76%;
-}
-.banner:hover .deck-card {
-  transform: rotate(-9deg) translateY(-6px);
-}
-
-/* ── Filtros y tarjetas ──────────────────────────────────────── */
+/* Filtros y tarjetas */
 .filters {
   display: flex;
   flex-wrap: wrap;
@@ -1178,7 +881,7 @@ a {
   opacity: 1;
 }
 
-/* ── Contacto ────────────────────────────────────────────────── */
+/* Contacto */
 .contact-grid {
   display: grid;
   grid-template-columns: 0.9fr 1.1fr;
@@ -1319,7 +1022,7 @@ a {
   color: var(--err);
 }
 
-/* ── Pie ─────────────────────────────────────────────────────── */
+/* Pie */
 .site-footer {
   border-top: 1px solid var(--line);
   padding-block: var(--sp-4);
@@ -1355,7 +1058,7 @@ a {
   color: var(--ink-3);
 }
 
-/* ── Revelado al entrar en pantalla ──────────────────────────── */
+/* Revelado al entrar en pantalla */
 .reveal {
   opacity: 0;
   transform: translateY(22px);
@@ -1368,23 +1071,15 @@ a {
   transform: none;
 }
 
-/* ── Adaptación ──────────────────────────────────────────────── */
+/* Adaptación */
 @media (max-width: 980px) {
-  .hero-inner,
   .about-grid,
-  .contact-grid,
-  .banner {
+  .contact-grid {
     grid-template-columns: 1fr;
   }
 
-  .hero-visual {
-    order: -1;
-  }
   .about-card {
     position: static;
-  }
-  .banner-deck {
-    height: 210px;
   }
 }
 
@@ -1446,24 +1141,9 @@ a {
   .section {
     padding-block: var(--sp-6);
   }
-  .banner {
-    padding: var(--sp-4) var(--sp-3);
-  }
-  .deck-card {
-    width: 128px;
-  }
 }
 
-@media (max-width: 420px) {
-  .banner-deck {
-    height: 190px;
-  }
-  .deck-4 {
-    display: none;
-  }
-}
-
-/* ── Transición circular del tema ─────────────────────────────
+/* ─ Transición circular del tema -
    El navegador toma una foto del antes y del después; el JS recorta
    una de las dos con un círculo que crece o mengua desde el botón.
    Hay que anular la animación por defecto —un fundido cruzado— o se
@@ -1493,7 +1173,7 @@ a {
   z-index: 1;
 }
 
-/* ── Movimiento reducido ─────────────────────────────────────── */
+/* Movimiento reducido */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

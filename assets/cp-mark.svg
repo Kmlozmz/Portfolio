@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="cp-title">
+  <title id="cp-title">Monograma de Camilo Pineda</title>
+  <!--
+    Monograma CP. Las dos letras comparten el mismo trazo y el mismo radio:
+    la C es un arco abierto y la P el mismo arco cerrado sobre un asta. Se
+    dibujan con `stroke` y no con relleno para que el grosor se mantenga
+    constante a cualquier tamaño, incluso a 16px de favicon.
+
+    El color se hereda con currentColor, así que sigue al tema del sitio en
+    lugar de traer el suyo propio.
+  -->
+  <g fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- C: arco abierto por la derecha -->
+    <path d="M30 15a15 15 0 1 0 0 30" />
+    <!-- P: asta y panza -->
+    <path d="M40 49V15h6a11 11 0 0 1 0 22h-6" />
+  </g>
+</svg>

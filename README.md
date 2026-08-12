@@ -1,24 +1,35 @@
 # Portafolio · Camilo Pineda
 
 Sitio personal construido con HTML, CSS y JavaScript sin dependencias ni
-frameworks.
+frameworks. Identidad propia — no la de ningún proyecto que aparezca en él.
 
 ## Estructura
 
 ```
 index.html        Portafolio completo
-banner.html       Banner de UniStack, suelto y con proporción ajustable
-css/styles.css    Tokens, rejilla y adaptación
-js/main.js        Menú, validación, filtros y animaciones
-assets/           Símbolo de marca en SVG
+css/styles.css    Tokens, tema claro/oscuro, rejilla y adaptación
+js/main.js        Menú, tema, validación, filtros y animaciones
+assets/           Monograma propio (cp-mark.svg) y el símbolo de UniStack,
+                   este último solo para identificar su tarjeta de proyecto
 ```
 
 ## Verlo
 
-Abrir `index.html` directamente con doble clic
+Al abrir `index.html` directamente con doble clic algunos navegadores
+restringen recursos locales. Lo más cómodo es servirlo:
+
+```bash
+python -m http.server 8000
+```
+
+Y abrir <http://localhost:8000>.
 
 ## Qué hace el JavaScript
 
+- **Tema claro/oscuro** con tres estados: elegido claro, elegido oscuro, y sin
+  elegir, en cuyo caso sigue al sistema. El cambio anima un barrido circular
+  desde el botón con la View Transitions API, con salida directa si el
+  navegador no la soporta o el visitante pidió menos movimiento.
 - **Menú hamburguesa** accesible: `aria-expanded`, cierre con Escape, al tocar
   fuera y al elegir un enlace; el foco vuelve al botón que lo abrió.
 - **Validación en vivo** del formulario: al salir del campo y, si ya falló,
@@ -28,8 +39,8 @@ Abrir `index.html` directamente con doble clic
 - **Enlace activo** según la sección visible, con `IntersectionObserver`.
 - Todo respeta `prefers-reduced-motion`.
 
-## Banner
+## Proyectos relacionados
 
-`banner.html` es una pieza aparte, pensada para capturarla como recurso
-gráfico. Los botones cambian la proporción (franja ancha, 16:9, 3:1, cuadrado)
-y el contenido escala con el ancho mediante *container queries*.
+UniStack tiene su propia página de producto, en un repositorio aparte:
+[UniStack-landing_page](https://github.com/Kmlozmz/UniStack-landing_page).
+Este portafolio solo la enlaza desde su tarjeta de proyecto.

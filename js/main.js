@@ -17,7 +17,7 @@ function initMenu() {
     nav.classList.toggle("is-open", open);
     burger.setAttribute("aria-expanded", String(open));
     burger.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
-    // Bloquear el fondo solo en móvil, que es donde el menú lo tapa
+    // Bloquear el fondo solo en teléfono, que es donde el menú lo tapa
     document.body.classList.toggle(
       "is-locked",
       open && window.innerWidth <= 760,
@@ -129,7 +129,7 @@ function initReveal() {
   items.forEach((el) => observer.observe(el));
 }
 
-/* -- Barras de habilidades --
+/* -- Barras de skills --
    La barra existe, pero no muestra un porcentaje: un «87%» no lo
    determina nadie. Se declaran tres niveles y cada uno ocupa una
    fracción fija, así que la barra compara entre sí y el texto dice
