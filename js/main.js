@@ -480,6 +480,15 @@ function initTheme() {
     // porque de ese orden de apilamiento depende cuál de los dos fotogramas
     // queda encima, y eso lo decide el CSS.
     const retracting = next === "light";
+
+    // Estas variables las lee el CSS para fijar, sin esperar al JS, el
+    // recorte con el que nace la capa que se va a animar. Se ponen antes
+    // de arrancar la transición para que ese punto de partida ya esté
+    // aplicado desde el primer fotograma; era el hueco entre este punto y
+    // el animate() de más abajo lo que producía el parpadeo.
+    root.style.setProperty("--reveal-x", `${x}px`);
+    root.style.setProperty("--reveal-y", `${y}px`);
+    root.style.setProperty("--reveal-r", `${radius}px`);
     root.classList.toggle("theme-retracting", retracting);
 
     const transition = document.startViewTransition(() => apply(next));
@@ -505,6 +514,9 @@ function initTheme() {
 
     transition.finished.finally(() => {
       root.classList.remove("theme-retracting");
+      root.style.removeProperty("--reveal-x");
+      root.style.removeProperty("--reveal-y");
+      root.style.removeProperty("--reveal-r");
     });
   });
 }

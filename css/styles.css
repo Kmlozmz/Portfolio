@@ -1159,18 +1159,31 @@ a {
 }
 
 /* Al ir a oscuro crece el nuevo por encima; al volver a claro mengua el
-   viejo, que es lo que da la sensación de retracción. */
+   viejo, que es lo que da la sensación de retracción.
+
+   El recorte de partida se fija aquí y no solo en la animación de JS.
+   Entre que empieza la transición y el script llega a llamar a animate()
+   dentro de transition.ready, el navegador puede pintar algún fotograma
+   con la capa todavía sin recortar; si el primer fotograma de la
+   animación no coincide con eso, hay un salto visible de golpe. Fijando
+   el mismo valor por CSS de entrada, animate() continúa desde donde ya
+   estaba en vez de saltar hasta ahí. Eso era el parpadeo. */
 ::view-transition-old(root) {
   z-index: 1;
 }
 ::view-transition-new(root) {
   z-index: 2;
+  clip-path: circle(0px at var(--reveal-x, 50%) var(--reveal-y, 50%));
 }
 :root.theme-retracting::view-transition-old(root) {
   z-index: 2;
+  clip-path: circle(
+    var(--reveal-r, 150%) at var(--reveal-x, 50%) var(--reveal-y, 50%)
+  );
 }
 :root.theme-retracting::view-transition-new(root) {
   z-index: 1;
+  clip-path: none;
 }
 
 /* Movimiento reducido */
