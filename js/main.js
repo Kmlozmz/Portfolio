@@ -294,24 +294,14 @@ const SWATCHES = [
 
 const LANDING_URL = "https://unistack.srk-lab.workers.dev/";
 
-/* Captura automática de la web (se vuelve a generar cada pocas horas). */
-const shot = (u) =>
-  `https://image.thum.io/get/maxAge/6/width/1280/crop/800/noanimate/${u}`;
-
-/* Si un sitio permite ser embebido, pon embed=true para ver el sitio en vivo. */
-const livePreview = (url, label, embed) => `
+/* Capturas estáticas de los sitios (guardadas en assets/projects). */
+const sitePreview = (img, url, label) => `
   <div class="art">
-    <div class="browser wide">
-      <div class="br-bar"><i></i><i></i><i></i><span class="br-url">${label}</span><a class="br-open" href="${url}" target="_blank" rel="noopener">Open ↗</a></div>
-      <div class="live-frame">
-        ${embed
-          ? `<iframe src="${url}" title="Live preview of ${label}" loading="lazy" tabindex="-1" scrolling="no"></iframe>`
-          : `<img src="${shot(url)}" alt="Preview of ${label}" loading="lazy" />`}
-      </div>
-    </div>
-    <p class="art-caption">${embed ? "LIVE PREVIEW" : "AUTO-UPDATED PREVIEW"}</p>
+    <a class="browser wide" href="${url}" target="_blank" rel="noopener" aria-label="Open ${label}">
+      <div class="br-bar"><i></i><i></i><i></i><span class="br-url">${label}</span><span class="br-open">Open ↗</span></div>
+      <div class="live-frame"><img src="${img}" alt="Screenshot of ${label}" loading="lazy" /></div>
+    </a>
   </div>`;
-
 const ART = {
   unistack: () => `
     <div class="art">
@@ -340,7 +330,7 @@ const ART = {
       <p class="art-caption">ILLUSTRATIVE · SAMPLE DATA</p>
     </div>`,
 
-  landing: () => livePreview(LANDING_URL, "unistack.srk-lab.workers.dev", false),
+  landing: () => sitePreview("assets/projects/unistack-site.jpg", LANDING_URL, "unistack.srk-lab.workers.dev"),
 
   portfolio: () => {
     let seed = 7;
@@ -424,16 +414,9 @@ function initWork() {
   ).join("");
   const tabs = $$(".work-tab", list);
 
-  const fitFrame = () => {
-    const f = $(".live-frame iframe", art);
-    if (f) f.style.transform = `scale(${f.parentElement.clientWidth / 1280})`;
-  };
-  window.addEventListener("resize", fitFrame);
-
   const render = () => {
     const w = WORK[idx];
     art.innerHTML = ART[w.art]();
-    fitFrame();
 
     info.style.animation = "none";
     void info.offsetWidth;

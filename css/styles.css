@@ -1265,6 +1265,9 @@ img {
 
 /* ----- Browser mockups (Landing / Portfolio) ----- */
 .browser {
+  display: block;
+  text-decoration: none;
+  color: inherit;
   width: min(100%, 540px);
   border: 1px solid var(--border-color);
   border-radius: 14px;
