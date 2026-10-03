@@ -96,14 +96,7 @@
 					<!-- Details row (Name, tagline, socials) -->
 					<div class="hero-details-row reveal">
 						<div class="hero-intro-col">
-							<div class="hero-name-badge-row">
-								<h1 class="hero-name">Camilo Pineda</h1>
-								<span class="hero-handle">/ Kmlo</span>
-								<span class="hero-status-pill">
-									<span class="pulse green" aria-hidden="true"></span>
-									Available
-								</span>
-							</div>
+							<h1 class="hero-name">Camilo Pineda <span class="hero-handle">/ Kmlo</span></h1>
 							<p class="hero-tagline">
 								Software developer &amp; builder crafting resilient mobile apps, interactive web experiences, and digital tools with meticulous care.
 							</p>
@@ -227,119 +220,20 @@
 
 			<!-- PROJECTS -->
 			<section class="block" id="proyectos">
+				<p class="label reveal">SELECTED WORK</p>
 				<h2 class="giant reveal">Featured Projects</h2>
 
-				<!-- Interactive Project Selector Tabs -->
-				<div class="work-tabs reveal" role="tablist" aria-label="Projects selector" id="workTabs">
-					<button class="work-tab is-active" type="button" data-index="0" role="tab" aria-selected="true">
-						<span class="tab-index">01</span>
-						<span class="tab-title">UniStack</span>
-						<span class="tab-tag">Android App</span>
-					</button>
-					<button class="work-tab" type="button" data-index="1" role="tab" aria-selected="false">
-						<span class="tab-index">02</span>
-						<span class="tab-title">Landing Page</span>
-						<span class="tab-tag">Web Showcase</span>
-					</button>
-					<button class="work-tab" type="button" data-index="2" role="tab" aria-selected="false">
-						<span class="tab-index">03</span>
-						<span class="tab-title">Design Tokens</span>
-						<span class="tab-tag">Systems &amp; Linter</span>
-					</button>
-					<button class="work-tab" type="button" data-index="3" role="tab" aria-selected="false">
-						<span class="tab-index">04</span>
-						<span class="tab-title">Interactive Portfolio</span>
-						<span class="tab-tag">Frontend &amp; UX</span>
-					</button>
-				</div>
-
-				<div class="work reveal">
-					<article class="card work-info">
-						<div>
-							<div class="work-meta-header">
-								<span class="work-count" id="workCount">01 / 04</span>
-								<span class="work-category" id="workKicker">ANDROID APP</span>
-							</div>
-							<h3 class="work-title" id="workTitle">UniStack</h3>
-							<p class="muted work-desc" id="workDesc">
-								Academic lifecycle companion for students: modular terms, weighted GPA calculations, offline-first persistence with 1-file backup/restore, custom OTA in-app updates, and 28 dynamic themes.
-							</p>
-
-							<!-- Dynamic Highlights Checklist -->
-							<div class="work-highlights-list" id="workHighlights">
-								<div class="work-highlight-item">
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-									<span>Offline-first SQLite/Room persistence engine</span>
-								</div>
-								<div class="work-highlight-item">
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-									<span>Full data &amp; attachments single-file backup/restore</span>
-								</div>
-								<div class="work-highlight-item">
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-									<span>28 dynamic themes &amp; typography pairings</span>
-								</div>
-								<div class="work-highlight-item">
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-									<span>Automated in-app OTA update verification</span>
-								</div>
-							</div>
-
-							<div class="work-tech-zone">
-								<p class="label">ENGINEERED WITH:</p>
-								<ul class="made" id="workMade">
-									<li>Kotlin</li>
-									<li>Jetpack Compose</li>
-									<li>Coroutines &amp; Flow</li>
-									<li>Room DB</li>
-									<li>Hilt</li>
-								</ul>
-							</div>
-						</div>
-
-						<div class="work-foot">
-							<div class="work-actions">
-								<span class="wip is-done" id="workBadge">
-									<span class="wip-dot" aria-hidden="true"></span>RELEASED v1.0.1
-								</span>
-								<a class="work-link" id="workLink" href="https://github.com/Kmlozmz/UniStack-releases" target="_blank" rel="noopener">
-									DOWNLOAD APK (v1.0.1) &#8599;
-								</a>
-							</div>
-							<div class="work-nav">
-								<button class="arrow-btn" id="workPrev" type="button" aria-label="Previous project">
-									&lt;
-								</button>
-								<button class="arrow-btn" id="workNext" type="button" aria-label="Next project">
-									&gt;
-								</button>
-							</div>
-						</div>
-					</article>
-
-					<!-- Interactive Project Preview Stage -->
-					<article class="card work-stage" id="workStage">
-						<div class="stage-topbar">
-							<div class="stage-window-controls" aria-hidden="true">
-								<span class="stage-dot red"></span>
-								<span class="stage-dot yellow"></span>
-								<span class="stage-dot green"></span>
-							</div>
-							<span class="stage-title" id="stageWindowTitle">UniStack v1.0.1</span>
-							<div class="stage-tabs" id="stageModeBar" role="tablist">
-								<button class="stage-tab is-active" type="button" data-mode="preview">Preview</button>
-								<button class="stage-tab" type="button" data-mode="arch">Architecture</button>
-								<button class="stage-tab" type="button" data-mode="specs">Specs</button>
-							</div>
-						</div>
-						<div class="stage-canvas" id="stageCanvas">
-							<!-- Injected dynamically by JS -->
-						</div>
-					</article>
+				<div class="showcase reveal">
+					<ol class="showcase-list" id="workTabs" role="tablist" aria-label="Projects"></ol>
+					<div class="showcase-stage" id="workStage" aria-live="polite">
+						<div class="stage-art" id="stageArt"></div>
+						<div class="stage-info" id="stageInfo"></div>
+					</div>
 				</div>
 			</section>
 
-			<!-- COLLABORATION BANNER -->
+			
+<!-- COLLABORATION BANNER -->
 			<section class="block">
 				<article class="card creative reveal">
 					<div>

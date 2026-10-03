@@ -286,459 +286,253 @@ function initReveal() {
   items.forEach((el) => obs.observe(el));
 }
 
-/* ---------- Carrusel y Showcase de proyectos ---------- */
+/* ---------- Showcase de proyectos ---------- */
+const SWATCHES = [
+  "#F1A5A0", "#7c8cf8", "#4ec9a4", "#f0b35a",
+  "#c78bf2", "#5ab0ee", "#ef6b6b", "#9aa5b1",
+];
+
+const ART = {
+  unistack: () => `
+    <div class="art">
+      <div class="phones" style="--ap:${SWATCHES[0]}" id="unistackArt">
+        <div class="phone main">
+          <div class="ph-head">Semester <span class="ph-chip">Term 2</span></div>
+          <div class="ph-ring">
+            <svg viewBox="0 0 100 100"><circle class="track" cx="50" cy="50" r="42" fill="none" stroke-width="9"/><circle class="val" cx="50" cy="50" r="42" fill="none" stroke-width="9" stroke-dasharray="211 264"/></svg>
+            <b><span>4.3<small>WEIGHTED GPA</small></span></b>
+          </div>
+          <div class="ph-course"><span>Mathematics <em>4.6</em></span><div class="ph-bar"><i style="width:88%"></i></div></div>
+          <div class="ph-course"><span>History <em>4.1</em></span><div class="ph-bar"><i style="width:74%"></i></div></div>
+          <div class="ph-course"><span>Physics <em>4.2</em></span><div class="ph-bar"><i style="width:80%"></i></div></div>
+          <div class="ph-nav"><i class="on"></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="phone side">
+          <div class="ph-head">Themes <span class="ph-chip">28</span></div>
+          <div class="ph-aa">Aa</div>
+          <div class="ph-note">Font pairing</div>
+          <div class="ph-swatches">
+            ${SWATCHES.map((c, i) => `<button type="button" class="ph-swatch${i === 0 ? " is-on" : ""}" style="--c:${c}" data-accent="${c}" aria-label="Theme ${i + 1}"></button>`).join("")}
+          </div>
+          <div class="ph-note">Tap a color</div>
+        </div>
+      </div>
+      <p class="art-caption">ILLUSTRATIVE · SAMPLE DATA</p>
+    </div>`,
+
+  landing: () => `
+    <div class="art">
+      <div class="browser">
+        <div class="br-bar"><i></i><i></i><i></i><span class="br-url">kmlozmz.github.io/UniStack-landing_page</span></div>
+        <div class="br-body">
+          <div class="br-hero">
+            <div class="br-copy">
+              <h4>UniStack</h4>
+              <p>Academic lifecycle companion for students.</p>
+              <div class="br-btns"><em class="solid">Download APK</em><em>Features</em></div>
+            </div>
+            <div class="phone mini"><i class="a"></i><i class="big"></i><i></i><i></i></div>
+          </div>
+          <div class="br-cards">
+            <div class="br-card">Offline-first<span>Room persistence</span></div>
+            <div class="br-card">1-file backup<span>Data + media</span></div>
+            <div class="br-card">28 themes<span>Fonts &amp; colors</span></div>
+          </div>
+        </div>
+      </div>
+    </div>`,
+
+  tokens: () => `
+    <div class="art">
+      <div class="term">
+        <div class="term-bar"><i></i><i></i><i></i><span>gradle · verifyDesignTokens</span><button type="button" class="term-run" data-run>Apply fix &amp; re-run</button></div>
+        <pre class="term-body" id="termBody"></pre>
+      </div>
+      <div class="tok-row">
+        <span class="tok"><i style="--c:#F1A5A0"></i>color.primary</span>
+        <span class="tok"><i style="--c:#7c8cf8"></i>color.surface</span>
+        <span class="tok"><i></i>shape.medium</span>
+        <span class="tok"><i></i>motion.fast</span>
+      </div>
+      <p class="art-caption">ILLUSTRATIVE OUTPUT</p>
+    </div>`,
+
+  portfolio: () => {
+    let seed = 7;
+    const rand = () => {
+      seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+      return seed / 0x7fffffff;
+    };
+    let cells = "";
+    for (let k = 0; k < 130; k++) {
+      const r = rand();
+      cells += `<i class="${r > 0.86 ? "l3" : r > 0.7 ? "l2" : r > 0.5 ? "l1" : ""}"></i>`;
+    }
+    return `
+    <div class="art">
+      <div class="browser">
+        <div class="br-bar"><i></i><i></i><i></i><span class="br-url">kmlozmz.github.io/Portafolio-JC</span></div>
+        <div class="br-body">
+          <img class="br-banner" src="assets/hero.gif" alt="" />
+          <div class="br-id"><img src="assets/pfp.webp" alt="" /><div><b>Camilo Pineda</b><span>Software developer &amp; builder</span></div></div>
+          <div class="mini-heat">${cells}</div>
+        </div>
+      </div>
+    </div>`;
+  },
+};
+
+const TERM_FAIL = `<span class="dim">&gt; Task :app:verifyDesignTokens</span>
+<span class="bad">✗ HomeScreen.kt:42   hardcoded Color(0xFF1E1E1E)</span>
+<span class="bad">✗ ProfileCard.kt:17  raw 12.dp corner radius</span>
+<span class="bad">BUILD FAILED</span> <span class="dim">· 2 style leaks</span>`;
+
+const TERM_OK = `<span class="dim">&gt; Task :app:verifyDesignTokens</span>
+<span class="ok">✓ 0 hardcoded colors</span>
+<span class="ok">✓ 0 raw shape values</span>
+<span class="ok">BUILD SUCCESSFUL</span> <span class="dim">· tokens only</span>`;
+
 const WORK = [
   {
     title: "UniStack",
+    tag: "Android app",
     kicker: "ANDROID APP",
+    status: "● Released v1.0.1",
     desc: "Academic lifecycle companion for students: modular terms, weighted GPA calculations, offline-first persistence with 1-file backup/restore, custom OTA in-app updates, and 28 dynamic themes.",
-    highlights: [
-      "Offline-first SQLite/Room persistence engine",
-      "Full data & media attachments single-file backup/restore",
-      "28 dynamic themes & typography pairings",
-      "Automated in-app OTA update verification",
-    ],
     made: ["Kotlin", "Jetpack Compose", "Coroutines & Flow", "Room DB", "Hilt"],
-    badge: "RELEASED v1.0.1",
-    done: true,
-    link: "https://github.com/Kmlozmz/UniStack-releases",
-    linkText: "DOWNLOAD APK (v1.0.1) ↗",
-    windowTitle: "UniStack for Android · v1.0.1 Stable",
-    views: {
-      preview: `
-        <div class="sim-app">
-          <div class="sim-header">
-            <div class="sim-header-info">
-              <h4>Semester VI · Active Term</h4>
-              <p>Academic Performance Overview</p>
-            </div>
-            <span class="sim-gpa-badge">★ 4.62 / 5.0 GPA</span>
-          </div>
-          <div class="sim-modules-list">
-            <div class="sim-module-card">
-              <span class="sim-module-name">
-                <span class="sim-module-tag">CORE</span>
-                Software Architecture &amp; Patterns
-              </span>
-              <span class="sim-module-grade">Grade: 4.8</span>
-            </div>
-            <div class="sim-module-card">
-              <span class="sim-module-name">
-                <span class="sim-module-tag">DATA</span>
-                Database Systems &amp; Persistence
-              </span>
-              <span class="sim-module-grade">Grade: 4.5</span>
-            </div>
-            <div class="sim-module-card">
-              <span class="sim-module-name">
-                <span class="sim-module-tag">MOBILE</span>
-                Reactive Concurrency &amp; Flow
-              </span>
-              <span class="sim-module-grade">Grade: 4.7</span>
-            </div>
-          </div>
-          <div class="sim-footer-bar">
-            <span>💾 1-File Backup: Ready</span>
-            <span>🎨 28 Themes: Active</span>
-            <span>🚀 OTA: Up to date</span>
-          </div>
-        </div>
-      `,
-      arch: `
-        <div class="sim-arch-grid">
-          <div class="sim-arch-row">
-            <span class="sim-arch-label">UI LAYER</span>
-            <p class="sim-arch-desc">Jetpack Compose UI, Material 3 Expressive, UDF StateFlow, Single Activity Architecture.</p>
-          </div>
-          <div class="sim-arch-row">
-            <span class="sim-arch-label">DOMAIN</span>
-            <p class="sim-arch-desc">Modular GPA calculation engine, attendance absence thresholds, OTA release verification.</p>
-          </div>
-          <div class="sim-arch-row">
-            <span class="sim-arch-label">DATA LAYER</span>
-            <p class="sim-arch-desc">Offline-first SQLite via Room DB, Encrypted SharedPreferences, DocumentProvider file streams.</p>
-          </div>
-        </div>
-      `,
-      specs: `
-        <div class="sim-specs-grid">
-          <div class="sim-spec-box">
-            <p class="sim-spec-key">RELEASE STATUS</p>
-            <p class="sim-spec-val">v1.0.1 Production Stable</p>
-          </div>
-          <div class="sim-spec-box">
-            <p class="sim-spec-key">MINIMUM SDK</p>
-            <p class="sim-spec-val">Android 8.0 (API Level 26+)</p>
-          </div>
-          <div class="sim-spec-box">
-            <p class="sim-spec-key">PERSISTENCE</p>
-            <p class="sim-spec-val">100% Offline SQLite Engine</p>
-          </div>
-          <div class="sim-spec-box">
-            <p class="sim-spec-key">THEMING</p>
-            <p class="sim-spec-val">28 Dynamic Color Schemes</p>
-          </div>
-        </div>
-      `,
-    },
+    links: [
+      { label: "DOWNLOAD APK ↗", href: "https://github.com/Kmlozmz/UniStack-releases" },
+      { label: "LANDING PAGE ↗", href: "https://kmlozmz.github.io/UniStack-landing_page/", ghost: true },
+    ],
+    art: "unistack",
   },
   {
     title: "UniStack Landing Page",
+    tag: "Web showcase",
     kicker: "WEB SHOWCASE",
-    desc: "Dedicated product showcase for UniStack. Built with semantic markup, responsive grid layouts, SVG animations, and performance-first architecture to drive direct downloads.",
-    highlights: [
-      "Custom responsive layout for mobile and desktop",
-      "SVG icon assets and clean typography hierarchy",
-      "Direct APK download links and release notes",
-      "Sub-second cold load with zero framework overhead",
-    ],
-    made: ["Web Standards", "Responsive Layout", "SVG Animations", "UX Craft"],
-    badge: "LIVE",
-    done: true,
-    link: "https://kmlozmz.github.io/UniStack-landing_page/",
-    linkText: "VISIT LANDING PAGE ↗",
-    windowTitle: "kmlozmz.github.io/UniStack-landing_page",
-    views: {
-      preview: `
-        <div class="sim-browser">
-          <div class="sim-browser-bar">
-            <span class="sim-browser-url">https://kmlozmz.github.io/UniStack-landing_page/</span>
-          </div>
-          <div class="sim-browser-hero">
-            <h4 class="sim-browser-title">Academic Life in One App</h4>
-            <p class="sim-browser-sub">The offline-first student companion engineered for focus, clarity, and control.</p>
-            <div class="sim-browser-pills">
-              <span class="sim-pill">Download APK v1.0.1</span>
-              <span class="sim-pill">View Docs</span>
-            </div>
-          </div>
-          <div class="sim-footer-bar">
-            <span>⚡ Sub-Second Load</span>
-            <span>📱 100% Responsive</span>
-            <span>🔒 Privacy First</span>
-          </div>
-        </div>
-      `,
-      arch: `
-        <div class="sim-arch-grid">
-          <div class="sim-arch-row">
-            <span class="sim-arch-label">MARKUP</span>
-            <p class="sim-arch-desc">Semantic HTML5 with full accessible landmarks and screen-reader navigable attributes.</p>
-          </div>
-          <div class="sim-arch-row">
-            <span class="sim-arch-label">STYLING</span>
-            <p class="sim-arch-desc">Modular CSS Custom Properties, fluid typography clamp(), and responsive CSS Grid / Flexbox.</p>
-          </div>
-          <div class="sim-arch-row">
-            <span class="sim-arch-label">DELIVERY</span>
-            <p class="sim-arch-desc">Zero external runtime dependencies. Lightweight compressed SVG assets and optimized WebP media.</p>
-          </div>
-        </div>
-      `,
-      specs: `
-        <div class="sim-specs-grid">
-          <div class="sim-spec-box">
-            <p class="sim-spec-key">HOSTING</p>
-            <p class="sim-spec-val">GitHub Pages CDN</p>
-          </div>
-          <div class="sim-spec-box">
-            <p class="sim-spec-key">PERFORMANCE</p>
-            <p class="sim-spec-val">100 / 100 Lighthouse Target</p>
-          </div>
-          <div class="sim-spec-box">
-            <p class="sim-spec-key">DEPENDENCIES</p>
-            <p class="sim-spec-val">Zero Runtime Dependencies</p>
-          </div>
-          <div class="sim-spec-box">
-            <p class="sim-spec-key">RESPONSIVE RANGE</p>
-            <p class="sim-spec-val">320px to 4K Ultrawide</p>
-          </div>
-        </div>
-      `,
-    },
+    status: "● Live",
+    desc: "Dedicated product site for UniStack: responsive layout, SVG animations and a direct path to download the latest release.",
+    made: ["HTML", "CSS", "SVG Animations", "Responsive Design"],
+    links: [{ label: "VISIT SITE ↗", href: "https://kmlozmz.github.io/UniStack-landing_page/" }],
+    art: "landing",
   },
   {
     title: "Design Tokens & Tooling",
+    tag: "Systems & linter",
     kicker: "SYSTEMS & LINTER",
-    desc: "Comprehensive token architecture for color, shape, and motion. Custom Gradle verification tasks analyze code and fail the build if hardcoded styles leak into UI screens.",
-    highlights: [
-      "Strict build-fail verification rules for hardcoded colors",
-      "28 synchronized dark and light dynamic themes",
-      "Automated compilation to Jetpack Compose tokens",
-      "Python scripts for continuous asset optimization",
-    ],
-    made: ["Design Systems", "Compose Theming", "Gradle Automation", "CI Rules"],
-    badge: "ACTIVE",
-    done: true,
-    link: "https://github.com/Kmlozmz",
-    linkText: "VIEW GITHUB ↗",
-    windowTitle: "Design System & Build Verification Pipeline",
-    views: {
-      preview: `
-        <div class="sim-app">
-          <div class="sim-swatch-strip">
-            <div class="sim-swatch-box">
-              <div class="sim-swatch-color" style="background:#2e3440;"></div>
-              <span>Slate</span>
-            </div>
-            <div class="sim-swatch-box">
-              <div class="sim-swatch-color" style="background:#10b981;"></div>
-              <span>Mint</span>
-            </div>
-            <div class="sim-swatch-box">
-              <div class="sim-swatch-color" style="background:#f59e0b;"></div>
-              <span>Amber</span>
-            </div>
-            <div class="sim-swatch-box">
-              <div class="sim-swatch-color" style="background:#F1A5A0;"></div>
-              <span>Coral</span>
-            </div>
-          </div>
-          <div class="sim-module-card">
-            <span class="sim-module-name">
-              <span class="sim-module-tag">LINTER</span>
-              Gradle Token Verification Task
-            </span>
-            <span class="sim-module-grade" style="color:var(--ok);">PASSED (0 leaks)</span>
-          </div>
-          <div class="sim-footer-bar">
-            <span>✓ Compile-Time Checks</span>
-            <span>✓ 28 Color Schemes</span>
-            <span>✓ Zero Hardcoded Hex</span>
-          </div>
-        </div>
-      `,
-      arch: `
-        <div class="sim-arch-grid">
-          <div class="sim-arch-row">
-            <span class="sim-arch-label">TOKENS</span>
-            <p class="sim-arch-desc">Abstract multi-platform design token definitions for colors, typography scales, and corner radii.</p>
-          </div>
-          <div class="sim-arch-row">
-            <span class="sim-arch-label">PARSER</span>
-            <p class="sim-arch-desc">Custom Gradle plugin inspecting AST to detect raw color literals in Compose UI files.</p>
-          </div>
-          <div class="sim-arch-row">
-            <span class="sim-arch-label">CI GATE</span>
-            <p class="sim-arch-desc">Fails ./gradlew assembleRelease builds automatically if unverified styles leak into production code.</p>
-          </div>
-        </div>
-      `,
-      specs: `
-        <div class="sim-specs-grid">
-          <div class="sim-spec-box">
-            <p class="sim-spec-key">VERIFIED THEMES</p>
-            <p class="sim-spec-val">28 Balanced Schemes</p>
-          </div>
-          <div class="sim-spec-box">
-            <p class="sim-spec-key">ENFORCEMENT</p>
-            <p class="sim-spec-val">Compile-Time Static Guard</p>
-          </div>
-          <div class="sim-spec-box">
-            <p class="sim-spec-key">TOOLING</p>
-            <p class="sim-spec-val">Custom Gradle Plugin</p>
-          </div>
-          <div class="sim-spec-box">
-            <p class="sim-spec-key">COLOR LEAKS</p>
-            <p class="sim-spec-val">0 Allowed in Release</p>
-          </div>
-        </div>
-      `,
-    },
+    status: "● Active",
+    desc: "Token architecture for color, shape and motion, plus custom Gradle verification tasks that fail the build if hardcoded styles leak into UI screens.",
+    made: ["Design Systems", "Compose Theming", "Gradle Automation", "Python"],
+    links: [{ label: "VIEW GITHUB ↗", href: "https://github.com/Kmlozmz" }],
+    art: "tokens",
   },
   {
     title: "Interactive Portfolio",
+    tag: "Frontend & UX",
     kicker: "FRONTEND & UX",
-    desc: "Bento grid personal portfolio. Engineered with circular View Transitions API theme toggling, custom physics-based dual cursor, seeded contribution heatmap, and live Bogota timekeeper.",
-    highlights: [
-      "View Transitions API circular theme toggle reveal",
-      "Physics-based lerp dual cursor with hover states",
-      "53-week deterministic seeded contribution heatmap",
-      "Lenis inertial smooth scrolling normalization",
-    ],
-    made: ["View Transitions API", "CSS Architecture", "Canvas & Physics", "Lenis"],
-    badge: "SHIPPED",
-    done: true,
-    link: "https://github.com/Kmlozmz/Portafolio-JC",
-    linkText: "VIEW SOURCE ↗",
-    windowTitle: "kmlozmz.github.io/Portafolio-JC",
-    views: {
-      preview: `
-        <div class="sim-app">
-          <div class="sim-modules-list">
-            <div class="sim-module-card">
-              <span class="sim-module-name">
-                <span class="sim-module-tag">API</span>
-                View Transitions Circular Reveal
-              </span>
-              <span class="sim-module-grade" style="color:var(--ok);">ACTIVE</span>
-            </div>
-            <div class="sim-module-card">
-              <span class="sim-module-name">
-                <span class="sim-module-tag">PHYSICS</span>
-                Dual Cursor Lerp Interpolation
-              </span>
-              <span class="sim-module-grade" style="color:var(--ok);">0.15 DAMPING</span>
-            </div>
-            <div class="sim-module-card">
-              <span class="sim-module-name">
-                <span class="sim-module-tag">CANVAS</span>
-                Seeded 53-Week Contribution Matrix
-              </span>
-              <span class="sim-module-grade" style="color:var(--ok);">SEED 129</span>
-            </div>
-          </div>
-          <div class="sim-footer-bar">
-            <span>● 4 / 4 Systems Online</span>
-            <span>✦ Inspired by Ayan</span>
-            <span>⚡ High Contrast</span>
-          </div>
-        </div>
-      `,
-      arch: `
-        <div class="sim-arch-grid">
-          <div class="sim-arch-row">
-            <span class="sim-arch-label">CORE</span>
-            <p class="sim-arch-desc">Vanilla Modern ES6+ JavaScript. Modular function lifecycle with zero heavy frameworks.</p>
-          </div>
-          <div class="sim-arch-row">
-            <span class="sim-arch-label">ANIMATION</span>
-            <p class="sim-arch-desc">RequestAnimationFrame loops for physics cursor and Lenis inertial smooth scroll normalization.</p>
-          </div>
-          <div class="sim-arch-row">
-            <span class="sim-arch-label">THEMING</span>
-            <p class="sim-arch-desc">Synchronized light/dark CSS custom properties with native circular mask view transition.</p>
-          </div>
-        </div>
-      `,
-      specs: `
-        <div class="sim-specs-grid">
-          <div class="sim-spec-box">
-            <p class="sim-spec-key">DESIGN CONCEPT</p>
-            <p class="sim-spec-val">Inspired by notayan.in</p>
-          </div>
-          <div class="sim-spec-box">
-            <p class="sim-spec-key">ACCESSIBILITY</p>
-            <p class="sim-spec-val">Reduced Motion & High Contrast</p>
-          </div>
-          <div class="sim-spec-box">
-            <p class="sim-spec-key">BUNDLE SIZE</p>
-            <p class="sim-spec-val">Lightweight Zero-Bloat</p>
-          </div>
-          <div class="sim-spec-box">
-            <p class="sim-spec-key">VIEW TRANSITIONS</p>
-            <p class="sim-spec-val">Native Chrome & Fallback</p>
-          </div>
-        </div>
-      `,
-    },
+    status: "● Shipped",
+    desc: "This site: a magnifier-lens hero, circular View Transitions theme toggle, physics-based dual cursor and a live Bogotá clock.",
+    made: ["View Transitions API", "CSS", "JavaScript", "Lenis"],
+    links: [{ label: "VIEW SOURCE ↗", href: "https://github.com/Kmlozmz/Portafolio-JC" }],
+    art: "portfolio",
   },
 ];
 
 function initWork() {
-  const count = $("#workCount");
-  const title = $("#workTitle");
-  const desc = $("#workDesc");
-  const kicker = $("#workKicker");
-  const highlights = $("#workHighlights");
-  const made = $("#workMade");
-  const badge = $("#workBadge");
-  const link = $("#workLink");
-  const windowTitle = $("#stageWindowTitle");
-  const canvas = $("#stageCanvas");
-  const tabs = $$("#workTabs .work-tab");
-  const modeTabs = $$("#stageModeBar .stage-tab");
+  const list = $("#workTabs");
+  const art = $("#stageArt");
+  const info = $("#stageInfo");
+  const stage = $("#workStage");
+  if (!list || !art || !info) return;
 
-  if (!count || !title || !canvas) return;
+  let idx = 0;
+  let termPass = false;
 
-  let activeIndex = 0;
-  let activeMode = "preview";
+  list.innerHTML = WORK.map(
+    (w, k) => `
+    <li role="presentation">
+      <button class="work-tab" type="button" role="tab" data-index="${k}">
+        <span class="tab-index">${String(k + 1).padStart(2, "0")}</span>
+        <span class="tab-title">${w.title}</span>
+        <span class="tab-tag">${w.tag}</span>
+      </button>
+    </li>`,
+  ).join("");
+  const tabs = $$(".work-tab", list);
 
-  const checkSvg =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
-
-  const renderStage = () => {
-    const w = WORK[activeIndex];
-    if (!w || !canvas) return;
-    const content = (w.views && w.views[activeMode]) || "";
-    canvas.innerHTML = content;
+  const paintTerm = () => {
+    const body = $("#termBody");
+    const btn = $("[data-run]", art);
+    if (!body) return;
+    body.innerHTML = termPass ? TERM_OK : TERM_FAIL;
+    if (btn) btn.innerHTML = termPass ? "Reset" : "Apply fix &amp; re-run";
   };
 
   const render = () => {
-    const w = WORK[activeIndex];
-    count.textContent = `${String(activeIndex + 1).padStart(2, "0")} / ${String(
-      WORK.length,
-    ).padStart(2, "0")}`;
-    title.textContent = w.title;
-    desc.textContent = w.desc;
-    if (kicker) kicker.textContent = w.kicker;
-    if (windowTitle)
-      windowTitle.textContent = w.windowTitle || `${w.title} Preview`;
+    const w = WORK[idx];
+    termPass = false;
+    art.innerHTML = ART[w.art]();
+    paintTerm();
 
-    if (highlights && w.highlights) {
-      highlights.innerHTML = w.highlights
-        .map(
-          (h) =>
-            `<div class="work-highlight-item">${checkSvg}<span>${h}</span></div>`,
-        )
-        .join("");
-    }
+    info.style.animation = "none";
+    void info.offsetWidth;
+    info.style.animation = "";
+    info.innerHTML = `
+      <div>
+        <div class="stage-meta">
+          <span class="count">${String(idx + 1).padStart(2, "0")} / ${String(WORK.length).padStart(2, "0")}</span>
+          <span>${w.kicker}</span>
+          <span class="stage-status">${w.status}</span>
+        </div>
+        <h3 class="work-title">${w.title}</h3>
+        <p class="work-desc">${w.desc}</p>
+        <ul class="made">${w.made.map((m) => `<li>${m}</li>`).join("")}</ul>
+      </div>
+      <div class="stage-actions">
+        ${w.links
+          .map(
+            (l) =>
+              `<a class="work-link${l.ghost ? " ghost" : ""}" href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`,
+          )
+          .join("")}
+        <div class="work-nav">
+          <button class="arrow-btn" type="button" data-nav="-1" aria-label="Previous project">&lt;</button>
+          <button class="arrow-btn" type="button" data-nav="1" aria-label="Next project">&gt;</button>
+        </div>
+      </div>`;
 
-    if (made && w.made) {
-      made.innerHTML = w.made.map((m) => `<li>${m}</li>`).join("");
-    }
-
-    if (badge) {
-      badge.innerHTML = `<span class="wip-dot" aria-hidden="true"></span>${w.badge}`;
-      badge.classList.toggle("is-done", w.done);
-    }
-
-    if (link) {
-      link.href = w.link;
-      link.textContent = w.linkText || "VIEW PROJECT ↗";
-      link.setAttribute("aria-label", `View ${w.title}`);
-    }
-
-    tabs.forEach((tab, idx) => {
-      const active = idx === activeIndex;
-      tab.classList.toggle("is-active", active);
-      tab.setAttribute("aria-selected", String(active));
+    tabs.forEach((t, k) => {
+      const on = k === idx;
+      t.classList.toggle("is-active", on);
+      t.setAttribute("aria-selected", String(on));
     });
-
-    modeTabs.forEach((tab) => {
-      const mode = tab.getAttribute("data-mode");
-      tab.classList.toggle("is-active", mode === activeMode);
-    });
-
-    renderStage();
   };
 
-  tabs.forEach((tab) => {
-    tab.addEventListener("click", () => {
-      const idx = Number(tab.getAttribute("data-index"));
-      if (!isNaN(idx) && idx >= 0 && idx < WORK.length) {
-        activeIndex = idx;
-        render();
-      }
-    });
-  });
+  tabs.forEach((t) =>
+    t.addEventListener("click", () => {
+      idx = Number(t.getAttribute("data-index"));
+      render();
+    }),
+  );
 
-  modeTabs.forEach((tab) => {
-    tab.addEventListener("click", () => {
-      activeMode = tab.getAttribute("data-mode") || "preview";
-      modeTabs.forEach((t) => t.classList.toggle("is-active", t === tab));
-      renderStage();
-    });
-  });
-
-  $("#workPrev")?.addEventListener("click", () => {
-    activeIndex = (activeIndex - 1 + WORK.length) % WORK.length;
-    render();
-  });
-
-  $("#workNext")?.addEventListener("click", () => {
-    activeIndex = (activeIndex + 1) % WORK.length;
-    render();
+  stage.addEventListener("click", (e) => {
+    const nav = e.target.closest("[data-nav]");
+    if (nav) {
+      idx = (idx + Number(nav.getAttribute("data-nav")) + WORK.length) % WORK.length;
+      render();
+      return;
+    }
+    const sw = e.target.closest("[data-accent]");
+    if (sw) {
+      const host = $("#unistackArt");
+      if (host) host.style.setProperty("--ap", sw.getAttribute("data-accent"));
+      $$(".ph-swatch", art).forEach((b) => b.classList.toggle("is-on", b === sw));
+      return;
+    }
+    if (e.target.closest("[data-run]")) {
+      termPass = !termPass;
+      paintTerm();
+    }
   });
 
   render();
