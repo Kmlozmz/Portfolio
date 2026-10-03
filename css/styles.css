@@ -1452,95 +1452,48 @@ img {
 .mini-heat i.l2 { background: var(--contrib-bg-2); }
 .mini-heat i.l3 { background: var(--contrib-bg-3); }
 
-/* ----- Terminal (Design tokens) ----- */
-.term {
-  width: min(100%, 540px);
-  border-radius: 14px;
-  background: #151517;
-  color: #e6e6ea;
+.browser.wide {
+  width: min(100%, 760px);
+}
+
+.br-open {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
   border: 1px solid var(--border-color);
-  overflow: hidden;
-  font-family: var(--mono);
-  text-align: left;
-  box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.5);
 }
 
-.term-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.6rem 0.85rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 0.68rem;
-  color: #9b9ba4;
-}
-
-.term-bar i {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.18);
-}
-
-.term-bar span {
-  margin-left: 0.4rem;
-  flex: 1;
-}
-
-.term-run {
-  font-family: var(--mono);
-  font-size: 0.66rem;
-  padding: 0.28rem 0.7rem;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: transparent;
-  color: #e6e6ea;
-  cursor: pointer;
-  transition: background var(--dur) var(--ease);
-}
-
-.term-run:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.term-body {
-  margin: 0;
-  padding: 1rem;
-  font-size: 0.74rem;
-  line-height: 1.75;
-  white-space: pre-wrap;
-  min-height: 150px;
-}
-
-.term-body .dim { color: #8d8d96; }
-.term-body .bad { color: #f08a84; }
-.term-body .ok { color: #7ddc9a; }
-
-.tok-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.tok {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-family: var(--mono);
-  font-size: 0.66rem;
-  padding: 0.3rem 0.65rem;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: var(--card-bg-opaque);
+.br-open:hover {
   color: var(--text-dark);
 }
 
-.tok i {
-  width: 10px;
-  height: 10px;
-  border-radius: 3px;
-  background: var(--c, var(--text-muted));
+.live-frame {
+  position: relative;
+  aspect-ratio: 8 / 5;
+  overflow: hidden;
+  background: var(--preview-bg);
+}
+
+.live-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+}
+
+.live-frame iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1280px;
+  height: 800px;
+  border: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
 }
 
 /* ----- Stage info ----- */

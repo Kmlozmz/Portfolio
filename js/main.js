@@ -292,6 +292,26 @@ const SWATCHES = [
   "#c78bf2", "#5ab0ee", "#ef6b6b", "#9aa5b1",
 ];
 
+const LANDING_URL = "https://unistack.srk-lab.workers.dev/";
+
+/* Captura automática de la web (se vuelve a generar cada pocas horas). */
+const shot = (u) =>
+  `https://image.thum.io/get/maxAge/6/width/1280/crop/800/noanimate/${u}`;
+
+/* Si un sitio permite ser embebido, pon embed=true para ver el sitio en vivo. */
+const livePreview = (url, label, embed) => `
+  <div class="art">
+    <div class="browser wide">
+      <div class="br-bar"><i></i><i></i><i></i><span class="br-url">${label}</span><a class="br-open" href="${url}" target="_blank" rel="noopener">Open ↗</a></div>
+      <div class="live-frame">
+        ${embed
+          ? `<iframe src="${url}" title="Live preview of ${label}" loading="lazy" tabindex="-1" scrolling="no"></iframe>`
+          : `<img src="${shot(url)}" alt="Preview of ${label}" loading="lazy" />`}
+      </div>
+    </div>
+    <p class="art-caption">${embed ? "LIVE PREVIEW" : "AUTO-UPDATED PREVIEW"}</p>
+  </div>`;
+
 const ART = {
   unistack: () => `
     <div class="art">
@@ -320,42 +340,7 @@ const ART = {
       <p class="art-caption">ILLUSTRATIVE · SAMPLE DATA</p>
     </div>`,
 
-  landing: () => `
-    <div class="art">
-      <div class="browser">
-        <div class="br-bar"><i></i><i></i><i></i><span class="br-url">kmlozmz.github.io/UniStack-landing_page</span></div>
-        <div class="br-body">
-          <div class="br-hero">
-            <div class="br-copy">
-              <h4>UniStack</h4>
-              <p>Academic lifecycle companion for students.</p>
-              <div class="br-btns"><em class="solid">Download APK</em><em>Features</em></div>
-            </div>
-            <div class="phone mini"><i class="a"></i><i class="big"></i><i></i><i></i></div>
-          </div>
-          <div class="br-cards">
-            <div class="br-card">Offline-first<span>Room persistence</span></div>
-            <div class="br-card">1-file backup<span>Data + media</span></div>
-            <div class="br-card">28 themes<span>Fonts &amp; colors</span></div>
-          </div>
-        </div>
-      </div>
-    </div>`,
-
-  tokens: () => `
-    <div class="art">
-      <div class="term">
-        <div class="term-bar"><i></i><i></i><i></i><span>gradle · verifyDesignTokens</span><button type="button" class="term-run" data-run>Apply fix &amp; re-run</button></div>
-        <pre class="term-body" id="termBody"></pre>
-      </div>
-      <div class="tok-row">
-        <span class="tok"><i style="--c:#F1A5A0"></i>color.primary</span>
-        <span class="tok"><i style="--c:#7c8cf8"></i>color.surface</span>
-        <span class="tok"><i></i>shape.medium</span>
-        <span class="tok"><i></i>motion.fast</span>
-      </div>
-      <p class="art-caption">ILLUSTRATIVE OUTPUT</p>
-    </div>`,
+  landing: () => livePreview(LANDING_URL, "unistack.srk-lab.workers.dev", false),
 
   portfolio: () => {
     let seed = 7;
@@ -371,7 +356,7 @@ const ART = {
     return `
     <div class="art">
       <div class="browser">
-        <div class="br-bar"><i></i><i></i><i></i><span class="br-url">kmlozmz.github.io/Portafolio-JC</span></div>
+        <div class="br-bar"><i></i><i></i><i></i><span class="br-url">this website</span></div>
         <div class="br-body">
           <img class="br-banner" src="assets/hero.gif" alt="" />
           <div class="br-id"><img src="assets/pfp.webp" alt="" /><div><b>Camilo Pineda</b><span>Software developer &amp; builder</span></div></div>
@@ -382,57 +367,37 @@ const ART = {
   },
 };
 
-const TERM_FAIL = `<span class="dim">&gt; Task :app:verifyDesignTokens</span>
-<span class="bad">✗ HomeScreen.kt:42   hardcoded Color(0xFF1E1E1E)</span>
-<span class="bad">✗ ProfileCard.kt:17  raw 12.dp corner radius</span>
-<span class="bad">BUILD FAILED</span> <span class="dim">· 2 style leaks</span>`;
-
-const TERM_OK = `<span class="dim">&gt; Task :app:verifyDesignTokens</span>
-<span class="ok">✓ 0 hardcoded colors</span>
-<span class="ok">✓ 0 raw shape values</span>
-<span class="ok">BUILD SUCCESSFUL</span> <span class="dim">· tokens only</span>`;
-
 const WORK = [
   {
     title: "UniStack",
     tag: "Android app",
     kicker: "ANDROID APP",
-    status: "● Released v1.0.1",
-    desc: "Academic lifecycle companion for students: modular terms, weighted GPA calculations, offline-first persistence with 1-file backup/restore, custom OTA in-app updates, and 28 dynamic themes.",
-    made: ["Kotlin", "Jetpack Compose", "Coroutines & Flow", "Room DB", "Hilt"],
+    status: "● Available now",
+    desc: "An Android app that puts your whole university life in one place: courses, assignments, exams, grades and expenses. It works without internet, saves everything in a single backup file, updates itself, and can be customized with 28 themes.",
+    made: ["Kotlin", "Jetpack Compose", "Room", "Hilt"],
     links: [
       { label: "DOWNLOAD APK ↗", href: "https://github.com/Kmlozmz/UniStack-releases" },
-      { label: "LANDING PAGE ↗", href: "https://kmlozmz.github.io/UniStack-landing_page/", ghost: true },
+      { label: "VISIT WEBSITE ↗", href: LANDING_URL, ghost: true },
     ],
     art: "unistack",
   },
   {
-    title: "UniStack Landing Page",
-    tag: "Web showcase",
-    kicker: "WEB SHOWCASE",
+    title: "UniStack Website",
+    tag: "Web",
+    kicker: "WEBSITE",
     status: "● Live",
-    desc: "Dedicated product site for UniStack: responsive layout, SVG animations and a direct path to download the latest release.",
-    made: ["HTML", "CSS", "SVG Animations", "Responsive Design"],
-    links: [{ label: "VISIT SITE ↗", href: "https://kmlozmz.github.io/UniStack-landing_page/" }],
+    desc: "The official website for UniStack. It explains what the app does, shows how it looks and lets anyone download the latest version.",
+    made: ["Web design", "Responsive", "Cloudflare"],
+    links: [{ label: "VISIT WEBSITE ↗", href: LANDING_URL }],
     art: "landing",
   },
   {
-    title: "Design Tokens & Tooling",
-    tag: "Systems & linter",
-    kicker: "SYSTEMS & LINTER",
-    status: "● Active",
-    desc: "Token architecture for color, shape and motion, plus custom Gradle verification tasks that fail the build if hardcoded styles leak into UI screens.",
-    made: ["Design Systems", "Compose Theming", "Gradle Automation", "Python"],
-    links: [{ label: "VIEW GITHUB ↗", href: "https://github.com/Kmlozmz" }],
-    art: "tokens",
-  },
-  {
-    title: "Interactive Portfolio",
-    tag: "Frontend & UX",
-    kicker: "FRONTEND & UX",
-    status: "● Shipped",
-    desc: "This site: a magnifier-lens hero, circular View Transitions theme toggle, physics-based dual cursor and a live Bogotá clock.",
-    made: ["View Transitions API", "CSS", "JavaScript", "Lenis"],
+    title: "Personal Portfolio",
+    tag: "Web",
+    kicker: "WEBSITE",
+    status: "● You are here",
+    desc: "The website you are on right now: a place to show my work, tell who I am and make it easy to get in touch.",
+    made: ["HTML", "CSS", "JavaScript"],
     links: [{ label: "VIEW SOURCE ↗", href: "https://github.com/Kmlozmz/Portafolio-JC" }],
     art: "portfolio",
   },
@@ -446,7 +411,6 @@ function initWork() {
   if (!list || !art || !info) return;
 
   let idx = 0;
-  let termPass = false;
 
   list.innerHTML = WORK.map(
     (w, k) => `
@@ -460,19 +424,16 @@ function initWork() {
   ).join("");
   const tabs = $$(".work-tab", list);
 
-  const paintTerm = () => {
-    const body = $("#termBody");
-    const btn = $("[data-run]", art);
-    if (!body) return;
-    body.innerHTML = termPass ? TERM_OK : TERM_FAIL;
-    if (btn) btn.innerHTML = termPass ? "Reset" : "Apply fix &amp; re-run";
+  const fitFrame = () => {
+    const f = $(".live-frame iframe", art);
+    if (f) f.style.transform = `scale(${f.parentElement.clientWidth / 1280})`;
   };
+  window.addEventListener("resize", fitFrame);
 
   const render = () => {
     const w = WORK[idx];
-    termPass = false;
     art.innerHTML = ART[w.art]();
-    paintTerm();
+    fitFrame();
 
     info.style.animation = "none";
     void info.offsetWidth;
@@ -528,10 +489,6 @@ function initWork() {
       if (host) host.style.setProperty("--ap", sw.getAttribute("data-accent"));
       $$(".ph-swatch", art).forEach((b) => b.classList.toggle("is-on", b === sw));
       return;
-    }
-    if (e.target.closest("[data-run]")) {
-      termPass = !termPass;
-      paintTerm();
     }
   });
 
