@@ -192,7 +192,7 @@
 						</svg>
 						<span class="kicker-text" data-es="ABOUT ME · EXPERIENCIA DINÁMICA" data-en="ABOUT ME · DYNAMIC EXPERIENCE">ABOUT ME · EXPERIENCIA DINÁMICA</span>
 					</p>
-					<h2 class="giant" id="sobreMiTitle" data-es="Who's this guy even..." data-en="Who's this guy even...">Who's this guy even...</h2>
+					<h2 class="giant" id="sobreMiTitle" data-es="Un poco sobre mí." data-en="A little bit about me">Un poco sobre mí.</h2>
 				</div>
 
 				<div class="about-spec-grid">
@@ -297,8 +297,8 @@
 
 					<!-- RIGHT: Engineering Manifesto and Telemetry -->
 					<div class="about-manifesto-col" id="manifestoRight">
-						<div class="tonal-manifesto">
-							<div class="sub-label">
+						<div class="tonal-manifesto prog-card" id="manCard">
+							<div class="sub-label" id="manSubLabel">
 								<svg class="sub-label-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 									<rect x="2" y="3" width="20" height="14" rx="2"/>
 									<line x1="8" y1="21" x2="16" y2="21"/>
@@ -306,23 +306,23 @@
 								</svg>
 								<span data-es="MANIFIESTO DE INGENIERÍA" data-en="ENGINEERING MANIFESTO">MANIFIESTO DE INGENIERÍA</span>
 							</div>
-							<h3 class="manifesto-h3" data-es="Construcción sin dogmas, arquitectura limpia y obsesión por la fluidez." data-en="Dogma-free building, clean architecture, and obsession with fluid craft.">Construcción sin dogmas, arquitectura limpia y obsesión por la fluidez.</h3>
-							<p class="manifesto-body" id="manifestoBodyText" data-es="No me ato a tecnologías por moda o dogmas rígidos: elijo la herramienta exacta para cada desafío. Desde aplicaciones móviles con arquitectura sólida hasta interfaces web táctiles y automatización con agentes autónomos, combino lógica rigurosa con una artesanía visual donde cada microsegundo y cada interacción importan." data-en="I don't subscribe to tech dogmas or rigid stacks: I choose the exact tool for each challenge. From solid mobile architectures to tactile web interfaces and autonomous agent automation, I combine rigorous logic with meticulous visual craft where every microsecond and interaction matters.">
-								No me ato a tecnologías por moda o dogmas rígidos: <em>elijo la herramienta exacta para cada desafío</em>. Desde aplicaciones móviles con arquitectura sólida hasta interfaces web táctiles y automatización con agentes autónomos, combino lógica rigurosa con una artesanía visual donde cada microsegundo y cada interacción importan.
+							<h3 class="manifesto-h3" id="manH3" data-es="Construcción sin dogmas, arquitectura limpia y obsesión por la fluidez." data-en="Dogma-free building, clean architecture, and obsession with fluid craft.">Construcción sin dogmas, arquitectura limpia y obsesión por la fluidez.</h3>
+							<p class="manifesto-body" id="manBodyText" data-es="No me ato a tecnologías por moda o dogmas rígidos: elijo la herramienta exacta para cada desafío. Desde aplicaciones móviles con arquitectura sólida hasta interfaces web táctiles y automatización con agentes autónomos, combino lógica rigurosa con una artesanía visual donde cada microsegundo y cada interacción importan." data-en="I don't subscribe to tech dogmas or rigid stacks: I choose the exact tool for each challenge. From solid mobile architectures to tactile web interfaces and autonomous agent automation, I combine rigorous logic with meticulous visual craft where every microsecond and interaction matters.">
+								No me ato a tecnologías por moda o dogmas rígidos: <em class="man-em" id="manEm">elijo la herramienta exacta para cada desafío</em>. Desde aplicaciones móviles con arquitectura sólida hasta interfaces web táctiles y automatización con agentes autónomos, combino lógica rigurosa con una artesanía visual donde cada microsegundo y cada interacción importan.
 							</p>
 						</div>
 
-						<div class="telemetry-grid">
-							<div class="telemetry-card">
-								<div class="sub-label">
+						<div class="telemetry-grid" id="telemetryGrid">
+							<div class="telemetry-card prog-card" id="telemClockCard">
+								<div class="sub-label" id="telemClockSub">
 									<svg class="sub-label-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 										<circle cx="12" cy="12" r="10"/>
 										<polyline points="12 6 12 12 16 14"/>
 									</svg>
 									<span data-es="TELEMETRÍA &amp; HORA LOCAL" data-en="TELEMETRY &amp; LOCAL TIME">TELEMETRÍA &amp; HORA LOCAL</span>
 								</div>
-								<div class="val-sub">Barranquilla, CO</div>
-								<div class="clock-chip">
+								<div class="val-sub" id="telemCity">Barranquilla, CO</div>
+								<div class="clock-chip" id="telemClockChip">
 									<span class="clock-dot"></span>
 									<span id="liveClockCOT">17:45:00 COT (GMT-5)</span>
 								</div>
@@ -331,8 +331,8 @@
 								</p>
 							</div>
 
-							<div class="telemetry-card">
-								<div class="sub-label">
+							<div class="telemetry-card prog-card" id="telemPrinciplesCard">
+								<div class="sub-label" id="telemPrinciplesSub">
 									<svg class="sub-label-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 										<line x1="4" y1="21" x2="4" y2="14"/>
 										<line x1="4" y1="10" x2="4" y2="3"/>
@@ -346,16 +346,16 @@
 									</svg>
 									<span data-es="PRINCIPIOS DE TRABAJO" data-en="CORE PRINCIPLES">PRINCIPIOS DE TRABAJO</span>
 								</div>
-								<ul class="work-principles">
-									<li class="principle-li">
+								<ul class="work-principles" id="principlesList">
+									<li class="principle-li" id="principle01">
 										<span class="principle-idx">01</span>
 										<span class="principle-txt"><strong data-es="Rendimiento &amp; Latencia:" data-en="Performance &amp; Latency:">Rendimiento &amp; Latencia:</strong> <span data-es="Cero bloqueos de render, animaciones a 60fps reales." data-en="Zero render locks, genuine 60fps animations.">Cero bloqueos de render, animaciones a 60fps reales.</span></span>
 									</li>
-									<li class="principle-li">
+									<li class="principle-li" id="principle02">
 										<span class="principle-idx">02</span>
 										<span class="principle-txt"><strong data-es="Diseño con Peso:" data-en="Tactile Design:">Diseño con Peso:</strong> <span data-es="Físicas táctiles elásticas sin depender de bordes genéricos." data-en="Elastic physics without generic borders.">Físicas táctiles elásticas sin depender de bordes genéricos.</span></span>
 									</li>
-									<li class="principle-li">
+									<li class="principle-li" id="principle03">
 										<span class="principle-idx">03</span>
 										<span class="principle-txt"><strong data-es="Resiliencia:" data-en="Resilience:">Resiliencia:</strong> <span data-es="Código tipado, mantenible y probado de punta a punta." data-en="Typed, maintainable, end-to-end verified code.">Código tipado, mantenible y probado de punta a punta.</span></span>
 									</li>
@@ -374,8 +374,7 @@
 				<div class="showcase prog-build" id="workStageContainer">
 					<ol class="showcase-list" id="workTabs" role="tablist" aria-label="Projects"></ol>
 					<div class="showcase-stage" id="workStage" aria-live="polite">
-						<div class="stage-art" id="stageArt"></div>
-						<div class="stage-info" id="stageInfo"></div>
+						<div class="stage-panels" id="stagePanels"></div>
 					</div>
 				</div>
 			</section>

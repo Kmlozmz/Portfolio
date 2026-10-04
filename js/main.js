@@ -534,6 +534,10 @@ function initLanguage() {
     if (typeof updatePassConstruction === "function") {
       requestAnimationFrame(updatePassConstruction);
     }
+
+    if (typeof updateWorkPillGlobal === "function") {
+      requestAnimationFrame(updateWorkPillGlobal);
+    }
   };
 
   toggleBtn.addEventListener("click", () => {
@@ -687,87 +691,152 @@ const WORK = [
 
 function initWork() {
   const list = $("#workTabs");
-  const art = $("#stageArt");
-  const info = $("#stageInfo");
   const stage = $("#workStage");
-  if (!list || !art || !info) return;
+  const panelsContainer = $("#stagePanels");
+  if (!list || !stage || !panelsContainer) return;
 
-  let idx = 0;
+  let activeIdx = 0;
 
-  list.innerHTML = WORK.map(
-    (w, k) => `
-    <li role="presentation">
-      <button class="work-tab" type="button" role="tab" data-index="${k}">
-        <span class="tab-index">${String(k + 1).padStart(2, "0")}</span>
-        <span class="tab-title">${w.title}</span>
-        <span class="tab-tag">${w.tag}</span>
-      </button>
-    </li>`,
-  ).join("");
+  // 1. Build tabs markup with the sliding pill indicator
+  list.innerHTML = `
+    <div class="work-sliding-pill" id="workSlidingPill" aria-hidden="true"></div>
+    ${WORK.map(
+      (w, k) => `
+      <li role="presentation">
+        <button class="work-tab${k === 0 ? " is-active" : ""}" type="button" role="tab" data-index="${k}" aria-selected="${k === 0 ? "true" : "false"}">
+          <span class="tab-index">${String(k + 1).padStart(2, "0")}</span>
+          <span class="tab-title">${w.title}</span>
+          <span class="tab-tag">${w.tag}</span>
+        </button>
+      </li>`,
+    ).join("")}
+  `;
   const tabs = $$(".work-tab", list);
+  const pill = $("#workSlidingPill", list);
 
-  const render = () => {
-    const w = WORK[idx];
-    art.innerHTML = ART[w.art]();
-
-    info.style.animation = "none";
-    void info.offsetWidth;
-    info.style.animation = "";
-    info.innerHTML = `
-      <div>
-        <div class="stage-meta">
-          <span class="count">${String(idx + 1).padStart(2, "0")} / ${String(WORK.length).padStart(2, "0")}</span>
-          <span>${w.kicker}</span>
-          <span class="stage-status">${w.status}</span>
-        </div>
-        <h3 class="work-title">${w.title}</h3>
-        <p class="work-desc">${w.desc}</p>
-        <ul class="made">${w.made.map((m) => `<li>${m}</li>`).join("")}</ul>
+  // 2. Pre-render all panels for instant, zero-flicker directional transitions
+  panelsContainer.innerHTML = WORK.map(
+    (w, k) => `
+    <div class="stage-panel${k === 0 ? " is-active" : ""}" id="stagePanel${k}" role="tabpanel" aria-label="${w.title}">
+      <div class="stage-art">
+        ${ART[w.art]()}
       </div>
-      <div class="stage-actions">
-        ${w.links
-          .map(
-            (l) =>
-              `<a class="work-link${l.ghost ? " ghost" : ""}" href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`,
-          )
-          .join("")}
-        <div class="work-nav">
-          <button class="arrow-btn" type="button" data-nav="-1" aria-label="Previous project">&lt;</button>
-          <button class="arrow-btn" type="button" data-nav="1" aria-label="Next project">&gt;</button>
+      <div class="stage-info">
+        <div>
+          <div class="stage-meta">
+            <span class="count">${String(k + 1).padStart(2, "0")} / ${String(WORK.length).padStart(2, "0")}</span>
+            <span>${w.kicker}</span>
+            <span class="stage-status">${w.status}</span>
+          </div>
+          <h3 class="work-title">${w.title}</h3>
+          <p class="work-desc">${w.desc}</p>
+          <ul class="made">${w.made.map((m) => `<li>${m}</li>`).join("")}</ul>
         </div>
-      </div>`;
+        <div class="stage-actions">
+          ${w.links
+            .map(
+              (l) =>
+                `<a class="work-link${l.ghost ? " ghost" : ""}" href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`,
+            )
+            .join("")}
+          <div class="work-nav">
+            <button class="arrow-btn" type="button" data-nav="-1" aria-label="Previous project">&lt;</button>
+            <button class="arrow-btn" type="button" data-nav="1" aria-label="Next project">&gt;</button>
+          </div>
+        </div>
+      </div>
+    </div>`,
+  ).join("");
+  const panels = $$(".stage-panel", panelsContainer);
 
-    tabs.forEach((t, k) => {
-      const on = k === idx;
+  const updateSlidingPill = (idx) => {
+    if (!pill) return;
+    const targetTab = tabs[idx];
+    if (!targetTab) return;
+    const li = targetTab.closest("li") || targetTab;
+    const isHorizontal = window.innerWidth <= 960;
+    if (isHorizontal) {
+      pill.style.transform = `translateX(${li.offsetLeft}px)`;
+      pill.style.width = `${li.offsetWidth}px`;
+      pill.style.height = `${li.offsetHeight}px`;
+      const listRect = list.getBoundingClientRect();
+      const tabRect = li.getBoundingClientRect();
+      if (tabRect.left < listRect.left || tabRect.right > listRect.right) {
+        li.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      }
+    } else {
+      pill.style.transform = `translateY(${li.offsetTop}px)`;
+      pill.style.width = "100%";
+      pill.style.height = `${li.offsetHeight}px`;
+    }
+  };
+
+  window.updateWorkPillGlobal = () => updateSlidingPill(activeIdx);
+
+  const goToProject = (newIdx, direction = null) => {
+    if (newIdx === activeIdx && panels.length > 0) return;
+    const prevIdx = activeIdx;
+    activeIdx = newIdx;
+
+    tabs.forEach((t, i) => {
+      const on = i === activeIdx;
       t.classList.toggle("is-active", on);
       t.setAttribute("aria-selected", String(on));
+    });
+
+    updateSlidingPill(activeIdx);
+
+    const isForward = direction !== null ? direction > 0 : newIdx > prevIdx;
+
+    panels.forEach((p, i) => {
+      p.classList.remove("slide-exit-up", "slide-exit-down");
+      if (i === prevIdx) {
+        p.classList.add(isForward ? "slide-exit-up" : "slide-exit-down");
+        p.classList.remove("is-active");
+      } else if (i === newIdx) {
+        p.classList.remove("is-active");
+        void p.offsetWidth;
+        p.style.transform = isForward ? "translateY(24px)" : "translateY(-24px)";
+        setTimeout(() => {
+          p.classList.add("is-active");
+          p.style.transform = "translateY(0)";
+        }, 20);
+      } else {
+        p.classList.remove("is-active");
+      }
     });
   };
 
   tabs.forEach((t) =>
     t.addEventListener("click", () => {
-      idx = Number(t.getAttribute("data-index"));
-      render();
+      goToProject(Number(t.getAttribute("data-index")));
     }),
   );
 
   stage.addEventListener("click", (e) => {
     const nav = e.target.closest("[data-nav]");
     if (nav) {
-      idx = (idx + Number(nav.getAttribute("data-nav")) + WORK.length) % WORK.length;
-      render();
+      const dir = Number(nav.getAttribute("data-nav"));
+      goToProject((activeIdx + dir + WORK.length) % WORK.length, dir);
       return;
     }
     const sw = e.target.closest("[data-accent]");
     if (sw) {
-      const host = $("#unistackArt");
+      const activeArt = $(".stage-panel.is-active .art", stage);
+      const host = $("#unistackArt", activeArt);
       if (host) host.style.setProperty("--ap", sw.getAttribute("data-accent"));
-      $$(".ph-swatch", art).forEach((b) => b.classList.toggle("is-on", b === sw));
+      $$(".ph-swatch", activeArt).forEach((b) => b.classList.toggle("is-on", b === sw));
       return;
     }
   });
 
-  render();
+  window.addEventListener("resize", () => {
+    updateSlidingPill(activeIdx);
+  });
+
+  requestAnimationFrame(() => {
+    updateSlidingPill(0);
+  });
 }
 
 /* ---------- Heatmap of contributions ---------- */
@@ -1003,6 +1072,22 @@ function initPassConstruction() {
   const passStatItems = $$("#passStats .pass-stat-item");
   const manifestoRight = $("#manifestoRight");
 
+  // Right Column Modular Elements
+  const manCard = $("#manCard");
+  const manSubLabel = $("#manSubLabel");
+  const manH3 = $("#manH3");
+  const manBodyText = $("#manBodyText");
+  const manEm = $("#manEm");
+  const telemClockCard = $("#telemClockCard");
+  const telemClockSub = $("#telemClockSub");
+  const telemCity = $("#telemCity");
+  const telemClockChip = $("#telemClockChip");
+  const telemPrinciplesCard = $("#telemPrinciplesCard");
+  const telemPrinciplesSub = $("#telemPrinciplesSub");
+  const principle01 = $("#principle01");
+  const principle02 = $("#principle02");
+  const principle03 = $("#principle03");
+
   // Flight layer elements: Living Identity Unit (Avatar + Name/Handle)
   const flightAvatar = $("#flightAvatar");
   const flightInfo = $("#flightInfo");
@@ -1023,44 +1108,22 @@ function initPassConstruction() {
 
   if (!developerPass || !sobreMi || !flightAvatar) return;
 
-  // Interactive 3D mouse tilt & specular highlight tracking
-  let isHoveringPass = false;
-  let curTiltX = 0;
-  let curTiltY = 0;
+  // Specular spotlight tracking for cards (NO 3D tilt distortion - clean, flat, premium feel)
+  const setupCardSpotlight = (cardEl) => {
+    if (!cardEl) return;
+    cardEl.addEventListener("pointermove", (e) => {
+      const b = cardEl.getBoundingClientRect();
+      const x = e.clientX - b.left;
+      const y = e.clientY - b.top;
+      cardEl.style.setProperty("--mx", `${x}px`);
+      cardEl.style.setProperty("--my", `${y}px`);
+    });
+  };
 
-  developerPass.addEventListener("pointerenter", () => {
-    isHoveringPass = true;
-  });
-
-  developerPass.addEventListener("pointermove", (e) => {
-    const b = developerPass.getBoundingClientRect();
-    const x = e.clientX - b.left;
-    const y = e.clientY - b.top;
-    developerPass.style.setProperty("--mx", `${x}px`);
-    developerPass.style.setProperty("--my", `${y}px`);
-
-    const normX = (x / b.width - 0.5) * 2;
-    const normY = (y / b.height - 0.5) * 2;
-    curTiltX = -normY * 7;
-    curTiltY = normX * 7;
-
-    const scrollY = window.scrollY || window.pageYOffset || 0;
-    const curP = Math.max(0, Math.min(1, (scrollY - startScroll) / (targetScroll - startScroll)));
-    if (curP >= 0.85) {
-      developerPass.style.transform = `perspective(900px) rotateX(${curTiltX}deg) rotateY(${curTiltY}deg) scale(1.01)`;
-    }
-  });
-
-  developerPass.addEventListener("pointerleave", () => {
-    isHoveringPass = false;
-    curTiltX = 0;
-    curTiltY = 0;
-    const scrollY = window.scrollY || window.pageYOffset || 0;
-    const curP = Math.max(0, Math.min(1, (scrollY - startScroll) / (targetScroll - startScroll)));
-    if (curP >= 0.85) {
-      developerPass.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg) scale(1.0)";
-    }
-  });
+  setupCardSpotlight(developerPass);
+  setupCardSpotlight(manCard);
+  setupCardSpotlight(telemClockCard);
+  setupCardSpotlight(telemPrinciplesCard);
 
   // Coordinates cache
   let originAv = null;
@@ -1068,7 +1131,7 @@ function initPassConstruction() {
   let originInfo = null;
   let targetInfo = null;
   let startScroll = 20;
-  let targetScroll = 680;
+  let targetScroll = 620;
 
   const measure = () => {
     if (!pageWrapper || !heroAvatarWrap || !passAvatarTarget || !heroName || !passInfoTarget) return;
@@ -1120,8 +1183,9 @@ function initPassConstruction() {
     };
 
     if (sobreMi) {
-      startScroll = 20;
-      targetScroll = Math.max(500, sobreMi.offsetTop + 180);
+      startScroll = 40;
+      // Complete assembly comfortably centered in viewport (scrollY ~700-720px), well before top clipping!
+      targetScroll = Math.max(620, sobreMi.offsetTop + 14);
     }
 
     update();
@@ -1176,6 +1240,24 @@ function initPassConstruction() {
       }
       developerPass.style.transform = "none";
       developerPass.style.opacity = "1";
+      if (manifestoRight) {
+        manifestoRight.style.transform = "none";
+        manifestoRight.style.opacity = "1";
+      }
+      if (manCard) { manCard.style.transform = "none"; manCard.style.opacity = "1"; }
+      if (manSubLabel) { manSubLabel.style.transform = "none"; manSubLabel.style.opacity = "1"; }
+      if (manH3) { manH3.style.transform = "none"; manH3.style.opacity = "1"; }
+      if (manBodyText) { manBodyText.style.transform = "none"; manBodyText.style.opacity = "1"; }
+      if (manEm) { manEm.style.setProperty("--em-width", "100%"); manEm.style.setProperty("--em-op", "1"); }
+      if (telemClockCard) { telemClockCard.style.transform = "none"; telemClockCard.style.opacity = "1"; }
+      if (telemClockSub) { telemClockSub.style.transform = "none"; telemClockSub.style.opacity = "1"; }
+      if (telemCity) { telemCity.style.transform = "none"; telemCity.style.opacity = "1"; }
+      if (telemClockChip) { telemClockChip.style.transform = "none"; telemClockChip.style.opacity = "1"; }
+      if (telemPrinciplesCard) { telemPrinciplesCard.style.transform = "none"; telemPrinciplesCard.style.opacity = "1"; }
+      if (telemPrinciplesSub) { telemPrinciplesSub.style.transform = "none"; telemPrinciplesSub.style.opacity = "1"; }
+      [principle01, principle02, principle03].forEach(pEl => {
+        if (pEl) { pEl.style.transform = "none"; pEl.style.opacity = "1"; }
+      });
       return;
     }
 
@@ -1183,45 +1265,42 @@ function initPassConstruction() {
     const rawP = (scrollY - startScroll) / (targetScroll - startScroll);
     const p = Math.max(0, Math.min(1, rawP));
 
-    // Dynamic flight trajectory: smoothly eases from hero (p=0.12) to pass dock (p=0.72)
-    const pFlight = step(p, 0.12, 0.72);
+    // Dynamic flight trajectory: smoothly spans p from 0.18 to 0.78 (400px of scroll travel!)
+    // Smooth, gentle pace matching scroll naturally without rushing ahead
+    const pFlight = step(p, 0.18, 0.78);
 
     // ========================================================
     // 1. HERO DECONSTRUCTION (Desarmando al bajar / Armando al subir)
     // ========================================================
-    const pHero = Math.min(1, p * 2.2);
+    const pHero = step(p, 0.10, 0.55);
     if (heroVisualCard) {
-      const heroTiltX = pHero * 10;
-      const heroScale = 1 - 0.08 * pHero;
-      const heroY = -pHero * 35;
-      const heroBlur = pHero > 0.01 ? pHero * 4 : 0;
+      const heroScale = 1 - 0.03 * pHero;
+      const heroY = -pHero * 22;
       const heroOp = 1 - 0.75 * pHero;
-      heroVisualCard.style.transform = `perspective(1000px) rotateX(${heroTiltX}deg) scale(${heroScale}) translateY(${heroY}px)`;
-      heroVisualCard.style.filter = heroBlur > 0.1 ? `blur(${heroBlur}px)` : "none";
+      heroVisualCard.style.transform = `translateY(${heroY}px) scale(${heroScale})`;
       heroVisualCard.style.opacity = String(heroOp);
     }
 
-    const pTagFade = Math.min(1, p * 2.5);
+    const pTagFade = step(p, 0.08, 0.40);
     if (heroTagline) {
-      heroTagline.style.transform = `translateY(${pTagFade * 25}px)`;
+      heroTagline.style.transform = `translateY(${pTagFade * 20}px)`;
       heroTagline.style.opacity = String(Math.max(0, 1 - pTagFade));
     }
     if (heroActionsCol) {
-      heroActionsCol.style.transform = `translateY(${pTagFade * 25}px)`;
+      heroActionsCol.style.transform = `translateY(${pTagFade * 20}px)`;
       heroActionsCol.style.opacity = String(Math.max(0, 1 - pTagFade));
     }
 
     // ========================================================
     // 2. LIVING IDENTITY UNIT (Avatar + Name/Handle moving together)
     // ========================================================
-    const isDocked = p >= 0.72;
+    const isDocked = p >= 0.78;
 
-    // Smooth, invisible crossfade across p in [0.005, 0.07]
-    // Because flight elements mirror hero coordinates, font, and borders 100%,
-    // there is ZERO jump, pop, or layout shift when scrolling starts!
-    const pFade = step(p, 0.005, 0.07);
+    // Smooth invisible crossfade across p in [0.12, 0.19]
+    // The hero avatar and name stay anchored in the hero until liftoff begins!
+    const pFade = step(p, 0.12, 0.19);
 
-    if (p <= 0.002) {
+    if (p <= 0.11) {
       heroAvatarWrap.style.opacity = "1";
       if (heroName) heroName.style.opacity = "1";
       flightAvatar.style.opacity = "0";
@@ -1239,7 +1318,7 @@ function initPassConstruction() {
     const curAvX = originAv.x + (targetAv.x - originAv.x) * pFlight;
     const curAvY = originAv.y + (targetAv.y - originAv.y) * pFlight;
     const curAvScale = 1.0 + (targetAv.w / originAv.w - 1.0) * pFlight;
-    const pBorderFade = step(p, 0.35, 0.72);
+    const pBorderFade = step(p, 0.40, 0.78);
     const curBorderW = Math.max(0, 6 * (1 - pBorderFade));
     flightAvatar.style.transform = `translate3d(${curAvX}px, ${curAvY}px, 0) scale(${curAvScale})`;
     flightAvatar.style.borderWidth = `${curBorderW}px`;
@@ -1252,60 +1331,59 @@ function initPassConstruction() {
       const curInfoScale = 1.0 + (targetScaleInfo - 1.0) * pFlight;
       flightInfo.style.transform = `translate3d(${curInfoX}px, ${curInfoY}px, 0) scale(${curInfoScale})`;
 
-      // Early dissolve of '/ Kmlo' as unit lifts off:
-      const pDissolveHero = step(p, 0.04, 0.20);
+      // Dissolve of '/ Kmlo' as unit lifts off:
+      const pDissolveHero = step(p, 0.18, 0.36);
       if (flightHandleHero) flightHandleHero.style.opacity = String(1 - pDissolveHero);
 
       // Pass handle '@Kmlozmz' fades in smoothly as unit approaches dock:
-      const pFadePass = step(p, 0.42, 0.68);
+      const pFadePass = step(p, 0.55, 0.76);
       if (flightHandlePass) {
         flightHandlePass.style.opacity = String(pFadePass);
         flightHandlePass.style.transform = `translateY(${(1 - pFadePass) * 6}px)`;
       }
     }
 
-    // Static Pass elements handoff at p >= 0.72 (Dock complete)
+    // Static Pass elements handoff at p >= 0.78 (Dock complete)
     if (passAvatarImg) passAvatarImg.style.opacity = isDocked ? "1" : "0";
     if (passName) passName.style.opacity = isDocked ? "1" : "0";
     if (passHandle) passHandle.style.opacity = isDocked ? "1" : "0";
 
     // Progressive Construction of Sobre Mí Header:
-    // Only materializes as the flight unit clears the upper flight path and settles towards the pass!
-    // This completely eliminates any collision or interference with the moving avatar and text!
-    const pKicker = step(p, 0.48, 0.68);
+    const pKicker = step(p, 0.42, 0.62);
     if (sobreMiKicker) {
       sobreMiKicker.style.opacity = String(pKicker);
-      sobreMiKicker.style.transform = `translateY(${(1 - pKicker) * 20}px)`;
+      sobreMiKicker.style.transform = `translateY(${(1 - pKicker) * 16}px)`;
     }
-    const pTitle = step(p, 0.52, 0.72);
+    const pTitle = step(p, 0.46, 0.66);
     if (sobreMiTitle) {
       sobreMiTitle.style.opacity = String(pTitle);
-      sobreMiTitle.style.transform = `translateY(${(1 - pTitle) * 28}px)`;
+      sobreMiTitle.style.transform = `translateY(${(1 - pTitle) * 20}px)`;
     }
 
     // ========================================================
-    // 3. PROGRESSIVE MORPHOLOGICAL PASS ASSEMBLY (Triggered sequentially)
+    // 3. PROGRESSIVE MORPHOLOGICAL PASS ASSEMBLY (Left Column)
     // ========================================================
-    // Pass Chassis: 3D perspective rising & leveling
-    const pCard = step(p, 0.15, 0.50);
-    const cardScale = 0.90 + 0.10 * pCard;
-    const cardY = (1 - pCard) * 45;
-    const cardRotX = (1 - pCard) * 12;
+    // Pass Chassis: Gentle vertical rise & settle
+    const pCard = step(p, 0.22, 0.60);
+    const cardScale = 0.97 + 0.03 * pCard;
+    const cardY = (1 - pCard) * 26;
     const cardOp = pCard;
-    if (!isHoveringPass || p < 0.85) {
-      developerPass.style.transform = `perspective(900px) translateY(${cardY}px) rotateX(${cardRotX}deg) scale(${cardScale})`;
+    if (p < 1.0) {
+      developerPass.style.transform = `translateY(${cardY}px) scale(${cardScale})`;
+    } else {
+      developerPass.style.removeProperty("transform");
     }
     developerPass.style.opacity = String(cardOp);
 
     // Header Spec (>_ DEVELOPER SPEC // ID 0001)
-    const pHd = step(p, 0.22, 0.55);
+    const pHd = step(p, 0.28, 0.62);
     if (passHd) {
       passHd.style.opacity = String(pHd);
-      passHd.style.transform = `translateY(${(1 - pHd) * -18}px)`;
+      passHd.style.transform = `translateY(${(1 - pHd) * -14}px)`;
     }
 
     // Avatar Badges: Bloom when identity unit docks
-    const pBadge = step(p, 0.70, 0.80);
+    const pBadge = step(p, 0.76, 0.85);
     if (passEmoji) {
       passEmoji.style.transform = `scale(${pBadge})`;
       passEmoji.style.opacity = String(pBadge);
@@ -1316,48 +1394,48 @@ function initPassConstruction() {
     }
 
     // Tagline inside pass: Materializes as identity settles
-    const pTag = step(p, 0.70, 0.82);
+    const pTag = step(p, 0.77, 0.86);
     if (passTagline) {
       passTagline.style.opacity = String(pTag);
-      passTagline.style.transform = `translateY(${(1 - pTag) * 14}px)`;
+      passTagline.style.transform = `translateY(${(1 - pTag) * 12}px)`;
     }
 
     // Laser Cut 1: Perforated ticket line draws across
-    const pPerf1 = step(p, 0.76, 0.86);
+    const pPerf1 = step(p, 0.80, 0.88);
     if (passPerf1) {
       passPerf1.style.transform = `scaleX(${pPerf1})`;
       passPerf1.style.opacity = String(pPerf1);
     }
 
     // Telemetry rows: Barranquilla & Mobile Arch slide in
-    const pLi1 = step(p, 0.78, 0.88);
+    const pLi1 = step(p, 0.82, 0.90);
     if (passLi1) {
       passLi1.style.opacity = String(pLi1);
-      passLi1.style.transform = `translateX(${(1 - pLi1) * -20}px)`;
+      passLi1.style.transform = `translateX(${(1 - pLi1) * -16}px)`;
     }
-    const pLi2 = step(p, 0.81, 0.90);
+    const pLi2 = step(p, 0.84, 0.91);
     if (passLi2) {
       passLi2.style.opacity = String(pLi2);
-      passLi2.style.transform = `translateX(${(1 - pLi2) * -20}px)`;
+      passLi2.style.transform = `translateX(${(1 - pLi2) * -16}px)`;
     }
 
     // Specialties label & chips: Sockets plug in
-    const pSec = step(p, 0.83, 0.92);
+    const pSec = step(p, 0.86, 0.93);
     if (passSecLabel) {
       passSecLabel.style.opacity = String(pSec);
     }
     if (passChips && passChips.length) {
       passChips.forEach((chip, i) => {
-        const start = 0.84 + i * 0.02;
-        const end = Math.min(1.0, start + 0.08);
+        const start = 0.87 + i * 0.02;
+        const end = Math.min(0.96, start + 0.06);
         const pChip = step(p, start, end);
         chip.style.opacity = String(pChip);
-        chip.style.transform = `translateY(${(1 - pChip) * 12}px) scale(${0.80 + 0.20 * pChip})`;
+        chip.style.transform = `translateY(${(1 - pChip) * 10}px) scale(${0.85 + 0.15 * pChip})`;
       });
     }
 
     // Laser Cut 2
-    const pPerf2 = step(p, 0.90, 0.96);
+    const pPerf2 = step(p, 0.91, 0.96);
     if (passPerf2) {
       passPerf2.style.transform = `scaleX(${pPerf2})`;
       passPerf2.style.opacity = String(pPerf2);
@@ -1366,19 +1444,135 @@ function initPassConstruction() {
     // Pass Stats Footer: 4 Metrics rise into place
     if (passStatItems && passStatItems.length) {
       passStatItems.forEach((stat, i) => {
-        const start = 0.92 + i * 0.018;
-        const end = Math.min(1.0, start + 0.07);
+        const start = 0.92 + i * 0.016;
+        const end = Math.min(0.99, start + 0.05);
         const pStat = step(p, start, end);
         stat.style.opacity = String(pStat);
-        stat.style.transform = `translateY(${(1 - pStat) * 14}px) scale(${0.88 + 0.12 * pStat})`;
+        stat.style.transform = `translateY(${(1 - pStat) * 12}px) scale(${0.90 + 0.10 * pStat})`;
       });
     }
 
-    // Right Column Manifesto & Telemetry
-    const pMan = step(p, 0.25, 0.85);
+    // ========================================================
+    // 4. PROGRESSIVE DYNAMIC RIGHT COLUMN (Manifesto & Telemetry)
+    // ========================================================
     if (manifestoRight) {
-      manifestoRight.style.opacity = String(0.15 + 0.85 * pMan);
-      manifestoRight.style.transform = `translateY(${(1 - pMan) * 35}px)`;
+      manifestoRight.style.opacity = "1";
+    }
+
+    // 4a. Manifesto Card (#manCard)
+    const pManCard = step(p, 0.26, 0.62);
+    if (manCard) {
+      manCard.style.opacity = String(pManCard);
+      if (p < 1.0) {
+        const manY = (1 - pManCard) * 22;
+        const manScale = 0.98 + 0.02 * pManCard;
+        manCard.style.transform = `translateY(${manY}px) scale(${manScale})`;
+      } else {
+        manCard.style.removeProperty("transform");
+      }
+    }
+    // Manifesto Sub-label
+    const pManSub = step(p, 0.32, 0.55);
+    if (manSubLabel) {
+      manSubLabel.style.opacity = String(pManSub);
+      manSubLabel.style.transform = `translateX(${(1 - pManSub) * -12}px)`;
+    }
+    // Manifesto H3 Headline
+    const pManH3 = step(p, 0.38, 0.60);
+    if (manH3) {
+      manH3.style.opacity = String(pManH3);
+      manH3.style.transform = `translateY(${(1 - pManH3) * 12}px)`;
+    }
+    // Manifesto Body Text
+    const pManBody = step(p, 0.44, 0.66);
+    if (manBodyText) {
+      manBodyText.style.opacity = String(pManBody);
+      manBodyText.style.transform = `translateY(${(1 - pManBody) * 10}px)`;
+    }
+    // Manifesto Em Highlight Glow
+    const pManEm = step(p, 0.52, 0.72);
+    if (manEm) {
+      manEm.style.setProperty("--em-width", `${pManEm * 100}%`);
+      manEm.style.setProperty("--em-op", String(pManEm));
+    }
+
+    // 4b. Clock Telemetry Card (#telemClockCard)
+    const pClockCard = step(p, 0.48, 0.76);
+    if (telemClockCard) {
+      telemClockCard.style.opacity = String(pClockCard);
+      if (p < 1.0) {
+        const clockY = (1 - pClockCard) * 18;
+        const clockScale = 0.98 + 0.02 * pClockCard;
+        telemClockCard.style.transform = `translateY(${clockY}px) scale(${clockScale})`;
+      } else {
+        telemClockCard.style.removeProperty("transform");
+      }
+    }
+    // Clock Sub-label
+    const pClockSub = step(p, 0.52, 0.70);
+    if (telemClockSub) {
+      telemClockSub.style.opacity = String(pClockSub);
+      telemClockSub.style.transform = `translateX(${(1 - pClockSub) * -10}px)`;
+    }
+    // Clock City
+    const pCity = step(p, 0.54, 0.72);
+    if (telemCity) {
+      telemCity.style.opacity = String(pCity);
+      telemCity.style.transform = `translateX(${(1 - pCity) * -10}px)`;
+    }
+    // Clock Chip Pop & Bloom
+    const pClockChip = step(p, 0.58, 0.76);
+    if (telemClockChip) {
+      telemClockChip.style.opacity = String(pClockChip);
+      telemClockChip.style.transform = `translateY(${(1 - pClockChip) * 8}px) scale(${0.85 + 0.15 * pClockChip})`;
+    }
+
+    // 4c. Principles Card (#telemPrinciplesCard)
+    const pPrinciplesCard = step(p, 0.54, 0.82);
+    if (telemPrinciplesCard) {
+      telemPrinciplesCard.style.opacity = String(pPrinciplesCard);
+      if (p < 1.0) {
+        const princY = (1 - pPrinciplesCard) * 18;
+        const princScale = 0.98 + 0.02 * pPrinciplesCard;
+        telemPrinciplesCard.style.transform = `translateY(${princY}px) scale(${princScale})`;
+      } else {
+        telemPrinciplesCard.style.removeProperty("transform");
+      }
+    }
+    // Principles Sub-label
+    const pPrincSub = step(p, 0.56, 0.75);
+    if (telemPrinciplesSub) {
+      telemPrinciplesSub.style.opacity = String(pPrincSub);
+      telemPrinciplesSub.style.transform = `translateX(${(1 - pPrincSub) * -10}px)`;
+    }
+
+    // 4d. The 3 Core Principles (Tactical staggered slide-in)
+    const pP1 = step(p, 0.65, 0.80);
+    if (principle01) {
+      principle01.style.opacity = String(pP1);
+      if (p < 1.0) {
+        principle01.style.transform = `translateX(${(1 - pP1) * -12}px)`;
+      } else {
+        principle01.style.removeProperty("transform");
+      }
+    }
+    const pP2 = step(p, 0.74, 0.88);
+    if (principle02) {
+      principle02.style.opacity = String(pP2);
+      if (p < 1.0) {
+        principle02.style.transform = `translateX(${(1 - pP2) * -12}px)`;
+      } else {
+        principle02.style.removeProperty("transform");
+      }
+    }
+    const pP3 = step(p, 0.82, 0.96);
+    if (principle03) {
+      principle03.style.opacity = String(pP3);
+      if (p < 1.0) {
+        principle03.style.transform = `translateX(${(1 - pP3) * -12}px)`;
+      } else {
+        principle03.style.removeProperty("transform");
+      }
     }
   };
 
@@ -1467,21 +1661,27 @@ function initPageProgressiveConstruction() {
       }
       if (workStage) {
         const pWs = step(pStage, 0.15, 0.65);
-        const rotX = (1 - pWs) * 8;
-        const y = (1 - pWs) * 38;
-        const scale = 0.94 + 0.06 * pWs;
+        const y = (1 - pWs) * 24;
+        const scale = 0.98 + 0.02 * pWs;
         workStage.style.opacity = String(pWs);
-        workStage.style.transform = `perspective(1000px) rotateX(${rotX}deg) translateY(${y}px) scale(${scale})`;
+        if (pWs < 1.0) {
+          workStage.style.transform = `translateY(${y}px) scale(${scale})`;
+        } else {
+          workStage.style.removeProperty("transform");
+        }
       }
     }
 
     // --- 2. COLLABORATION BANNER ---
     if (collabCard) {
       const pCollab = getViewportProgress(collabCard, 0.93, 0.45);
-      const rotX = (1 - pCollab) * 6;
-      const y = (1 - pCollab) * 32;
+      const y = (1 - pCollab) * 20;
       collabCard.style.opacity = String(pCollab);
-      collabCard.style.transform = `perspective(900px) rotateX(${rotX}deg) translateY(${y}px)`;
+      if (pCollab < 1.0) {
+        collabCard.style.transform = `translateY(${y}px)`;
+      } else {
+        collabCard.style.removeProperty("transform");
+      }
     }
 
     // --- 3. HABILIDADES / EXPERTISE ---
@@ -1517,7 +1717,7 @@ function initPageProgressiveConstruction() {
       });
     }
 
-    // --- 4. SERVICIOS (4 Setup Cards in 3D) ---
+    // --- 4. SERVICIOS (4 Setup Cards) ---
     if (servTitle || setupCards.length) {
       const pServHeader = getViewportProgress(servLabel || servTitle, 0.94, 0.45);
       if (servLabel) {
@@ -1536,11 +1736,14 @@ function initPageProgressiveConstruction() {
 
       setupCards.forEach((card, i) => {
         const pCard = getViewportProgress(card, 0.94, 0.45);
-        const rotY = (i % 2 === 0 ? -1 : 1) * (1 - pCard) * 4;
-        const y = (1 - pCard) * 35;
-        const scale = 0.93 + 0.07 * pCard;
+        const y = (1 - pCard) * 22;
+        const scale = 0.98 + 0.02 * pCard;
         card.style.opacity = String(pCard);
-        card.style.transform = `perspective(900px) rotateY(${rotY}deg) translateY(${y}px) scale(${scale})`;
+        if (pCard < 1.0) {
+          card.style.transform = `translateY(${y}px) scale(${scale})`;
+        } else {
+          card.style.removeProperty("transform");
+        }
       });
     }
 

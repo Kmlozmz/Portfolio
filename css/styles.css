@@ -31,6 +31,11 @@
   --preview-bg: rgba(8, 6, 13, 0.04);
   --avatar-shadow: 0 10px 30px rgba(8, 6, 13, 0.08);
 
+  /* Scrollbar Theme */
+  --scrollbar-track: var(--bg-tan);
+  --scrollbar-thumb: rgba(8, 6, 13, 0.22);
+  --scrollbar-thumb-hover: var(--accent);
+
   /* GitHub Heatmap - High contrast in light mode */
   --contrib-bg-0: rgba(8, 6, 13, 0.07);
   --contrib-border-0: rgba(8, 6, 13, 0.06);
@@ -75,6 +80,11 @@
   --preview-bg: #18181a;
   --avatar-shadow: 0 0 0 1px rgba(241, 165, 160, 0.16), 0 14px 38px rgba(241, 165, 160, 0.18);
 
+  /* Scrollbar Theme Dark */
+  --scrollbar-track: var(--bg-tan);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.22);
+  --scrollbar-thumb-hover: var(--accent);
+
   /* GitHub Heatmap - Vibrant coral tones in dark mode */
   --contrib-bg-0: rgba(255, 255, 255, 0.06);
   --contrib-border-0: rgba(255, 255, 255, 0.03);
@@ -106,6 +116,11 @@
     --container-bg: #121212;
     --preview-bg: #18181a;
     --avatar-shadow: 0 0 0 1px rgba(241, 165, 160, 0.16), 0 14px 38px rgba(241, 165, 160, 0.18);
+
+    --scrollbar-track: var(--bg-tan);
+    --scrollbar-thumb: rgba(255, 255, 255, 0.22);
+    --scrollbar-thumb-hover: var(--accent);
+
     --contrib-bg-0: rgba(255, 255, 255, 0.06);
     --contrib-border-0: rgba(255, 255, 255, 0.03);
     --contrib-bg-1: rgba(241, 165, 160, 0.25);
@@ -124,9 +139,51 @@
   box-sizing: border-box;
 }
 
+/* Custom Aesthetic Scrollbar (Seamless Notayan Style) */
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 72px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* Chromium, Edge, Safari, Brave custom scrollbar */
+::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track,
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid var(--scrollbar-track);
+  background-clip: padding-box;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover,
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+
+::-webkit-scrollbar-corner,
+*::-webkit-scrollbar-corner {
+  background: var(--scrollbar-track);
+}
+
+/* Remove retro Windows arrows/stepper buttons */
+::-webkit-scrollbar-button,
+*::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 html.lenis {
@@ -927,7 +984,8 @@ img {
 }
 
 .card:hover {
-  border-color: var(--accent-border);
+  border-color: var(--border-color);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
 }
 
 .card-title {
@@ -1167,11 +1225,11 @@ img {
 }
 
 .developer-pass:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+  transform: translateY(-2px);
+  box-shadow: 0 24px 55px rgba(0, 0, 0, 0.45);
 }
 :root:not(.dark):not([data-theme="dark"]) .developer-pass:hover {
-  box-shadow: 0 26px 60px rgba(8, 6, 13, 0.12), inset 0 0 0 1px rgba(8, 6, 13, 0.14);
+  box-shadow: 0 20px 48px rgba(8, 6, 13, 0.09);
 }
 
 /* Pass Header */
@@ -1453,11 +1511,56 @@ img {
   background: var(--surface-raised);
   border-radius: var(--r-xl);
   padding: 28px;
-  transition: background 0.3s ease;
+  border: none;
+  outline: none;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 :root:not(.dark):not([data-theme="dark"]) .tonal-manifesto {
   background: rgba(255, 255, 255, 0.7);
   box-shadow: 0 4px 20px rgba(8, 6, 13, 0.04);
+}
+
+/* Progressive Cards in Right Column with Specular Spotlight (Border-Free & Clean) */
+.prog-card {
+  position: relative;
+  overflow: hidden;
+  will-change: transform, opacity;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none;
+  transition: box-shadow 0.3s ease, transform 0.25s ease;
+}
+
+.prog-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    280px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(241, 165, 160, 0.10),
+    rgba(255, 255, 255, 0.03) 40%,
+    transparent 72%
+  );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.prog-card:hover::before {
+  opacity: 1;
+}
+
+.prog-card:hover {
+  transform: translateY(-2px);
+  border: none !important;
+  outline: none !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+}
+:root:not(.dark):not([data-theme="dark"]) .prog-card:hover {
+  border: none !important;
+  outline: none !important;
+  box-shadow: 0 10px 24px rgba(8, 6, 13, 0.06);
 }
 
 .manifesto-h3 {
@@ -1467,16 +1570,43 @@ img {
   color: var(--text-dark);
   line-height: 1.3;
   margin-bottom: 12px;
+  transform-origin: left top;
+  will-change: transform, opacity;
 }
 .manifesto-body {
   font-size: 15px;
   line-height: 1.65;
   color: var(--text-muted);
+  transform-origin: left top;
+  will-change: transform, opacity;
 }
 .manifesto-body em {
   color: var(--text-dark);
   font-style: normal;
   font-weight: 600;
+}
+
+/* Luminous highlight in Manifesto */
+.man-em {
+  color: var(--text-dark);
+  font-style: normal;
+  font-weight: 600;
+  position: relative;
+  display: inline-block;
+  transition: color 0.3s ease;
+}
+.man-em::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0px;
+  width: var(--em-width, 0%);
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+  opacity: var(--em-op, 0);
+  box-shadow: 0 0 10px rgba(241, 165, 160, 0.65);
+  transition: width 0.12s linear, opacity 0.12s linear;
 }
 
 .telemetry-grid {
@@ -1489,7 +1619,9 @@ img {
   background: var(--button-bg);
   border-radius: var(--r-lg);
   padding: 20px;
-  transition: background 0.3s ease;
+  border: none;
+  outline: none;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 :root:not(.dark):not([data-theme="dark"]) .telemetry-card {
   background: rgba(255, 255, 255, 0.85);
@@ -1507,6 +1639,8 @@ img {
   display: flex;
   align-items: center;
   gap: 6px;
+  transform-origin: left center;
+  will-change: transform, opacity;
 }
 .sub-label-ic {
   width: 14px;
@@ -1516,6 +1650,8 @@ img {
   font-size: 17px;
   font-weight: 700;
   color: var(--text-dark);
+  transform-origin: left center;
+  will-change: transform, opacity;
 }
 .desc-sub {
   font-size: 13px;
@@ -1536,6 +1672,8 @@ img {
   color: var(--text-dark);
   font-weight: 600;
   margin-top: 8px;
+  transform-origin: left center;
+  will-change: transform, opacity;
 }
 :root.dark .clock-chip,
 :root[data-theme="dark"] .clock-chip {
@@ -1567,12 +1705,28 @@ img {
   gap: 10px;
   font-size: 13px;
   line-height: 1.45;
+  padding: 4px 6px;
+  border-radius: 8px;
+  margin: -4px -6px;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
+  will-change: transform, opacity;
+  transform-origin: left center;
 }
+.principle-li:hover {
+  transform: translateX(4px);
+  background: rgba(255, 255, 255, 0.04);
+}
+:root:not(.dark):not([data-theme="dark"]) .principle-li:hover {
+  background: rgba(8, 6, 13, 0.03);
+}
+
 .principle-idx {
   font-family: var(--mono);
   font-size: 11px;
   font-weight: 800;
   color: var(--accent);
+  display: inline-block;
+  will-change: transform, opacity;
 }
 .principle-txt {
   color: var(--text-muted);
@@ -1598,6 +1752,7 @@ img {
 }
 
 .showcase-list {
+  position: relative;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -1617,6 +1772,32 @@ img {
   }
 }
 
+.showcase-list > li {
+  position: relative;
+  z-index: 2;
+}
+
+/* Sliding elastic pill indicator */
+.work-sliding-pill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--text-dark);
+  background: var(--card-bg-opaque);
+  pointer-events: none;
+  transition: transform 0.36s cubic-bezier(0.2, 0.9, 0.25, 1), height 0.22s ease, width 0.22s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  z-index: 1;
+}
+
+@media (max-width: 960px) {
+  .work-sliding-pill {
+    transition: transform 0.36s cubic-bezier(0.2, 0.9, 0.25, 1), width 0.22s ease, height 0.22s ease;
+  }
+}
+
 .work-tab {
   width: 100%;
   display: grid;
@@ -1631,19 +1812,22 @@ img {
   background: transparent;
   color: var(--text-muted);
   cursor: pointer;
-  transition: all var(--dur) var(--ease);
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
   white-space: nowrap;
 }
 
 .work-tab:hover {
-  background: var(--button-bg);
   color: var(--text-dark);
 }
 
 .work-tab.is-active {
-  background: var(--card-bg-opaque);
-  border-color: var(--text-dark);
+  background: transparent;
+  border-color: transparent;
   color: var(--text-dark);
+}
+
+.work-tab.is-active:hover {
+  background: transparent;
 }
 
 .tab-index {
@@ -1672,6 +1856,46 @@ img {
   border-radius: 24px;
   background: var(--card-bg-opaque);
   overflow: hidden;
+  position: relative;
+}
+
+/* Stage Panels Track & Directional Slide */
+.stage-panels {
+  display: grid;
+  grid-template-columns: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.stage-panel {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.stage-panel.is-active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  visibility: visible;
+  position: relative;
+  z-index: 2;
+}
+
+.stage-panel.slide-exit-up {
+  opacity: 0;
+  transform: translateY(-24px);
+}
+
+.stage-panel.slide-exit-down {
+  opacity: 0;
+  transform: translateY(24px);
 }
 
 .stage-art {
@@ -1692,19 +1916,6 @@ img {
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  animation: artIn 0.5s var(--ease-out);
-}
-
-@keyframes artIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-  }
 }
 
 .art-caption {
@@ -2136,7 +2347,6 @@ img {
   gap: 1.5rem;
   padding: 1.5rem 1.75rem 1.75rem;
   align-items: end;
-  animation: artIn 0.45s var(--ease-out);
 }
 
 @media (max-width: 760px) {
