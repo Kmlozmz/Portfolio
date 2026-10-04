@@ -1195,8 +1195,8 @@ function initPassConstruction() {
 
     if (sobreMi) {
       startScroll = 40;
-      // Complete assembly comfortably centered in viewport (scrollY ~700-720px), well before top clipping!
-      targetScroll = Math.max(620, sobreMi.offsetTop + 14);
+      // Complete assembly comfortably before/upon arrival at #sobre-mi (accounting for fixed header)
+      targetScroll = Math.max(450, sobreMi.offsetTop - 72);
     }
 
     update();

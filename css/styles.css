@@ -895,15 +895,19 @@ img {
 /* ---------- Bloques ---------- */
 .block {
   width: 100%;
-  padding: 80px 48px;
+  padding: 56px 48px;
   box-sizing: border-box;
   border-bottom: 1px solid var(--border-color);
+}
+
+#sobre-mi.block {
+  padding: 32px 48px 36px;
 }
 
 .sobre-mi-header {
   position: relative;
   z-index: 5;
-  padding: 4px 0 12px;
+  padding: 0 0 4px;
 }
 
 .kicker {
@@ -918,18 +922,18 @@ img {
   align-items: center;
   gap: 8px;
   font-family: var(--mono);
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   position: relative;
   z-index: 12;
 }
 #sobre-mi .kicker-badge-ic {
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
   flex: none;
   color: var(--accent);
 }
@@ -941,6 +945,8 @@ img {
 #sobre-mi .giant {
   position: relative;
   z-index: 12;
+  font-size: clamp(2rem, 3.8vw, 2.75rem);
+  margin-top: 0.15rem;
 }
 
 .label {
@@ -1055,10 +1061,10 @@ img {
 /* ---------- Grid Layout in #sobre-mi ---------- */
 .about-spec-grid {
   display: grid;
-  grid-template-columns: 380px 1fr;
-  gap: 36px;
-  margin-top: 2.5rem;
-  align-items: start;
+  grid-template-columns: 360px 1fr;
+  gap: 22px;
+  margin-top: 1.25rem;
+  align-items: stretch;
 }
 
 /* ---------- Shared Element Flight Layer (Hero -> Pass Docking) ---------- */
@@ -1155,17 +1161,17 @@ img {
 .pass-dock-container {
   position: relative;
   width: 100%;
-  max-width: 380px;
+  max-width: 360px;
 }
 
 .developer-pass {
   position: relative;
   width: 100%;
   border-radius: var(--r-xl);
-  padding: 24px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
   background: linear-gradient(155deg, #181a21 0%, #121318 55%, #0b0c0f 100%);
   color: #fff;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
@@ -1237,7 +1243,7 @@ img {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 800;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -1263,14 +1269,14 @@ img {
 /* Pass Identity Dock Slots */
 .pass-face-row {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   align-items: flex-start;
-  min-height: 98px;
+  min-height: auto;
   position: relative;
 }
 .pass-avatar-frame {
-  width: 76px;
-  height: 76px;
+  width: 66px;
+  height: 66px;
   position: relative;
   flex: none;
   border-radius: 50%;
@@ -1337,12 +1343,12 @@ img {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 80px;
+  min-height: auto;
   transform-origin: left center;
   will-change: transform, opacity;
 }
 .pass-name {
-  font-size: 21px;
+  font-size: 18px;
   font-weight: 800;
   letter-spacing: -0.4px;
   line-height: 1.15;
@@ -1354,19 +1360,19 @@ img {
   color: #0c0d10;
 }
 .pass-handle {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--accent);
   font-family: var(--mono);
-  margin-top: 2px;
+  margin-top: 1px;
   transform-origin: left center;
   will-change: transform, opacity;
 }
 .pass-tagline {
-  font-size: 11.5px;
+  font-size: 11px;
   color: rgba(255, 255, 255, 0.72);
-  margin-top: 4px;
-  line-height: 1.35;
+  margin-top: 2px;
+  line-height: 1.3;
   font-style: italic;
   max-width: 236px;
   transform-origin: left center;
@@ -1380,7 +1386,7 @@ img {
 .pass-tear-perf {
   height: 0;
   border-top: 2px dashed rgba(255, 255, 255, 0.16);
-  margin: 4px -24px;
+  margin: 2px -20px;
   transform-origin: left center;
   will-change: transform, opacity;
 }
@@ -1391,8 +1397,8 @@ img {
 .pass-li {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 13px;
+  gap: 8px;
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.9);
   transform-origin: left center;
   will-change: transform, opacity;
@@ -1401,8 +1407,8 @@ img {
   color: var(--text-dark);
 }
 .pass-li-icon {
-  width: 17px;
-  height: 17px;
+  width: 15px;
+  height: 15px;
   color: var(--accent);
   flex: none;
 }
@@ -1410,10 +1416,10 @@ img {
 .pass-sec-wrap {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 .pass-sec {
-  font-size: 10.5px;
+  font-size: 9.5px;
   font-weight: 800;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -1427,16 +1433,16 @@ img {
 .pass-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 5px;
 }
 .pass-chip {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   background: rgba(255, 255, 255, 0.08);
   border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 11.5px;
+  padding: 3px 8px;
+  font-size: 11px;
   font-weight: 700;
   color: #fff;
   transform-origin: center center;
@@ -1465,16 +1471,16 @@ img {
 }
 
 .chip-ic {
-  width: 13px;
-  height: 13px;
+  width: 12px;
+  height: 12px;
 }
 
 .pass-stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: 4px;
   text-align: center;
-  padding-top: 4px;
+  padding-top: 2px;
 }
 .pass-stat-item {
   transform-origin: center bottom;
@@ -1482,7 +1488,7 @@ img {
 }
 .pass-stats b {
   display: block;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 800;
   color: #fff;
   font-family: var(--mono);
@@ -1491,7 +1497,7 @@ img {
   color: var(--text-dark);
 }
 .pass-stats small {
-  font-size: 9.5px;
+  font-size: 8.5px;
   color: rgba(255, 255, 255, 0.55);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -1504,13 +1510,13 @@ img {
 .about-manifesto-col {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
 }
 
 .tonal-manifesto {
   background: var(--surface-raised);
   border-radius: var(--r-xl);
-  padding: 28px;
+  padding: 18px 22px;
   border: none;
   outline: none;
   transition: background 0.3s ease, box-shadow 0.3s ease;
@@ -1564,18 +1570,18 @@ img {
 }
 
 .manifesto-h3 {
-  font-size: 22px;
+  font-size: 1.15rem;
   font-weight: 700;
-  letter-spacing: -0.4px;
+  letter-spacing: -0.3px;
   color: var(--text-dark);
-  line-height: 1.3;
-  margin-bottom: 12px;
+  line-height: 1.25;
+  margin-bottom: 8px;
   transform-origin: left top;
   will-change: transform, opacity;
 }
 .manifesto-body {
-  font-size: 15px;
-  line-height: 1.65;
+  font-size: 0.88rem;
+  line-height: 1.52;
   color: var(--text-muted);
   transform-origin: left top;
   will-change: transform, opacity;
@@ -1612,13 +1618,13 @@ img {
 .telemetry-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 12px;
 }
 
 .telemetry-card {
   background: var(--button-bg);
   border-radius: var(--r-lg);
-  padding: 20px;
+  padding: 16px 18px;
   border: none;
   outline: none;
   transition: background 0.3s ease, box-shadow 0.3s ease;
@@ -1629,49 +1635,49 @@ img {
 }
 
 .sub-label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--accent);
   font-family: var(--mono);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   transform-origin: left center;
   will-change: transform, opacity;
 }
 .sub-label-ic {
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
 }
 .val-sub {
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-dark);
   transform-origin: left center;
   will-change: transform, opacity;
 }
 .desc-sub {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-muted);
-  margin-top: 8px;
-  line-height: 1.45;
+  margin-top: 6px;
+  line-height: 1.38;
 }
 
 .clock-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   background: rgba(8, 6, 13, 0.06);
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 11px;
   font-family: var(--mono);
   color: var(--text-dark);
   font-weight: 600;
-  margin-top: 8px;
+  margin-top: 6px;
   transform-origin: left center;
   will-change: transform, opacity;
 }
@@ -1681,8 +1687,8 @@ img {
 }
 
 .clock-dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: var(--ok);
   animation: pulseDot 2s infinite;
@@ -1696,18 +1702,18 @@ img {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 8px;
+  gap: 5px;
+  margin-top: 4px;
 }
 .principle-li {
   display: flex;
   align-items: baseline;
-  gap: 10px;
-  font-size: 13px;
-  line-height: 1.45;
-  padding: 4px 6px;
-  border-radius: 8px;
-  margin: -4px -6px;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.35;
+  padding: 2px 4px;
+  border-radius: 6px;
+  margin: -2px -4px;
   transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
   will-change: transform, opacity;
   transform-origin: left center;
@@ -1722,7 +1728,7 @@ img {
 
 .principle-idx {
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
   color: var(--accent);
   display: inline-block;
