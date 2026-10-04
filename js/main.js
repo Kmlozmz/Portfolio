@@ -697,7 +697,7 @@ function initWork() {
 
   let activeIdx = 0;
 
-  // 1. Build tabs markup with the sliding pill indicator
+  // 1. Build tabs markup with the luminous rail indicator (Style 3)
   list.innerHTML = `
     <div class="work-sliding-pill" id="workSlidingPill" aria-hidden="true"></div>
     ${WORK.map(
@@ -706,7 +706,6 @@ function initWork() {
         <button class="work-tab${k === 0 ? " is-active" : ""}" type="button" role="tab" data-index="${k}" aria-selected="${k === 0 ? "true" : "false"}">
           <span class="tab-index">${String(k + 1).padStart(2, "0")}</span>
           <span class="tab-title">${w.title}</span>
-          <span class="tab-tag">${w.tag}</span>
         </button>
       </li>`,
     ).join("")}
@@ -758,7 +757,6 @@ function initWork() {
     const li = targetTab.closest("li") || targetTab;
     pill.style.transform = `translateX(${li.offsetLeft}px)`;
     pill.style.width = `${li.offsetWidth}px`;
-    pill.style.height = `${li.offsetHeight}px`;
     const listRect = list.getBoundingClientRect();
     const tabRect = li.getBoundingClientRect();
     if (tabRect.left < listRect.left || tabRect.right > listRect.right) {
@@ -767,6 +765,9 @@ function initWork() {
   };
 
   window.updateWorkPillGlobal = () => updateSlidingPill(activeIdx);
+
+  let deconstructTimer = null;
+  let reconstructTimer = null;
 
   const goToProject = (newIdx, direction = null) => {
     if (newIdx === activeIdx && panels.length > 0) return;
@@ -781,34 +782,40 @@ function initWork() {
 
     updateSlidingPill(activeIdx);
 
-    const isForward = direction !== null ? direction > 0 : newIdx > prevIdx;
-    const isMobile = window.innerWidth <= 960;
+    const prevPanel = panels[prevIdx];
+    const nextPanel = panels[newIdx];
 
+    // Clear any pending transition timers to prevent stale states
+    clearTimeout(deconstructTimer);
+    clearTimeout(reconstructTimer);
+
+    // Phase 1: Deconstruct current project pieces
     panels.forEach((p, i) => {
-      p.classList.remove("slide-exit-left", "slide-exit-right", "slide-exit-up", "slide-exit-down");
+      p.classList.remove("is-reconstructing");
       if (i === prevIdx) {
-        if (isMobile) {
-          p.classList.add(isForward ? "slide-exit-up" : "slide-exit-down");
-        } else {
-          p.classList.add(isForward ? "slide-exit-left" : "slide-exit-right");
-        }
-        p.classList.remove("is-active");
-      } else if (i === newIdx) {
-        p.classList.remove("is-active");
-        void p.offsetWidth;
-        if (isMobile) {
-          p.style.transform = isForward ? "translateY(24px)" : "translateY(-24px)";
-        } else {
-          p.style.transform = isForward ? "translateX(28px)" : "translateX(-28px)";
-        }
-        setTimeout(() => {
-          p.classList.add("is-active");
-          p.style.transform = isMobile ? "translateY(0)" : "translateX(0)";
-        }, 20);
-      } else {
-        p.classList.remove("is-active");
+        p.classList.add("is-deconstructing");
+      } else if (i !== newIdx) {
+        p.classList.remove("is-active", "is-deconstructing");
       }
     });
+
+    // Phase 2: After 200ms, swap active state and reconstruct new project pieces
+    deconstructTimer = setTimeout(() => {
+      panels.forEach((p, i) => {
+        p.classList.remove("is-deconstructing", "is-reconstructing");
+        if (i === newIdx) {
+          p.classList.add("is-reconstructing", "is-active");
+        } else {
+          p.classList.remove("is-active");
+        }
+      });
+
+      reconstructTimer = setTimeout(() => {
+        if (nextPanel) {
+          nextPanel.classList.remove("is-reconstructing");
+        }
+      }, 380);
+    }, 200);
   };
 
   tabs.forEach((t) =>

@@ -1749,14 +1749,16 @@ img {
   position: relative;
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 4px 0 8px;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1.25rem;
   width: fit-content;
   max-width: 100%;
   overflow-x: auto;
   scrollbar-width: none;
+  border: none;
+  background: transparent;
 }
 
 .showcase-list::-webkit-scrollbar {
@@ -1769,34 +1771,43 @@ img {
   flex-shrink: 0;
 }
 
-/* Sliding elastic pill indicator */
+/* Luminous Rail Active Line Indicator (Style 3) */
 .work-sliding-pill {
   position: absolute;
   left: 0;
-  top: 0;
-  height: 100%;
-  border-radius: 14px;
-  border: 1px solid var(--text-dark);
-  background: var(--card-bg-opaque);
+  bottom: 0;
+  top: auto;
+  height: 2px;
+  border-radius: 2px;
+  border: none;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent), 0 0 2px var(--accent);
   pointer-events: none;
-  transition: transform 0.36s cubic-bezier(0.2, 0.9, 0.25, 1), width 0.22s ease, height 0.22s ease;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: transform 0.36s cubic-bezier(0.2, 0.9, 0.25, 1), width 0.22s ease;
   z-index: 1;
+}
+
+:root[data-theme="light"] .work-sliding-pill {
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(216, 92, 84, 0.45);
 }
 
 .work-tab {
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1.25rem;
-  border-radius: 14px;
-  border: 1px solid var(--border-color);
-  background: transparent;
+  gap: 0.65rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 0;
+  border: none !important;
+  background: transparent !important;
   color: var(--text-muted);
   cursor: pointer;
-  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  transition: color 0.2s ease;
   white-space: nowrap;
   font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 500;
+  user-select: none;
 }
 
 .work-tab:hover {
@@ -1804,31 +1815,25 @@ img {
 }
 
 .work-tab.is-active {
-  background: transparent;
-  border-color: transparent;
   color: var(--text-dark);
-}
-
-.work-tab.is-active:hover {
-  background: transparent;
+  font-weight: 700;
 }
 
 .tab-index {
   font-family: var(--mono);
-  font-size: 0.75rem;
-  opacity: 0.6;
+  font-size: 0.74rem;
+  color: var(--accent);
+  font-weight: 700;
+  opacity: 0.9;
 }
 
 .tab-title {
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 0.92rem;
+  letter-spacing: -0.01em;
 }
 
 .tab-tag {
-  font-family: var(--mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.04em;
-  opacity: 0.75;
+  display: none;
 }
 
 .showcase-stage {
@@ -1854,30 +1859,16 @@ img {
   grid-template-columns: 52% 48%;
   min-height: 480px;
   opacity: 0;
-  transform: translateX(28px);
-  transition: opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
   visibility: hidden;
+  position: relative;
 }
 
 .stage-panel.is-active {
   opacity: 1;
-  transform: translateX(0);
   pointer-events: auto;
   visibility: visible;
-  position: relative;
   z-index: 2;
-}
-
-.stage-panel.slide-exit-left {
-  opacity: 0;
-  transform: translateX(-28px);
-}
-
-.stage-panel.slide-exit-right {
-  opacity: 0;
-  transform: translateX(28px);
 }
 
 @media (max-width: 960px) {
@@ -1885,23 +1876,98 @@ img {
     display: flex;
     flex-direction: column;
     min-height: auto;
-    transform: translateY(24px);
   }
+}
 
-  .stage-panel.is-active {
+/* Kinetic Deconstruction & Reconstruction targets */
+.stage-panel .art {
+  will-change: transform, opacity, filter;
+  transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.25, 1),
+              opacity 0.3s ease,
+              filter 0.3s ease;
+}
+
+.stage-panel .stage-info-main {
+  will-change: transform, opacity;
+  transition: transform 0.36s cubic-bezier(0.2, 0.9, 0.25, 1),
+              opacity 0.28s ease;
+}
+
+.stage-panel .stage-actions {
+  will-change: transform, opacity;
+  transition: transform 0.32s cubic-bezier(0.2, 0.9, 0.25, 1),
+              opacity 0.24s ease;
+}
+
+/* Phase 1: Deconstruction (active panel disassembles) */
+.stage-panel.is-deconstructing .art {
+  opacity: 0;
+  transform: translateY(-24px) scale(0.92) rotate(-1.5deg);
+  filter: blur(6px);
+}
+
+.stage-panel.is-deconstructing .stage-info-main {
+  opacity: 0;
+  transform: translateY(18px) scale(0.98);
+}
+
+.stage-panel.is-deconstructing .stage-actions {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+/* Phase 2: Reconstruction (incoming panel assembles) */
+.stage-panel.is-reconstructing {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+  z-index: 2;
+}
+
+.stage-panel.is-reconstructing .art {
+  animation: assembleArt 0.48s cubic-bezier(0.2, 0.9, 0.25, 1) forwards;
+}
+
+.stage-panel.is-reconstructing .stage-info-main {
+  animation: assembleText 0.42s cubic-bezier(0.2, 0.9, 0.25, 1) 0.05s forwards;
+}
+
+.stage-panel.is-reconstructing .stage-actions {
+  animation: assembleActions 0.38s cubic-bezier(0.2, 0.9, 0.25, 1) 0.12s forwards;
+}
+
+@keyframes assembleArt {
+  0% {
+    opacity: 0;
+    transform: translateY(28px) scale(0.94) rotate(1deg);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+    filter: blur(0);
+  }
+}
+
+@keyframes assembleText {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
     transform: translateY(0);
   }
+}
 
-  .stage-panel.slide-exit-left,
-  .stage-panel.slide-exit-up {
+@keyframes assembleActions {
+  0% {
     opacity: 0;
-    transform: translateY(-24px);
+    transform: translateY(12px);
   }
-
-  .stage-panel.slide-exit-right,
-  .stage-panel.slide-exit-down {
-    opacity: 0;
-    transform: translateY(24px);
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -2146,10 +2212,33 @@ img {
 }
 
 .br-bar i {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: var(--border-color);
+  display: inline-block;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25);
+  transition: transform 0.15s ease, filter 0.15s ease;
+  cursor: pointer;
+}
+
+.br-bar i:nth-child(1) {
+  background: #ff5f56;
+  border: 1px solid rgba(224, 68, 62, 0.45);
+}
+
+.br-bar i:nth-child(2) {
+  background: #ffbd2e;
+  border: 1px solid rgba(222, 161, 35, 0.45);
+}
+
+.br-bar i:nth-child(3) {
+  background: #27c93f;
+  border: 1px solid rgba(40, 167, 69, 0.45);
+}
+
+.br-bar:hover i {
+  filter: brightness(1.08);
 }
 
 .br-url {
