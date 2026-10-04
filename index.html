@@ -47,17 +47,37 @@
 <body>
 	<a class="skip-link" href="#main">Skip to content</a>
 
-	<!-- Custom cursor -->
-	<div class="custom-cursor-pointer" id="cursorPointer" aria-hidden="true"></div>
-	<div class="custom-cursor-trail" id="cursorTrail" aria-hidden="true"></div>
-
-	<div class="page-wrapper">
-		<header class="tech-header">
-			<div class="tech-header-col col-1">
-				<a href="#inicio" class="tech-logo">Kmlo_zmz</a>
+	<!-- ================= 01. PERMANENT FIXED HEADER ================= -->
+	<header class="site-header" id="siteHeader">
+		<div class="header-inner">
+			<!-- Left: Terminal brand -->
+			<div class="header-left">
+				<a href="#inicio" class="terminal-brand" aria-label="Kmlozmz Home">
+					<span class="terminal-brand-sym">~&gt;</span>
+					<span>Kmlo_zmz</span>
+					<span class="terminal-cursor-beam" aria-hidden="true"></span>
+				</a>
 			</div>
-			<div class="tech-header-col col-3">
-				<button class="theme-toggle-btn" id="themeToggle" type="button" aria-label="Switch to light theme"
+
+			<!-- Center: Navigation (Option 3: Riel Minimalista Luminous, 100% Dead-Centered) -->
+			<nav class="header-nav nav-style-line" id="mainHeaderNav" aria-label="Main Navigation">
+				<div class="nav-active-pill" id="navActivePill" aria-hidden="true"></div>
+				<a href="#inicio" class="nav-btn active" data-index="0" data-es="Inicio" data-en="Home">Inicio</a>
+				<a href="#sobre-mi" class="nav-btn" data-index="1" data-es="Sobre mí" data-en="About">Sobre mí</a>
+				<a href="#proyectos" class="nav-btn" data-index="2" data-es="Proyectos" data-en="Projects">Proyectos</a>
+				<a href="#habilidades" class="nav-btn" data-index="3" data-es="Habilidades" data-en="Skills">Habilidades</a>
+				<a href="#contacto" class="nav-btn" data-index="4" data-es="Contacto" data-en="Contact">Contacto</a>
+			</nav>
+
+			<!-- Right: Crisp 6px tech buttons -->
+			<div class="header-controls">
+				<button class="tech-btn" id="langToggle" type="button" aria-label="Switch language">
+					<span id="langES" class="lang-active">ES</span>
+					<span class="lang-sep">/</span>
+					<span id="langEN" class="lang-muted">EN</span>
+				</button>
+
+				<button class="tech-btn theme-toggle-btn" id="themeToggle" type="button" aria-label="Switch to light theme"
 					aria-pressed="true">
 					<span class="theme-pill-icons" aria-hidden="true">
 						<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -74,30 +94,48 @@
 					<span class="theme-toggle-text" id="themeLabel">LIGHT</span>
 				</button>
 			</div>
-		</header>
+		</div>
+	</header>
+
+	<!-- Custom cursor (stacked after header in DOM to ensure highest visibility) -->
+	<div class="custom-cursor-pointer" id="cursorPointer" aria-hidden="true"></div>
+	<div class="custom-cursor-trail" id="cursorTrail" aria-hidden="true"></div>
+
+	<div class="page-wrapper">
+		<!-- Shared Element Flight Layer: Living Identity Unit (Avatar + Name) -->
+		<div class="flight-avatar-wrap" id="flightAvatar" aria-hidden="true">
+			<img src="assets/pfp.webp" alt="Avatar flight" class="flight-avatar-img" width="136" height="136" />
+		</div>
+		<div class="flight-info-wrap" id="flightInfo" aria-hidden="true">
+			<div class="flight-name-row" id="flightNameRow">
+				<span class="flight-name" id="flightName">Camilo Pineda</span>
+				<span class="flight-handle-hero" id="flightHandleHero">/ Kmlo</span>
+			</div>
+			<div class="flight-handle-pass" id="flightHandlePass">@Kmlozmz</div>
+		</div>
 
 		<main id="main">
 			<!-- HERO -->
 			<section class="hero-section" id="inicio">
 				<div class="hero-container">
 					<!-- Banner Card with Lens -->
-					<div class="hero-visual-card reveal">
+					<div class="hero-visual-card">
 						<div class="lens" id="heroLens">
 							<img src="assets/hero.gif" alt="Hero Banner" class="hero-banner-image" width="1280" height="620" />
 						</div>
 					</div>
 
 					<!-- Overlaid Avatar -->
-					<div class="hero-avatar-wrap reveal">
-						<img src="assets/pfp.webp" alt="Avatar of Camilo Pineda" class="hero-avatar-image" width="480"
+					<div class="hero-avatar-wrap" id="heroAvatarWrap">
+						<img src="assets/pfp.webp" alt="Avatar of Camilo Pineda" class="hero-avatar-image" id="heroAvatarImg" width="480"
 							height="338" />
 					</div>
 
 					<!-- Details row (Name, tagline, socials) -->
-					<div class="hero-details-row reveal">
-						<div class="hero-intro-col">
-							<h1 class="hero-name">Camilo Pineda <span class="hero-handle">/ Kmlo</span></h1>
-							<p class="hero-tagline">
+					<div class="hero-details-row" id="heroDetailsRow">
+						<div class="hero-intro-col" id="heroIntroCol">
+							<h1 class="hero-name" id="heroName">Camilo Pineda <span class="hero-handle" id="heroHandle">/ Kmlo</span></h1>
+							<p class="hero-tagline" id="heroTagline">
 								Software developer &amp; builder crafting resilient mobile apps, interactive web experiences, and digital tools with meticulous care.
 							</p>
 						</div>
@@ -144,86 +182,196 @@
 
 			<!-- ABOUT ME -->
 			<section class="block" id="sobre-mi">
-				<p class="kicker reveal">Now you might wonder</p>
-				<h2 class="giant reveal">Who's this guy even...</h2>
-
-				<div class="grid-about">
-					<article class="card reveal">
-						<h3 class="card-title">Camilo Pineda · Barranquilla, Colombia</h3>
-						<p class="hand">
-							<span class="amp">&amp;</span> I create <em>digital software</em>
-						</p>
-						<ul class="pills">
-							<li>Mobile Applications</li>
-							<li>Web Interfaces</li>
-							<li>Tooling &amp; Automation</li>
-							<li>Product Craft</li>
-						</ul>
-						<p class="more">adaptable to any stack...</p>
-					</article>
-
-					<article class="card reveal">
-						<ol class="timeline">
-							<li>
-								<span class="t-icon" aria-hidden="true">
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-										stroke-linejoin="round">
-										<rect x="2" y="3" width="20" height="14" rx="2" />
-										<line x1="8" y1="21" x2="16" y2="21" />
-										<line x1="12" y1="17" x2="12" y2="21" />
-									</svg>
-								</span>
-								<div>
-									<p class="t-place">Independent Development</p>
-									<p class="t-meta">Mobile Apps, Web &amp; Systems | 2021 - Present</p>
-								</div>
-							</li>
-							<li>
-								<span class="t-icon" aria-hidden="true">
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-										stroke-linejoin="round">
-										<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-									</svg>
-								</span>
-								<div>
-									<p class="t-place">Continuous Building</p>
-									<p class="t-meta">Transforming ideas into shipped, working software</p>
-								</div>
-							</li>
-						</ol>
-					</article>
-
-					<div class="orb reveal" aria-hidden="true"></div>
+				<div class="sobre-mi-header" id="sobreMiHeader">
+					<p class="kicker" id="sobreMiKicker">
+						<svg class="kicker-badge-ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<rect x="3" y="5" width="18" height="15" rx="2"/>
+							<path d="M9 2h6v3H9z"/>
+							<circle cx="8" cy="12.5" r="2"/>
+							<path d="M13 11h5M13 14h3"/>
+						</svg>
+						<span class="kicker-text" data-es="ABOUT ME · EXPERIENCIA DINÁMICA" data-en="ABOUT ME · DYNAMIC EXPERIENCE">ABOUT ME · EXPERIENCIA DINÁMICA</span>
+					</p>
+					<h2 class="giant" id="sobreMiTitle" data-es="Who's this guy even..." data-en="Who's this guy even...">Who's this guy even...</h2>
 				</div>
 
-				<div class="grid-about-2">
-					<article class="card reveal">
-						<h3 class="card-title">
-							Software developer &amp; builder dedicated to turning ideas into resilient digital products.
-						</h3>
-						<p class="muted">
-							I build mobile applications, interactive web interfaces, and automation tools that feel natural, fast, and reliable. I don't subscribe to tech dogmas or rigid stacks: I choose the right tools for each challenge, combining clean architecture, solid logic, and meticulous visual craft from concept to production.
-						</p>
-					</article>
-					<article class="card reveal">
-						<p class="label">CURRENT FOCUS</p>
-						<p class="status">
-							<span class="pulse green" aria-hidden="true"></span>
-							Building &amp; Shipping Software
-						</p>
-						<p class="muted" style="margin-top: 0.6rem; font-size: 0.88rem; line-height: 1.5;">
-							Available for freelance contracts, mobile architectures, web interfaces, and tooling automation.
-						</p>
-					</article>
+				<div class="about-spec-grid">
+					<!-- LEFT: The Destination Developer Pass -->
+					<div class="pass-dock-container" id="passDock">
+						<div class="developer-pass" id="developerPass">
+							<!-- Header -->
+							<div class="pass-hd" id="passHd">
+								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="pass-mark-icon" aria-hidden="true">
+									<polyline points="4 17 10 11 4 5"></polyline>
+									<line x1="12" y1="19" x2="20" y2="19"></line>
+								</svg>
+								<span class="pass-title-text">DEVELOPER SPEC</span>
+								<span class="pass-f1"></span>
+								<span class="pass-serial">ID // 0001</span>
+							</div>
+
+							<!-- Pass Identity Dock (Avatar & Name) -->
+							<div class="pass-face-row" id="passFaceRow">
+								<div class="pass-avatar-frame" id="passAvatarTarget">
+									<img src="assets/pfp.webp" alt="Avatar of Camilo Pineda" class="pass-avatar-img" width="76" height="76" />
+									<span class="pass-emoji" id="passEmoji" aria-hidden="true">⚡</span>
+									<span class="pass-online" id="passOnline" title="Activo"></span>
+								</div>
+								<div class="pass-info-slot" id="passInfoTarget">
+									<div class="pass-name" id="passName">Camilo Pineda</div>
+									<div class="pass-handle" id="passHandle">@Kmlozmz</div>
+									<div class="pass-tagline" id="passTagline" data-es="«Software builder creando productos digitales resilientes»" data-en="«Software builder turning ideas into resilient digital products»">«Software builder creando productos digitales resilientes»</div>
+								</div>
+							</div>
+
+							<!-- Perforated laser tear cut -->
+							<div class="pass-tear-perf" id="passPerf1"></div>
+
+							<!-- Telemetry & Focus -->
+							<div class="pass-li" id="passLi1">
+								<svg class="pass-li-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+									<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+									<circle cx="12" cy="10" r="3"/>
+								</svg>
+								<span>Barranquilla, Colombia · GMT-5</span>
+							</div>
+							<div class="pass-li" id="passLi2">
+								<svg class="pass-li-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+									<polyline points="4 17 10 11 4 5"/>
+									<line x1="12" y1="19" x2="20" y2="19"/>
+								</svg>
+								<span>Mobile Architecture · Web Interfaces · Tooling</span>
+							</div>
+
+							<!-- Specialty Chips -->
+							<div class="pass-sec-wrap" id="passSecWrap">
+								<span class="pass-sec" id="passSecLabel" data-es="ESPECIALIDADES" data-en="SPECIALTIES">ESPECIALIDADES</span>
+								<div class="pass-chips" id="passChips">
+									<span class="pass-chip pass-chip--lead">
+										<svg class="chip-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+											<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+										</svg>
+										Mobile Arch
+									</span>
+									<span class="pass-chip pass-chip--lead">
+										<svg class="chip-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+											<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+											<line x1="3" y1="9" x2="21" y2="9"/>
+											<line x1="9" y1="21" x2="9" y2="9"/>
+										</svg>
+										Web Interfaces
+									</span>
+									<span class="pass-chip">
+										<svg class="chip-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+											<rect x="2" y="4" width="20" height="8" rx="2"/>
+											<rect x="2" y="14" width="20" height="8" rx="2"/>
+											<line x1="6" y1="8" x2="6.01" y2="8"/>
+											<line x1="6" y1="18" x2="6.01" y2="18"/>
+										</svg>
+										Autonomous Systems
+									</span>
+									<span class="pass-chip">
+										<svg class="chip-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+											<circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
+											<circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
+											<circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
+											<circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
+											<path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2Z"/>
+										</svg>
+										Product Craft
+									</span>
+								</div>
+							</div>
+
+							<div class="pass-tear-perf" id="passPerf2"></div>
+
+							<!-- Pass Stats -->
+							<div class="pass-stats" id="passStats">
+								<div class="pass-stat-item"><b>4+</b><small data-es="Años código" data-en="Years Code">Años código</small></div>
+								<div class="pass-stat-item"><b>100%</b><small data-es="Foco producto" data-en="Product Focus">Foco producto</small></div>
+								<div class="pass-stat-item"><b>COT</b><small data-es="Bogotá Time" data-en="Bogota Time">Bogotá Time</small></div>
+								<div class="pass-stat-item"><b>Ship</b><small data-es="Producción" data-en="Production">Producción</small></div>
+							</div>
+						</div>
+					</div>
+
+					<!-- RIGHT: Engineering Manifesto and Telemetry -->
+					<div class="about-manifesto-col" id="manifestoRight">
+						<div class="tonal-manifesto">
+							<div class="sub-label">
+								<svg class="sub-label-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+									<rect x="2" y="3" width="20" height="14" rx="2"/>
+									<line x1="8" y1="21" x2="16" y2="21"/>
+									<line x1="12" y1="17" x2="12" y2="21"/>
+								</svg>
+								<span data-es="MANIFIESTO DE INGENIERÍA" data-en="ENGINEERING MANIFESTO">MANIFIESTO DE INGENIERÍA</span>
+							</div>
+							<h3 class="manifesto-h3" data-es="Construcción sin dogmas, arquitectura limpia y obsesión por la fluidez." data-en="Dogma-free building, clean architecture, and obsession with fluid craft.">Construcción sin dogmas, arquitectura limpia y obsesión por la fluidez.</h3>
+							<p class="manifesto-body" id="manifestoBodyText" data-es="No me ato a tecnologías por moda o dogmas rígidos: elijo la herramienta exacta para cada desafío. Desde aplicaciones móviles con arquitectura sólida hasta interfaces web táctiles y automatización con agentes autónomos, combino lógica rigurosa con una artesanía visual donde cada microsegundo y cada interacción importan." data-en="I don't subscribe to tech dogmas or rigid stacks: I choose the exact tool for each challenge. From solid mobile architectures to tactile web interfaces and autonomous agent automation, I combine rigorous logic with meticulous visual craft where every microsecond and interaction matters.">
+								No me ato a tecnologías por moda o dogmas rígidos: <em>elijo la herramienta exacta para cada desafío</em>. Desde aplicaciones móviles con arquitectura sólida hasta interfaces web táctiles y automatización con agentes autónomos, combino lógica rigurosa con una artesanía visual donde cada microsegundo y cada interacción importan.
+							</p>
+						</div>
+
+						<div class="telemetry-grid">
+							<div class="telemetry-card">
+								<div class="sub-label">
+									<svg class="sub-label-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+										<circle cx="12" cy="12" r="10"/>
+										<polyline points="12 6 12 12 16 14"/>
+									</svg>
+									<span data-es="TELEMETRÍA &amp; HORA LOCAL" data-en="TELEMETRY &amp; LOCAL TIME">TELEMETRÍA &amp; HORA LOCAL</span>
+								</div>
+								<div class="val-sub">Barranquilla, CO</div>
+								<div class="clock-chip">
+									<span class="clock-dot"></span>
+									<span id="liveClockCOT">17:45:00 COT (GMT-5)</span>
+								</div>
+								<p class="desc-sub" data-es="Disponible para contratos freelance, arquitecturas móviles e interfaces reactivas." data-en="Available for freelance contracts, mobile architectures, and reactive interfaces.">
+									Disponible para contratos freelance, arquitecturas móviles e interfaces reactivas.
+								</p>
+							</div>
+
+							<div class="telemetry-card">
+								<div class="sub-label">
+									<svg class="sub-label-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+										<line x1="4" y1="21" x2="4" y2="14"/>
+										<line x1="4" y1="10" x2="4" y2="3"/>
+										<line x1="12" y1="21" x2="12" y2="12"/>
+										<line x1="12" y1="8" x2="12" y2="3"/>
+										<line x1="20" y1="21" x2="20" y2="16"/>
+										<line x1="20" y1="12" x2="20" y2="3"/>
+										<line x1="1" y1="14" x2="7" y2="14"/>
+										<line x1="9" y1="8" x2="15" y2="8"/>
+										<line x1="17" y1="16" x2="23" y2="16"/>
+									</svg>
+									<span data-es="PRINCIPIOS DE TRABAJO" data-en="CORE PRINCIPLES">PRINCIPIOS DE TRABAJO</span>
+								</div>
+								<ul class="work-principles">
+									<li class="principle-li">
+										<span class="principle-idx">01</span>
+										<span class="principle-txt"><strong data-es="Rendimiento &amp; Latencia:" data-en="Performance &amp; Latency:">Rendimiento &amp; Latencia:</strong> <span data-es="Cero bloqueos de render, animaciones a 60fps reales." data-en="Zero render locks, genuine 60fps animations.">Cero bloqueos de render, animaciones a 60fps reales.</span></span>
+									</li>
+									<li class="principle-li">
+										<span class="principle-idx">02</span>
+										<span class="principle-txt"><strong data-es="Diseño con Peso:" data-en="Tactile Design:">Diseño con Peso:</strong> <span data-es="Físicas táctiles elásticas sin depender de bordes genéricos." data-en="Elastic physics without generic borders.">Físicas táctiles elásticas sin depender de bordes genéricos.</span></span>
+									</li>
+									<li class="principle-li">
+										<span class="principle-idx">03</span>
+										<span class="principle-txt"><strong data-es="Resiliencia:" data-en="Resilience:">Resiliencia:</strong> <span data-es="Código tipado, mantenible y probado de punta a punta." data-en="Typed, maintainable, end-to-end verified code.">Código tipado, mantenible y probado de punta a punta.</span></span>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
 				</div>
 			</section>
 
 			<!-- PROJECTS -->
 			<section class="block" id="proyectos">
-				<p class="label reveal">SELECTED WORK</p>
-				<h2 class="giant reveal">Featured Projects</h2>
+				<p class="label prog-build" id="projLabel">SELECTED WORK</p>
+				<h2 class="giant prog-build" id="projTitle">Featured Projects</h2>
 
-				<div class="showcase reveal">
+				<div class="showcase prog-build" id="workStageContainer">
 					<ol class="showcase-list" id="workTabs" role="tablist" aria-label="Projects"></ol>
 					<div class="showcase-stage" id="workStage" aria-live="polite">
 						<div class="stage-art" id="stageArt"></div>
@@ -232,10 +380,9 @@
 				</div>
 			</section>
 
-			
-<!-- COLLABORATION BANNER -->
+			<!-- COLLABORATION BANNER -->
 			<section class="block">
-				<article class="card creative reveal">
+				<article class="card creative prog-build" id="collabCard">
 					<div>
 						<p class="label accent">// COLLABORATION &amp; WORK</p>
 						<h3 class="creative-title">
@@ -254,46 +401,46 @@
 
 			<!-- EXPERTISE -->
 			<section class="block" id="habilidades">
-				<p class="label reveal">MY EXPERTISE</p>
+				<p class="label prog-build" id="expLabel">MY EXPERTISE</p>
 				<div class="grid-exp">
 					<div class="exp-left">
-						<div class="exp-sticky">
-							<h2 class="giant reveal">
+						<div class="exp-sticky prog-build" id="expSticky">
+							<h2 class="giant">
 								Building functional software with precision &amp; craft.
 							</h2>
-							<p class="muted reveal">
+							<p class="muted">
 								Combining solid architecture, reactive concurrency, responsive interfaces, and the small details that make digital products feel instant, deliberate, and dependable.
 							</p>
-							<p class="note reveal">
+							<p class="note">
 								<span class="spark" aria-hidden="true">✦</span>
 								Always exploring new platforms, automation tools, and ambitious ideas.
 							</p>
 						</div>
 					</div>
-					<div class="exp-right">
-						<p class="label reveal">01 / Mobile &amp; App Development</p>
-						<ul class="skill-rows reveal">
+					<div class="exp-right" id="expRight">
+						<p class="label prog-build">01 / Mobile &amp; App Development</p>
+						<ul class="skill-rows prog-build">
 							<li><span class="n">01</span>Production Mobile Architecture &amp; Modular Engineering</li>
 							<li><span class="n">02</span>Reactive State Flow, Concurrency &amp; UDF Patterns</li>
 							<li><span class="n">03</span>Declarative Layouts, Gesture Pacing &amp; Motion Tuning</li>
 							<li><span class="n">04</span>Offline-First Data Persistence, Migrations &amp; Backups</li>
 						</ul>
-						<p class="label reveal">02 / Web Engineering &amp; Interfaces</p>
-						<ul class="skill-rows reveal">
+						<p class="label prog-build">02 / Web Engineering &amp; Interfaces</p>
+						<ul class="skill-rows prog-build">
 							<li><span class="n">05</span>Standards-Based Semantic HTML &amp; Accessible Architecture</li>
 							<li><span class="n">06</span>Performance-First CSS, Design Token Scaling &amp; Fluid Grids</li>
 							<li><span class="n">07</span>View Transitions API, Micro-Interactions &amp; Physics</li>
 							<li><span class="n">08</span>High-Fidelity Interactive UI/UX Prototyping</li>
 						</ul>
-						<p class="label reveal">03 / Automation, Tooling &amp; Workflows</p>
-						<ul class="skill-rows reveal">
+						<p class="label prog-build">03 / Automation, Tooling &amp; Workflows</p>
+						<ul class="skill-rows prog-build">
 							<li><span class="n">09</span>Custom Build Verification Plugins &amp; AST Code Checks</li>
 							<li><span class="n">10</span>Automated In-App OTA Update Engines &amp; Release Packaging</li>
 							<li><span class="n">11</span>Git &amp; Terminal Automation for Clean Production Workflows</li>
 							<li><span class="n">12</span>Utility Scripting (Python/Shell) &amp; Automation Pipelines</li>
 						</ul>
-						<p class="label reveal">04 / Product Craft &amp; Pragmatism</p>
-						<ul class="skill-rows reveal">
+						<p class="label prog-build">04 / Product Craft &amp; Pragmatism</p>
+						<ul class="skill-rows prog-build">
 							<li><span class="n">13</span>Rapid Technology Adoption Without Rigid Dogmas</li>
 							<li><span class="n">14</span>Meticulous Attention to Visual Hierarchy &amp; Feel</li>
 							<li><span class="n">15</span>Shipping Real, Functional Software from Concept to Release</li>
@@ -305,16 +452,16 @@
 
 			<!-- SERVICES -->
 			<section class="block" id="servicios">
-				<p class="label reveal">SERVICES</p>
-				<h2 class="giant reveal">What I can do for you.</h2>
-				<p class="muted max reveal">
+				<p class="label prog-build" id="servLabel">SERVICES</p>
+				<h2 class="giant prog-build" id="servTitle">What I can do for you.</h2>
+				<p class="muted max prog-build" id="servDesc">
 					From technical discovery to shipped production software: domain architecture, responsive interfaces, and the critical systems that guarantee reliability.
 					<br />
 					<span class="spark" aria-hidden="true">✦</span>
 					Direct engineer-to-client collaboration: transparent, accountable, and focused on tangible outcomes.
 				</p>
-				<div class="grid-setup">
-					<article class="card setup reveal">
+				<div class="grid-setup" id="servGrid">
+					<article class="card setup prog-build">
 						<div class="setup-top">
 							<p class="label">// 01 · ANDROID</p>
 							<span class="setup-icon" aria-hidden="true">▣</span>
@@ -330,7 +477,7 @@
 							<li>Offline-First</li>
 						</ul>
 					</article>
-					<article class="card setup reveal">
+					<article class="card setup prog-build">
 						<div class="setup-top">
 							<p class="label">// 02 · WEB</p>
 							<span class="setup-icon" aria-hidden="true">⌨</span>
@@ -346,7 +493,7 @@
 							<li>High Performance</li>
 						</ul>
 					</article>
-					<article class="card setup reveal">
+					<article class="card setup prog-build">
 						<div class="setup-top">
 							<p class="label">// 03 · SYSTEMS</p>
 							<span class="setup-icon" aria-hidden="true">◐</span>
@@ -362,7 +509,7 @@
 							<li>Visual Consistency</li>
 						</ul>
 					</article>
-					<article class="card setup reveal">
+					<article class="card setup prog-build">
 						<div class="setup-top">
 							<p class="label">// 04 · TOOLING</p>
 							<span class="setup-icon" aria-hidden="true">⚙</span>
@@ -379,7 +526,7 @@
 						</ul>
 					</article>
 				</div>
-				<p class="note note-center reveal">
+				<p class="note note-center prog-build">
 					<span class="spark" aria-hidden="true">✦</span>
 					Have an ambitious project in mind? If it runs on mobile, web, or backend — <a href="#contacto">let's talk &rarr;</a>
 				</p>
@@ -387,8 +534,8 @@
 
 			<!-- GITHUB -->
 			<section class="block" id="github">
-				<h2 class="giant reveal">GitHub Activity.</h2>
-				<article class="card reveal">
+				<h2 class="giant prog-build" id="ghTitle">GitHub Activity.</h2>
+				<article class="card prog-build" id="ghCard">
 					<div class="gh-head">
 						<p class="gh-user">
 							<span class="pulse pink" aria-hidden="true"></span>
@@ -403,9 +550,9 @@
 
 			<!-- CONTACT -->
 			<section class="block" id="contacto">
-				<h2 class="giant reveal">Let's talk.</h2>
-				<div class="grid-contact">
-					<article class="card reveal">
+				<h2 class="giant prog-build" id="contactTitle">Let's talk.</h2>
+				<div class="grid-contact" id="contactGrid">
+					<article class="card prog-build">
 						<h3 class="card-title">Let's build something.</h3>
 						<p class="muted">
 							Looking for a premium interface, an Android app that feels alive, or a digital design that stands out? Let's collaborate.
@@ -416,7 +563,7 @@
 							<li>Full-time</li>
 						</ul>
 					</article>
-					<article class="card reveal">
+					<article class="card prog-build">
 						<p class="label">CURRENT STATUS</p>
 						<p class="status">
 							<span class="pulse green" aria-hidden="true"></span>
@@ -425,12 +572,12 @@
 						<p class="label gap">LOCATION</p>
 						<p class="based">Barranquilla, Colombia <span class="co">CO</span></p>
 					</article>
-					<article class="card reveal">
+					<article class="card prog-build">
 						<p class="label">DIRECT EMAIL</p>
 						<p class="email">srkmlo16@gmail.com</p>
 						<a class="btn-solid" href="mailto:srkmlo16@gmail.com">SEND MESSAGE &#8599;</a>
 					</article>
-					<article class="card reveal">
+					<article class="card prog-build">
 						<p class="label">DIGITAL SPACES</p>
 						<ul class="spaces">
 							<li>

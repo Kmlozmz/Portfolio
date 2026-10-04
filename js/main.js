@@ -241,13 +241,305 @@ function scrollToTarget(target) {
   const el = typeof target === "string" ? $(target) : target;
   if (!el) return;
   if (window.__lenis) {
-    window.__lenis.scrollTo(el, { offset: -16 });
+    window.__lenis.scrollTo(el, { offset: -68, duration: 0.8 });
   } else {
     el.scrollIntoView({
       behavior: prefersReducedMotion ? "auto" : "smooth",
       block: "start",
     });
   }
+}
+
+/* ---------- Navigation (Option 3: Riel Minimalista Luminous + Desplazamiento Directo y a la Par) ---------- */
+let updateNavPillGlobal = null;
+
+function initNav() {
+  const nav = $("#mainHeaderNav");
+  const navPill = $("#navActivePill");
+  const navButtons = $$(".header-nav .nav-btn");
+  if (!nav || !navPill || !navButtons.length) return;
+
+  const SECTIONS = ["inicio", "sobre-mi", "proyectos", "habilidades", "contacto"];
+
+  let currentX = null;
+  let currentW = null;
+  let targetX = 0;
+  let targetW = 0;
+  let activeIndex = 0;
+  let isLooping = false;
+  let rafId = 0;
+  let isManualClick = false;
+  let manualClickTimer = null;
+
+  function getNavMetrics() {
+    const navRect = nav.getBoundingClientRect();
+    return navButtons.map((btn) => {
+      const r = btn.getBoundingClientRect();
+      return {
+        x: r.left - navRect.left,
+        width: r.width,
+      };
+    });
+  }
+
+  function getSectionTargets() {
+    const headerHeight = 56;
+    const maxScroll = Math.max(
+      1,
+      document.documentElement.scrollHeight - window.innerHeight,
+    );
+
+    const targets = [];
+    SECTIONS.forEach((id, idx) => {
+      if (idx === 0) {
+        targets.push(0);
+        return;
+      }
+      const el = document.getElementById(id);
+      if (!el) {
+        targets.push(0);
+        return;
+      }
+      const top = Math.max(0, el.offsetTop - headerHeight);
+      targets.push(top);
+    });
+
+    if (targets.length === 5) {
+      targets[4] = Math.min(targets[4], maxScroll);
+      for (let i = 1; i < targets.length; i++) {
+        if (targets[i] <= targets[i - 1]) {
+          targets[i] = targets[i - 1] + 60;
+        }
+      }
+    }
+
+    return { targets, maxScroll };
+  }
+
+  // Progreso continuo 1:1 con el scroll sin paradas intermedias ni mesetas
+  function getProgress(scrollY, targets, maxScroll) {
+    if (scrollY <= 0) return 0;
+    if (maxScroll > 0 && scrollY >= maxScroll - 30) return targets.length - 1;
+
+    for (let i = 0; i < targets.length - 1; i++) {
+      const y0 = targets[i];
+      const y1 = targets[i + 1];
+      if (scrollY >= y0 && scrollY <= y1) {
+        return i + (scrollY - y0) / (y1 - y0);
+      }
+    }
+
+    return targets.length - 1;
+  }
+
+  // Interpola posición x y ancho w exactamente a la par
+  function calculateTarget(progress, metrics) {
+    if (!metrics.length) return { x: 0, width: 0, activeIdx: 0 };
+
+    const clamped = Math.max(0, Math.min(metrics.length - 1, progress));
+    const baseIdx = Math.floor(clamped);
+    const nextIdx = Math.min(metrics.length - 1, baseIdx + 1);
+    const frac = clamped - baseIdx;
+
+    const m0 = metrics[baseIdx];
+    const m1 = metrics[nextIdx];
+
+    const x = m0.x + (m1.x - m0.x) * frac;
+    const width = m0.width + (m1.width - m0.width) * frac;
+    const activeIdx = Math.round(clamped);
+
+    return { x, width, activeIdx };
+  }
+
+  function loop() {
+    if (isManualClick) {
+      isLooping = false;
+      return;
+    }
+
+    const dx = targetX - currentX;
+    const dw = targetW - currentW;
+
+    if (Math.abs(dx) > 0.15 || Math.abs(dw) > 0.15) {
+      currentX += dx * 0.28;
+      currentW += dw * 0.28;
+      navPill.style.transform = `translateX(${currentX}px)`;
+      navPill.style.width = `${currentW}px`;
+      rafId = requestAnimationFrame(loop);
+    } else {
+      currentX = targetX;
+      currentW = targetW;
+      navPill.style.transform = `translateX(${targetX}px)`;
+      navPill.style.width = `${targetW}px`;
+      isLooping = false;
+    }
+  }
+
+  function update(immediate = false) {
+    if (isManualClick && !immediate) return;
+
+    const metrics = getNavMetrics();
+    const { targets, maxScroll } = getSectionTargets();
+    const scrollY = window.scrollY || window.pageYOffset;
+    const progress = getProgress(scrollY, targets, maxScroll);
+    const t = calculateTarget(progress, metrics);
+
+    targetX = t.x;
+    targetW = t.width;
+    activeIndex = t.activeIdx;
+
+    navButtons.forEach((b, idx) => {
+      b.classList.toggle("active", idx === activeIndex);
+    });
+
+    if (immediate || currentX === null || prefersReducedMotion) {
+      if (rafId) cancelAnimationFrame(rafId);
+      isLooping = false;
+      currentX = targetX;
+      currentW = targetW;
+      navPill.style.transition = "none";
+      navPill.style.transform = `translateX(${targetX}px)`;
+      navPill.style.width = `${targetW}px`;
+      navPill.style.opacity = "1";
+      return;
+    }
+
+    if (!isLooping) {
+      isLooping = true;
+      rafId = requestAnimationFrame(loop);
+    }
+  }
+
+  updateNavPillGlobal = (idx, immediate = true) => {
+    update(immediate);
+  };
+
+  // Manejador de clics en la navegación: deslizamiento visible, fluido y elegante directo al destino
+  navButtons.forEach((btn, idx) => {
+    btn.addEventListener("click", () => {
+      const metrics = getNavMetrics();
+      if (!metrics[idx]) return;
+
+      const dest = metrics[idx];
+      targetX = dest.x;
+      targetW = dest.width;
+      activeIndex = idx;
+
+      // Iluminar botón de destino inmediatamente
+      navButtons.forEach((b, i) => b.classList.toggle("active", i === idx));
+
+      // Pausar el loop LERP para permitir que la transición CSS ejecute el deslizamiento visible
+      if (rafId) cancelAnimationFrame(rafId);
+      isLooping = false;
+      isManualClick = true;
+      clearTimeout(manualClickTimer);
+
+      if (prefersReducedMotion) {
+        navPill.style.transition = "none";
+        navPill.style.transform = `translateX(${targetX}px)`;
+        navPill.style.width = `${targetW}px`;
+        currentX = targetX;
+        currentW = targetW;
+        isManualClick = false;
+        return;
+      }
+
+      // Deslizamiento con trayectoria visible de 460ms (ni instantáneo ni lento, perfectamente perceptible)
+      navPill.style.transition = "transform 0.46s cubic-bezier(0.22, 1, 0.36, 1), width 0.42s cubic-bezier(0.22, 1, 0.36, 1)";
+      navPill.style.transform = `translateX(${targetX}px)`;
+      navPill.style.width = `${targetW}px`;
+
+      currentX = targetX;
+      currentW = targetW;
+
+      // Restablecer sin transición una vez completado el deslizamiento para el scroll manual
+      manualClickTimer = setTimeout(() => {
+        isManualClick = false;
+        navPill.style.transition = "none";
+      }, 480);
+    });
+  });
+
+  // Listener pasivo de scroll continuo
+  window.addEventListener("scroll", () => update(false), { passive: true });
+
+  if (window.__lenis) {
+    window.__lenis.on("scroll", () => update(false));
+  }
+
+  window.addEventListener("resize", () => update(true), { passive: true });
+
+  // Disparo inicial tras pintar el layout
+  requestAnimationFrame(() => {
+    setTimeout(() => update(true), 60);
+  });
+}
+
+/* ---------- Language Switcher (ES / EN) ---------- */
+function initLanguage() {
+  const toggleBtn = $("#langToggle");
+  const esEl = $("#langES");
+  const enEl = $("#langEN");
+  const heroTagline = $("#heroTagline");
+  const navBtns = $$(".header-nav .nav-btn");
+
+  if (!toggleBtn) return;
+
+  let currentLang = "ES";
+
+  const updateLanguageUI = () => {
+    if (esEl && enEl) {
+      if (currentLang === "ES") {
+        esEl.className = "lang-active";
+        enEl.className = "lang-muted";
+      } else {
+        esEl.className = "lang-muted";
+        enEl.className = "lang-active";
+      }
+    }
+
+    if (heroTagline) {
+      if (currentLang === "EN") {
+        heroTagline.textContent =
+          "Software developer & builder crafting resilient mobile apps, interactive web experiences, and digital tools with meticulous care.";
+      } else {
+        heroTagline.textContent =
+          "Desarrollador de software y creador enfocado en aplicaciones móviles resilientes, experiencias web interactivas y herramientas con diseño meticuloso.";
+      }
+    }
+
+    navBtns.forEach((btn) => {
+      const text =
+        currentLang === "EN"
+          ? btn.getAttribute("data-en")
+          : btn.getAttribute("data-es");
+      if (text) btn.textContent = text;
+    });
+
+    $$("[data-es][data-en]").forEach((el) => {
+      const text =
+        currentLang === "EN"
+          ? el.getAttribute("data-en")
+          : el.getAttribute("data-es");
+      if (text) el.textContent = text;
+    });
+
+    // Recalibrate rail width for new text dimensions
+    if (typeof updateNavPillGlobal === "function") {
+      requestAnimationFrame(() => {
+        updateNavPillGlobal(currentNavIndex, true);
+      });
+    }
+
+    if (typeof updatePassConstruction === "function") {
+      requestAnimationFrame(updatePassConstruction);
+    }
+  };
+
+  toggleBtn.addEventListener("click", () => {
+    currentLang = currentLang === "ES" ? "EN" : "ES";
+    updateLanguageUI();
+  });
 }
 
 /* ---------- Anclas suaves ---------- */
@@ -553,7 +845,8 @@ function initHeatmap() {
 /* ---------- Live Clock (Bogota) ---------- */
 function initClock() {
   const clock = $("#clock");
-  if (!clock) return;
+  const clockCOT = $("#liveClockCOT");
+  if (!clock && !clockCOT) return;
   const fmt = new Intl.DateTimeFormat("en-US", {
     hour: "numeric",
     minute: "2-digit",
@@ -562,7 +855,9 @@ function initClock() {
     timeZone: "America/Bogota",
   });
   const tick = () => {
-    clock.textContent = fmt.format(new Date());
+    const timeStr = fmt.format(new Date());
+    if (clock) clock.textContent = timeStr;
+    if (clockCOT) clockCOT.textContent = `${timeStr} COT (GMT-5)`;
   };
   tick();
   window.setInterval(tick, 1000);
@@ -682,6 +977,610 @@ function initTheme() {
   });
 }
 
+/* ---------- Developer Pass: Progressive Morphological Construction & Flight Docking ---------- */
+let updatePassConstruction = null;
+
+function initPassConstruction() {
+  const sobreMi = $("#sobre-mi");
+  const pageWrapper = $(".page-wrapper");
+  const heroVisualCard = $(".hero-visual-card");
+  const heroAvatarWrap = $("#heroAvatarWrap");
+  const heroIntroCol = $("#heroIntroCol");
+  const heroName = $("#heroName");
+  const heroTagline = $("#heroTagline");
+  const heroActionsCol = $(".hero-actions-col");
+  const developerPass = $("#developerPass");
+  const passHd = $("#passHd");
+  const passAvatarTarget = $("#passAvatarTarget");
+  const passInfoTarget = $("#passInfoTarget");
+  const passTagline = $("#passTagline");
+  const passPerf1 = $("#passPerf1");
+  const passLi1 = $("#passLi1");
+  const passLi2 = $("#passLi2");
+  const passSecLabel = $("#passSecLabel");
+  const passChips = $$("#passChips .pass-chip");
+  const passPerf2 = $("#passPerf2");
+  const passStatItems = $$("#passStats .pass-stat-item");
+  const manifestoRight = $("#manifestoRight");
+
+  // Flight layer elements: Living Identity Unit (Avatar + Name/Handle)
+  const flightAvatar = $("#flightAvatar");
+  const flightInfo = $("#flightInfo");
+  const flightName = $("#flightName");
+  const flightHandleHero = $("#flightHandleHero");
+  const flightHandlePass = $("#flightHandlePass");
+
+  // Sobre Mi header elements for progressive construction
+  const sobreMiKicker = $("#sobreMiKicker");
+  const sobreMiTitle = $("#sobreMiTitle");
+
+  // Elements inside pass socket
+  const passAvatarImg = passAvatarTarget ? $("img", passAvatarTarget) : null;
+  const passOnline = $("#passOnline");
+  const passEmoji = $("#passEmoji");
+  const passName = $("#passName");
+  const passHandle = $("#passHandle");
+
+  if (!developerPass || !sobreMi || !flightAvatar) return;
+
+  // Interactive 3D mouse tilt & specular highlight tracking
+  let isHoveringPass = false;
+  let curTiltX = 0;
+  let curTiltY = 0;
+
+  developerPass.addEventListener("pointerenter", () => {
+    isHoveringPass = true;
+  });
+
+  developerPass.addEventListener("pointermove", (e) => {
+    const b = developerPass.getBoundingClientRect();
+    const x = e.clientX - b.left;
+    const y = e.clientY - b.top;
+    developerPass.style.setProperty("--mx", `${x}px`);
+    developerPass.style.setProperty("--my", `${y}px`);
+
+    const normX = (x / b.width - 0.5) * 2;
+    const normY = (y / b.height - 0.5) * 2;
+    curTiltX = -normY * 7;
+    curTiltY = normX * 7;
+
+    const scrollY = window.scrollY || window.pageYOffset || 0;
+    const curP = Math.max(0, Math.min(1, (scrollY - startScroll) / (targetScroll - startScroll)));
+    if (curP >= 0.85) {
+      developerPass.style.transform = `perspective(900px) rotateX(${curTiltX}deg) rotateY(${curTiltY}deg) scale(1.01)`;
+    }
+  });
+
+  developerPass.addEventListener("pointerleave", () => {
+    isHoveringPass = false;
+    curTiltX = 0;
+    curTiltY = 0;
+    const scrollY = window.scrollY || window.pageYOffset || 0;
+    const curP = Math.max(0, Math.min(1, (scrollY - startScroll) / (targetScroll - startScroll)));
+    if (curP >= 0.85) {
+      developerPass.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg) scale(1.0)";
+    }
+  });
+
+  // Coordinates cache
+  let originAv = null;
+  let targetAv = null;
+  let originInfo = null;
+  let targetInfo = null;
+  let startScroll = 20;
+  let targetScroll = 680;
+
+  const measure = () => {
+    if (!pageWrapper || !heroAvatarWrap || !passAvatarTarget || !heroName || !passInfoTarget) return;
+
+    // Temporarily clear any active transforms so we measure pure layout coordinates
+    const savedPassTransform = developerPass.style.transform;
+    const savedHeroTransform = heroAvatarWrap.style.transform;
+    const savedHeroBannerTransform = heroVisualCard ? heroVisualCard.style.transform : "";
+    developerPass.style.transform = "none";
+    heroAvatarWrap.style.transform = "none";
+    if (heroVisualCard) heroVisualCard.style.transform = "none";
+
+    const wrapRect = pageWrapper.getBoundingClientRect();
+    const hARect = heroAvatarWrap.getBoundingClientRect();
+    const tARect = passAvatarTarget.getBoundingClientRect();
+    const hNRect = heroName.getBoundingClientRect();
+    const tIRect = passInfoTarget.getBoundingClientRect();
+
+    developerPass.style.transform = savedPassTransform;
+    heroAvatarWrap.style.transform = savedHeroTransform;
+    if (heroVisualCard) heroVisualCard.style.transform = savedHeroBannerTransform;
+
+    originAv = {
+      x: hARect.left - wrapRect.left,
+      y: hARect.top - wrapRect.top,
+      w: hARect.width || 136,
+      h: hARect.height || 136,
+    };
+
+    targetAv = {
+      x: tARect.left - wrapRect.left,
+      y: tARect.top - wrapRect.top,
+      w: tARect.width || 76,
+      h: tARect.height || 76,
+    };
+
+    originInfo = {
+      x: hNRect.left - wrapRect.left,
+      y: hNRect.top - wrapRect.top,
+      w: hNRect.width || 400,
+      h: hNRect.height || 50,
+    };
+
+    targetInfo = {
+      x: tIRect.left - wrapRect.left,
+      y: tIRect.top - wrapRect.top,
+      w: tIRect.width || 220,
+      h: tIRect.height || 60,
+    };
+
+    if (sobreMi) {
+      startScroll = 20;
+      targetScroll = Math.max(500, sobreMi.offsetTop + 180);
+    }
+
+    update();
+  };
+
+  // Smoothstep interpolation helper: maps value x in [a, b] to [0, 1] with cubic ease
+  const step = (x, a, b) => {
+    if (x <= a) return 0;
+    if (x >= b) return 1;
+    const t = (x - a) / (b - a);
+    return t * t * (3 - 2 * t);
+  };
+
+  const update = () => {
+    if (!originAv || !targetAv || !originInfo || !targetInfo) return;
+
+    if (prefersReducedMotion) {
+      flightAvatar.style.display = "none";
+      if (flightInfo) flightInfo.style.display = "none";
+      heroAvatarWrap.style.opacity = "1";
+      if (heroIntroCol) heroIntroCol.style.opacity = "1";
+      if (heroName) heroName.style.opacity = "1";
+      if (heroTagline) {
+        heroTagline.style.opacity = "1";
+        heroTagline.style.transform = "none";
+      }
+      if (heroActionsCol) {
+        heroActionsCol.style.opacity = "1";
+        heroActionsCol.style.transform = "none";
+      }
+      if (heroVisualCard) {
+        heroVisualCard.style.opacity = "1";
+        heroVisualCard.style.transform = "none";
+        heroVisualCard.style.filter = "none";
+      }
+      if (passAvatarImg) passAvatarImg.style.opacity = "1";
+      if (passOnline) {
+        passOnline.style.transform = "none";
+        passOnline.style.opacity = "1";
+      }
+      if (passEmoji) {
+        passEmoji.style.transform = "none";
+        passEmoji.style.opacity = "1";
+      }
+      if (passName) {
+        passName.style.transform = "none";
+        passName.style.opacity = "1";
+      }
+      if (passHandle) {
+        passHandle.style.transform = "none";
+        passHandle.style.opacity = "1";
+      }
+      developerPass.style.transform = "none";
+      developerPass.style.opacity = "1";
+      return;
+    }
+
+    const scrollY = window.scrollY || window.pageYOffset || 0;
+    const rawP = (scrollY - startScroll) / (targetScroll - startScroll);
+    const p = Math.max(0, Math.min(1, rawP));
+
+    // Dynamic flight trajectory: smoothly eases from hero (p=0.12) to pass dock (p=0.72)
+    const pFlight = step(p, 0.12, 0.72);
+
+    // ========================================================
+    // 1. HERO DECONSTRUCTION (Desarmando al bajar / Armando al subir)
+    // ========================================================
+    const pHero = Math.min(1, p * 2.2);
+    if (heroVisualCard) {
+      const heroTiltX = pHero * 10;
+      const heroScale = 1 - 0.08 * pHero;
+      const heroY = -pHero * 35;
+      const heroBlur = pHero > 0.01 ? pHero * 4 : 0;
+      const heroOp = 1 - 0.75 * pHero;
+      heroVisualCard.style.transform = `perspective(1000px) rotateX(${heroTiltX}deg) scale(${heroScale}) translateY(${heroY}px)`;
+      heroVisualCard.style.filter = heroBlur > 0.1 ? `blur(${heroBlur}px)` : "none";
+      heroVisualCard.style.opacity = String(heroOp);
+    }
+
+    const pTagFade = Math.min(1, p * 2.5);
+    if (heroTagline) {
+      heroTagline.style.transform = `translateY(${pTagFade * 25}px)`;
+      heroTagline.style.opacity = String(Math.max(0, 1 - pTagFade));
+    }
+    if (heroActionsCol) {
+      heroActionsCol.style.transform = `translateY(${pTagFade * 25}px)`;
+      heroActionsCol.style.opacity = String(Math.max(0, 1 - pTagFade));
+    }
+
+    // ========================================================
+    // 2. LIVING IDENTITY UNIT (Avatar + Name/Handle moving together)
+    // ========================================================
+    const isDocked = p >= 0.72;
+
+    // Smooth, invisible crossfade across p in [0.005, 0.07]
+    // Because flight elements mirror hero coordinates, font, and borders 100%,
+    // there is ZERO jump, pop, or layout shift when scrolling starts!
+    const pFade = step(p, 0.005, 0.07);
+
+    if (p <= 0.002) {
+      heroAvatarWrap.style.opacity = "1";
+      if (heroName) heroName.style.opacity = "1";
+      flightAvatar.style.opacity = "0";
+      if (flightInfo) flightInfo.style.opacity = "0";
+      if (flightHandleHero) flightHandleHero.style.opacity = "1";
+      if (flightHandlePass) flightHandlePass.style.opacity = "0";
+    } else {
+      heroAvatarWrap.style.opacity = String(Math.max(0, 1 - pFade));
+      if (heroName) heroName.style.opacity = String(Math.max(0, 1 - pFade));
+      flightAvatar.style.opacity = isDocked ? "0" : String(pFade);
+      if (flightInfo) flightInfo.style.opacity = isDocked ? "0" : String(pFade);
+    }
+
+    // Avatar flight trajectory
+    const curAvX = originAv.x + (targetAv.x - originAv.x) * pFlight;
+    const curAvY = originAv.y + (targetAv.y - originAv.y) * pFlight;
+    const curAvScale = 1.0 + (targetAv.w / originAv.w - 1.0) * pFlight;
+    const pBorderFade = step(p, 0.35, 0.72);
+    const curBorderW = Math.max(0, 6 * (1 - pBorderFade));
+    flightAvatar.style.transform = `translate3d(${curAvX}px, ${curAvY}px, 0) scale(${curAvScale})`;
+    flightAvatar.style.borderWidth = `${curBorderW}px`;
+
+    // Text flight trajectory (Moves synchronized with avatar)
+    if (flightInfo) {
+      const curInfoX = originInfo.x + (targetInfo.x - originInfo.x) * pFlight;
+      const curInfoY = originInfo.y + (targetInfo.y - originInfo.y) * pFlight;
+      const targetScaleInfo = 0.50; // Scaled to 21px pass text size
+      const curInfoScale = 1.0 + (targetScaleInfo - 1.0) * pFlight;
+      flightInfo.style.transform = `translate3d(${curInfoX}px, ${curInfoY}px, 0) scale(${curInfoScale})`;
+
+      // Early dissolve of '/ Kmlo' as unit lifts off:
+      const pDissolveHero = step(p, 0.04, 0.20);
+      if (flightHandleHero) flightHandleHero.style.opacity = String(1 - pDissolveHero);
+
+      // Pass handle '@Kmlozmz' fades in smoothly as unit approaches dock:
+      const pFadePass = step(p, 0.42, 0.68);
+      if (flightHandlePass) {
+        flightHandlePass.style.opacity = String(pFadePass);
+        flightHandlePass.style.transform = `translateY(${(1 - pFadePass) * 6}px)`;
+      }
+    }
+
+    // Static Pass elements handoff at p >= 0.72 (Dock complete)
+    if (passAvatarImg) passAvatarImg.style.opacity = isDocked ? "1" : "0";
+    if (passName) passName.style.opacity = isDocked ? "1" : "0";
+    if (passHandle) passHandle.style.opacity = isDocked ? "1" : "0";
+
+    // Progressive Construction of Sobre Mí Header:
+    // Only materializes as the flight unit clears the upper flight path and settles towards the pass!
+    // This completely eliminates any collision or interference with the moving avatar and text!
+    const pKicker = step(p, 0.48, 0.68);
+    if (sobreMiKicker) {
+      sobreMiKicker.style.opacity = String(pKicker);
+      sobreMiKicker.style.transform = `translateY(${(1 - pKicker) * 20}px)`;
+    }
+    const pTitle = step(p, 0.52, 0.72);
+    if (sobreMiTitle) {
+      sobreMiTitle.style.opacity = String(pTitle);
+      sobreMiTitle.style.transform = `translateY(${(1 - pTitle) * 28}px)`;
+    }
+
+    // ========================================================
+    // 3. PROGRESSIVE MORPHOLOGICAL PASS ASSEMBLY (Triggered sequentially)
+    // ========================================================
+    // Pass Chassis: 3D perspective rising & leveling
+    const pCard = step(p, 0.15, 0.50);
+    const cardScale = 0.90 + 0.10 * pCard;
+    const cardY = (1 - pCard) * 45;
+    const cardRotX = (1 - pCard) * 12;
+    const cardOp = pCard;
+    if (!isHoveringPass || p < 0.85) {
+      developerPass.style.transform = `perspective(900px) translateY(${cardY}px) rotateX(${cardRotX}deg) scale(${cardScale})`;
+    }
+    developerPass.style.opacity = String(cardOp);
+
+    // Header Spec (>_ DEVELOPER SPEC // ID 0001)
+    const pHd = step(p, 0.22, 0.55);
+    if (passHd) {
+      passHd.style.opacity = String(pHd);
+      passHd.style.transform = `translateY(${(1 - pHd) * -18}px)`;
+    }
+
+    // Avatar Badges: Bloom when identity unit docks
+    const pBadge = step(p, 0.70, 0.80);
+    if (passEmoji) {
+      passEmoji.style.transform = `scale(${pBadge})`;
+      passEmoji.style.opacity = String(pBadge);
+    }
+    if (passOnline) {
+      passOnline.style.transform = `scale(${pBadge})`;
+      passOnline.style.opacity = String(pBadge);
+    }
+
+    // Tagline inside pass: Materializes as identity settles
+    const pTag = step(p, 0.70, 0.82);
+    if (passTagline) {
+      passTagline.style.opacity = String(pTag);
+      passTagline.style.transform = `translateY(${(1 - pTag) * 14}px)`;
+    }
+
+    // Laser Cut 1: Perforated ticket line draws across
+    const pPerf1 = step(p, 0.76, 0.86);
+    if (passPerf1) {
+      passPerf1.style.transform = `scaleX(${pPerf1})`;
+      passPerf1.style.opacity = String(pPerf1);
+    }
+
+    // Telemetry rows: Barranquilla & Mobile Arch slide in
+    const pLi1 = step(p, 0.78, 0.88);
+    if (passLi1) {
+      passLi1.style.opacity = String(pLi1);
+      passLi1.style.transform = `translateX(${(1 - pLi1) * -20}px)`;
+    }
+    const pLi2 = step(p, 0.81, 0.90);
+    if (passLi2) {
+      passLi2.style.opacity = String(pLi2);
+      passLi2.style.transform = `translateX(${(1 - pLi2) * -20}px)`;
+    }
+
+    // Specialties label & chips: Sockets plug in
+    const pSec = step(p, 0.83, 0.92);
+    if (passSecLabel) {
+      passSecLabel.style.opacity = String(pSec);
+    }
+    if (passChips && passChips.length) {
+      passChips.forEach((chip, i) => {
+        const start = 0.84 + i * 0.02;
+        const end = Math.min(1.0, start + 0.08);
+        const pChip = step(p, start, end);
+        chip.style.opacity = String(pChip);
+        chip.style.transform = `translateY(${(1 - pChip) * 12}px) scale(${0.80 + 0.20 * pChip})`;
+      });
+    }
+
+    // Laser Cut 2
+    const pPerf2 = step(p, 0.90, 0.96);
+    if (passPerf2) {
+      passPerf2.style.transform = `scaleX(${pPerf2})`;
+      passPerf2.style.opacity = String(pPerf2);
+    }
+
+    // Pass Stats Footer: 4 Metrics rise into place
+    if (passStatItems && passStatItems.length) {
+      passStatItems.forEach((stat, i) => {
+        const start = 0.92 + i * 0.018;
+        const end = Math.min(1.0, start + 0.07);
+        const pStat = step(p, start, end);
+        stat.style.opacity = String(pStat);
+        stat.style.transform = `translateY(${(1 - pStat) * 14}px) scale(${0.88 + 0.12 * pStat})`;
+      });
+    }
+
+    // Right Column Manifesto & Telemetry
+    const pMan = step(p, 0.25, 0.85);
+    if (manifestoRight) {
+      manifestoRight.style.opacity = String(0.15 + 0.85 * pMan);
+      manifestoRight.style.transform = `translateY(${(1 - pMan) * 35}px)`;
+    }
+  };
+
+  updatePassConstruction = update;
+
+  window.addEventListener("scroll", update, { passive: true });
+  if (window.__lenis) {
+    window.__lenis.on("scroll", update);
+  }
+  window.addEventListener("resize", measure, { passive: true });
+
+  // Initial measurement after layout pass
+  requestAnimationFrame(() => {
+    setTimeout(measure, 80);
+  });
+}
+
+/* ---------- Whole-Page Progressive Construction Engine (Armando al bajar / Desarmando al subir) ---------- */
+function initPageProgressiveConstruction() {
+  if (prefersReducedMotion) return;
+
+  // Cache elements across all sections
+  const projLabel = $("#projLabel");
+  const projTitle = $("#projTitle");
+  const workStageContainer = $("#workStageContainer");
+  const workTabs = $("#workTabs");
+  const workStage = $("#workStage");
+
+  const collabCard = $("#collabCard");
+
+  const expSec = $("#habilidades");
+  const expLabel = $("#expLabel");
+  const expSticky = $("#expSticky");
+  const expCategories = $$("#expRight > p.label");
+  const expSkillRows = $$("#expRight > .skill-rows");
+
+  const servLabel = $("#servLabel");
+  const servTitle = $("#servTitle");
+  const servDesc = $("#servDesc");
+  const setupCards = $$("#servGrid .card.setup");
+
+  const ghTitle = $("#ghTitle");
+  const ghCard = $("#ghCard");
+
+  const contactTitle = $("#contactTitle");
+  const contactCards = $$("#contactGrid .card");
+
+  const step = (x, a, b) => {
+    if (x <= a) return 0;
+    if (x >= b) return 1;
+    const t = (x - a) / (b - a);
+    return t * t * (3 - 2 * t);
+  };
+
+  const getViewportProgress = (el, enterFrac = 0.95, settleFrac = 0.35) => {
+    if (!el) return 0;
+    const rect = el.getBoundingClientRect();
+    const vh = window.innerHeight || 800;
+    const enterY = vh * enterFrac;
+    const settleY = vh * settleFrac;
+    const raw = (enterY - rect.top) / (enterY - settleY);
+    return Math.max(0, Math.min(1, raw));
+  };
+
+  const update = () => {
+    // --- 1. PROYECTOS PROGRESSIVE CONSTRUCTION ---
+    if (projTitle || workStage) {
+      const pProj = getViewportProgress(projLabel || projTitle, 0.95, 0.40);
+
+      if (projLabel) {
+        const pPl = step(pProj, 0.05, 0.32);
+        projLabel.style.opacity = String(pPl);
+        projLabel.style.transform = `translateY(${(1 - pPl) * 18}px)`;
+      }
+      if (projTitle) {
+        const pPt = step(pProj, 0.10, 0.42);
+        projTitle.style.opacity = String(pPt);
+        projTitle.style.transform = `translateY(${(1 - pPt) * 26}px)`;
+      }
+
+      const pStage = getViewportProgress(workStageContainer || workStage, 0.92, 0.45);
+      if (workTabs) {
+        const pTabs = step(pStage, 0.08, 0.45);
+        workTabs.style.opacity = String(pTabs);
+        workTabs.style.transform = `translateX(${(1 - pTabs) * -24}px)`;
+      }
+      if (workStage) {
+        const pWs = step(pStage, 0.15, 0.65);
+        const rotX = (1 - pWs) * 8;
+        const y = (1 - pWs) * 38;
+        const scale = 0.94 + 0.06 * pWs;
+        workStage.style.opacity = String(pWs);
+        workStage.style.transform = `perspective(1000px) rotateX(${rotX}deg) translateY(${y}px) scale(${scale})`;
+      }
+    }
+
+    // --- 2. COLLABORATION BANNER ---
+    if (collabCard) {
+      const pCollab = getViewportProgress(collabCard, 0.93, 0.45);
+      const rotX = (1 - pCollab) * 6;
+      const y = (1 - pCollab) * 32;
+      collabCard.style.opacity = String(pCollab);
+      collabCard.style.transform = `perspective(900px) rotateX(${rotX}deg) translateY(${y}px)`;
+    }
+
+    // --- 3. HABILIDADES / EXPERTISE ---
+    if (expSec) {
+      const pExpHeader = getViewportProgress(expLabel || expSec, 0.94, 0.45);
+      if (expLabel) {
+        expLabel.style.opacity = String(pExpHeader);
+        expLabel.style.transform = `translateY(${(1 - pExpHeader) * 18}px)`;
+      }
+      if (expSticky) {
+        const pSticky = step(pExpHeader, 0.10, 0.50);
+        expSticky.style.opacity = String(pSticky);
+        expSticky.style.transform = `translateY(${(1 - pSticky) * 24}px)`;
+      }
+
+      // Categories & Skill Rows
+      expCategories.forEach((catLabel, idx) => {
+        const pCat = getViewportProgress(catLabel, 0.94, 0.50);
+        catLabel.style.opacity = String(pCat);
+        catLabel.style.transform = `translateX(${(1 - pCat) * -18}px)`;
+
+        const ul = expSkillRows[idx];
+        if (ul) {
+          const rows = $$("li", ul);
+          rows.forEach((row, rIdx) => {
+            const start = 0.10 + rIdx * 0.12;
+            const end = Math.min(1.0, start + 0.35);
+            const pRow = step(pCat, start, end);
+            row.style.opacity = String(pRow);
+            row.style.transform = `translateX(${(1 - pRow) * 22}px)`;
+          });
+        }
+      });
+    }
+
+    // --- 4. SERVICIOS (4 Setup Cards in 3D) ---
+    if (servTitle || setupCards.length) {
+      const pServHeader = getViewportProgress(servLabel || servTitle, 0.94, 0.45);
+      if (servLabel) {
+        servLabel.style.opacity = String(pServHeader);
+        servLabel.style.transform = `translateY(${(1 - pServHeader) * 18}px)`;
+      }
+      if (servTitle) {
+        servTitle.style.opacity = String(pServHeader);
+        servTitle.style.transform = `translateY(${(1 - pServHeader) * 25}px)`;
+      }
+      if (servDesc) {
+        const pDesc = step(pServHeader, 0.15, 0.60);
+        servDesc.style.opacity = String(pDesc);
+        servDesc.style.transform = `translateY(${(1 - pDesc) * 20}px)`;
+      }
+
+      setupCards.forEach((card, i) => {
+        const pCard = getViewportProgress(card, 0.94, 0.45);
+        const rotY = (i % 2 === 0 ? -1 : 1) * (1 - pCard) * 4;
+        const y = (1 - pCard) * 35;
+        const scale = 0.93 + 0.07 * pCard;
+        card.style.opacity = String(pCard);
+        card.style.transform = `perspective(900px) rotateY(${rotY}deg) translateY(${y}px) scale(${scale})`;
+      });
+    }
+
+    // --- 5. GITHUB ACTIVITY ---
+    if (ghTitle || ghCard) {
+      const pGh = getViewportProgress(ghTitle || ghCard, 0.94, 0.45);
+      if (ghTitle) {
+        ghTitle.style.opacity = String(pGh);
+        ghTitle.style.transform = `translateY(${(1 - pGh) * 22}px)`;
+      }
+      if (ghCard) {
+        const pGc = step(pGh, 0.15, 0.65);
+        ghCard.style.opacity = String(pGc);
+        ghCard.style.transform = `translateY(${(1 - pGc) * 32}px) scale(${0.96 + 0.04 * pGc})`;
+      }
+    }
+
+    // --- 6. CONTACTO ---
+    if (contactTitle || contactCards.length) {
+      const pContact = getViewportProgress(contactTitle || contactCards[0], 0.94, 0.45);
+      if (contactTitle) {
+        contactTitle.style.opacity = String(pContact);
+        contactTitle.style.transform = `translateY(${(1 - pContact) * 25}px)`;
+      }
+      contactCards.forEach((card, i) => {
+        const pCard = getViewportProgress(card, 0.95, 0.50);
+        card.style.opacity = String(pCard);
+        card.style.transform = `translateY(${(1 - pCard) * 28}px) scale(${0.94 + 0.06 * pCard})`;
+      });
+    }
+  };
+
+  window.addEventListener("scroll", update, { passive: true });
+  if (window.__lenis) {
+    window.__lenis.on("scroll", update);
+  }
+  window.addEventListener("resize", update, { passive: true });
+  requestAnimationFrame(() => update());
+}
+
 /* ---------- Arranque ---------- */
 document.addEventListener("DOMContentLoaded", () => {
   try {
@@ -692,14 +1591,18 @@ document.addEventListener("DOMContentLoaded", () => {
   document.documentElement.removeAttribute("data-hero");
 
   initTheme();
-  initCursor();
   initLenis();
+  initNav();
+  initLanguage();
+  initCursor();
   initLens();
   initAnchors();
   initReveal();
   initWork();
   initHeatmap();
   initClock();
+  initPassConstruction();
+  initPageProgressiveConstruction();
   initFabs();
 });
 
