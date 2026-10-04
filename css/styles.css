@@ -1737,18 +1737,12 @@ img {
 }
 
 /* ---------- Proyectos (showcase ilustrado) ---------- */
+/* ---------- Proyectos (showcase bento apaisado 50/50) ---------- */
 .showcase {
-  display: grid;
-  grid-template-columns: 270px 1fr;
-  gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
   margin-top: 2rem;
-  align-items: start;
-}
-
-@media (max-width: 960px) {
-  .showcase {
-    grid-template-columns: 1fr;
-  }
 }
 
 .showcase-list {
@@ -1756,25 +1750,23 @@ img {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
+  display: inline-flex;
+  align-items: center;
   gap: 0.5rem;
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 
-@media (max-width: 960px) {
-  .showcase-list {
-    display: flex;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .showcase-list::-webkit-scrollbar {
-    display: none;
-  }
+.showcase-list::-webkit-scrollbar {
+  display: none;
 }
 
 .showcase-list > li {
   position: relative;
   z-index: 2;
+  flex-shrink: 0;
 }
 
 /* Sliding elastic pill indicator */
@@ -1782,31 +1774,21 @@ img {
   position: absolute;
   left: 0;
   top: 0;
-  width: 100%;
+  height: 100%;
   border-radius: 14px;
   border: 1px solid var(--text-dark);
   background: var(--card-bg-opaque);
   pointer-events: none;
-  transition: transform 0.36s cubic-bezier(0.2, 0.9, 0.25, 1), height 0.22s ease, width 0.22s ease;
+  transition: transform 0.36s cubic-bezier(0.2, 0.9, 0.25, 1), width 0.22s ease, height 0.22s ease;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   z-index: 1;
 }
 
-@media (max-width: 960px) {
-  .work-sliding-pill {
-    transition: transform 0.36s cubic-bezier(0.2, 0.9, 0.25, 1), width 0.22s ease, height 0.22s ease;
-  }
-}
-
 .work-tab {
-  width: 100%;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-areas: "n t" "n g";
-  column-gap: 0.85rem;
+  display: inline-flex;
   align-items: center;
-  text-align: left;
-  padding: 0.85rem 1rem;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
   border-radius: 14px;
   border: 1px solid var(--border-color);
   background: transparent;
@@ -1814,6 +1796,7 @@ img {
   cursor: pointer;
   transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
   white-space: nowrap;
+  font-family: inherit;
 }
 
 .work-tab:hover {
@@ -1831,20 +1814,17 @@ img {
 }
 
 .tab-index {
-  grid-area: n;
   font-family: var(--mono);
   font-size: 0.75rem;
   opacity: 0.6;
 }
 
 .tab-title {
-  grid-area: t;
   font-size: 0.95rem;
   font-weight: 600;
 }
 
 .tab-tag {
-  grid-area: g;
   font-family: var(--mono);
   font-size: 0.66rem;
   letter-spacing: 0.04em;
@@ -1857,6 +1837,7 @@ img {
   background: var(--card-bg-opaque);
   overflow: hidden;
   position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 /* Stage Panels Track & Directional Slide */
@@ -1869,10 +1850,11 @@ img {
 
 .stage-panel {
   grid-area: 1 / 1;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 52% 48%;
+  min-height: 480px;
   opacity: 0;
-  transform: translateY(24px);
+  transform: translateX(28px);
   transition: opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
@@ -1881,33 +1863,70 @@ img {
 
 .stage-panel.is-active {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateX(0);
   pointer-events: auto;
   visibility: visible;
   position: relative;
   z-index: 2;
 }
 
-.stage-panel.slide-exit-up {
+.stage-panel.slide-exit-left {
   opacity: 0;
-  transform: translateY(-24px);
+  transform: translateX(-28px);
 }
 
-.stage-panel.slide-exit-down {
+.stage-panel.slide-exit-right {
   opacity: 0;
-  transform: translateY(24px);
+  transform: translateX(28px);
+}
+
+@media (max-width: 960px) {
+  .stage-panel {
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
+    transform: translateY(24px);
+  }
+
+  .stage-panel.is-active {
+    transform: translateY(0);
+  }
+
+  .stage-panel.slide-exit-left,
+  .stage-panel.slide-exit-up {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+
+  .stage-panel.slide-exit-right,
+  .stage-panel.slide-exit-down {
+    opacity: 0;
+    transform: translateY(24px);
+  }
 }
 
 .stage-art {
-  min-height: 420px;
+  min-height: 480px;
+  height: 100%;
   display: grid;
   place-items: center;
-  padding: 2rem 1.5rem;
+  padding: 2rem 1.75rem;
   background-color: var(--preview-bg);
   background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
   background-size: 18px 18px;
-  border-bottom: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  border-bottom: none;
   overflow: hidden;
+}
+
+@media (max-width: 960px) {
+  .stage-art {
+    min-height: 340px;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.5rem 1rem;
+  }
 }
 
 .art {
@@ -2342,17 +2361,22 @@ img {
 
 /* ----- Stage info ----- */
 .stage-info {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 1.5rem;
-  padding: 1.5rem 1.75rem 1.75rem;
-  align-items: end;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2.25rem 2.25rem;
+  background: var(--card-bg-opaque);
 }
 
-@media (max-width: 760px) {
+@media (max-width: 960px) {
   .stage-info {
-    grid-template-columns: 1fr;
+    padding: 1.5rem 1.25rem 1.75rem;
   }
+}
+
+.stage-info-main {
+  display: flex;
+  flex-direction: column;
 }
 
 .stage-meta {
@@ -2376,20 +2400,20 @@ img {
 }
 
 .work-title {
-  font-size: clamp(1.9rem, 3.4vw, 2.6rem);
-  font-weight: 600;
+  font-size: clamp(1.6rem, 2.4vw, 2.2rem);
+  font-weight: 700;
   letter-spacing: -0.03em;
   color: var(--text-dark);
   margin: 0.6rem 0 0.5rem;
-  line-height: 1.1;
+  line-height: 1.15;
 }
 
 .work-desc {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   line-height: 1.6;
   color: var(--text-muted);
   margin: 0 0 1rem;
-  max-width: 56ch;
+  max-width: 52ch;
 }
 
 .made {
@@ -2415,9 +2439,27 @@ img {
 }
 
 .stage-actions {
-  display: grid;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px dashed var(--border-color);
+}
+
+@media (max-width: 560px) {
+  .stage-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+}
+
+.stage-links {
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.6rem;
-  min-width: 200px;
 }
 
 .work-link {
@@ -2457,7 +2499,7 @@ img {
 .work-nav {
   display: flex;
   gap: 0.5rem;
-  justify-content: flex-end;
+  flex-shrink: 0;
 }
 
 .arrow-btn {

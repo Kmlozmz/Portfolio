@@ -722,7 +722,7 @@ function initWork() {
         ${ART[w.art]()}
       </div>
       <div class="stage-info">
-        <div>
+        <div class="stage-info-main">
           <div class="stage-meta">
             <span class="count">${String(k + 1).padStart(2, "0")} / ${String(WORK.length).padStart(2, "0")}</span>
             <span>${w.kicker}</span>
@@ -733,12 +733,14 @@ function initWork() {
           <ul class="made">${w.made.map((m) => `<li>${m}</li>`).join("")}</ul>
         </div>
         <div class="stage-actions">
-          ${w.links
-            .map(
-              (l) =>
-                `<a class="work-link${l.ghost ? " ghost" : ""}" href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`,
-            )
-            .join("")}
+          <div class="stage-links">
+            ${w.links
+              .map(
+                (l) =>
+                  `<a class="work-link${l.ghost ? " ghost" : ""}" href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`,
+              )
+              .join("")}
+          </div>
           <div class="work-nav">
             <button class="arrow-btn" type="button" data-nav="-1" aria-label="Previous project">&lt;</button>
             <button class="arrow-btn" type="button" data-nav="1" aria-label="Next project">&gt;</button>
@@ -754,20 +756,13 @@ function initWork() {
     const targetTab = tabs[idx];
     if (!targetTab) return;
     const li = targetTab.closest("li") || targetTab;
-    const isHorizontal = window.innerWidth <= 960;
-    if (isHorizontal) {
-      pill.style.transform = `translateX(${li.offsetLeft}px)`;
-      pill.style.width = `${li.offsetWidth}px`;
-      pill.style.height = `${li.offsetHeight}px`;
-      const listRect = list.getBoundingClientRect();
-      const tabRect = li.getBoundingClientRect();
-      if (tabRect.left < listRect.left || tabRect.right > listRect.right) {
-        li.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-      }
-    } else {
-      pill.style.transform = `translateY(${li.offsetTop}px)`;
-      pill.style.width = "100%";
-      pill.style.height = `${li.offsetHeight}px`;
+    pill.style.transform = `translateX(${li.offsetLeft}px)`;
+    pill.style.width = `${li.offsetWidth}px`;
+    pill.style.height = `${li.offsetHeight}px`;
+    const listRect = list.getBoundingClientRect();
+    const tabRect = li.getBoundingClientRect();
+    if (tabRect.left < listRect.left || tabRect.right > listRect.right) {
+      li.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
     }
   };
 
@@ -787,19 +782,28 @@ function initWork() {
     updateSlidingPill(activeIdx);
 
     const isForward = direction !== null ? direction > 0 : newIdx > prevIdx;
+    const isMobile = window.innerWidth <= 960;
 
     panels.forEach((p, i) => {
-      p.classList.remove("slide-exit-up", "slide-exit-down");
+      p.classList.remove("slide-exit-left", "slide-exit-right", "slide-exit-up", "slide-exit-down");
       if (i === prevIdx) {
-        p.classList.add(isForward ? "slide-exit-up" : "slide-exit-down");
+        if (isMobile) {
+          p.classList.add(isForward ? "slide-exit-up" : "slide-exit-down");
+        } else {
+          p.classList.add(isForward ? "slide-exit-left" : "slide-exit-right");
+        }
         p.classList.remove("is-active");
       } else if (i === newIdx) {
         p.classList.remove("is-active");
         void p.offsetWidth;
-        p.style.transform = isForward ? "translateY(24px)" : "translateY(-24px)";
+        if (isMobile) {
+          p.style.transform = isForward ? "translateY(24px)" : "translateY(-24px)";
+        } else {
+          p.style.transform = isForward ? "translateX(28px)" : "translateX(-28px)";
+        }
         setTimeout(() => {
           p.classList.add("is-active");
-          p.style.transform = "translateY(0)";
+          p.style.transform = isMobile ? "translateY(0)" : "translateX(0)";
         }, 20);
       } else {
         p.classList.remove("is-active");
