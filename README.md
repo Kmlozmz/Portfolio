@@ -89,35 +89,6 @@ portafolio/
 
 ---
 
-## 🚀 Running Locally
-
-Because the project is built with standard web technologies, you don't need to install build tools or run complex compilers.
-
-### Option 1: Using VS Code Live Server
-1. Open the project folder in **VS Code**.
-2. Right-click `index.html` and select **"Open with Live Server"**.
-
-### Option 2: Using Node.js (npx serve)
-```bash
-npx serve .
-```
-
-### Option 3: Using Python
-```bash
-# Python 3
-python -m http.server 8000
-```
-Then visit `http://localhost:8000` in your browser.
-
----
-
-## 🔗 Related Ecosystem Projects
-
-- **[UniStack](https://github.com/Kmlozmz/UniStack)**: Source code repository for the UniStack Android application (Kotlin, Jetpack Compose, Room, Hilt).
-- **[UniStack-releases](https://github.com/Kmlozmz/UniStack-releases)**: Official release pipeline and APK distributions.
-- **[UniStack-landing_page](https://github.com/Kmlozmz/UniStack-landing_page)**: Dedicated product website for UniStack.
-
----
 
 ## 👤 Author
 
@@ -132,4 +103,3 @@ Then visit `http://localhost:8000` in your browser.
 ## 💡 Acknowledgements & Inspirations
 
 - Design and interaction concepts inspired by [Ayan](https://notayan.in).
-- Smooth scrolling powered by [Studio Freight Lenis](https://github.com/studio-freight/lenis).
