@@ -1,6 +1,6 @@
 # Portfolio · Camilo Pineda (Kmlo)
 
-[![Live Site](https://img.shields.io/badge/Live_Portfolio-kmlozmz.github.io-blue?style=for-the-badge&logo=github)](https://kmlozmz.github.io/Portafolio-JC/)
+[![Live Site](https://img.shields.io/badge/Live_Portfolio-kmlozmz.github.io-blue?style=for-the-badge&logo=github)](https://kmlozmz.github.io/Portfolio/)
 [![Tech Stack](https://img.shields.io/badge/Stack-Vanilla_HTML5_•_CSS3_•_JS_ESNext-orange?style=for-the-badge)](https://developer.mozilla.org/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
