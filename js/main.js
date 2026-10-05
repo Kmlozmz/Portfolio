@@ -740,7 +740,7 @@ const WORK = [
       en: "The website you are on right now: a place to show my work, tell who I am and make it easy to get in touch.",
     },
     made: ["HTML", "CSS", "JavaScript"],
-    links: [{ label: { es: "VER CÓDIGO ↗", en: "VIEW SOURCE ↗" }, href: "https://github.com/Kmlozmz/Portfolio" }],
+    links: [{ label: { es: "VER CÓDIGO ↗", en: "VIEW SOURCE ↗" }, href: "https://github.com/Kmlozmz/Portafolio-JC" }],
     art: "portfolio",
   },
 ];
