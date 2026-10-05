@@ -1,8 +1,11 @@
 # Portfolio · Camilo Pineda (Kmlo)
 
-[![Live Site](https://img.shields.io/badge/Live_Portfolio-kmlozmz.github.io-blue?style=for-the-badge&logo=github)](https://kmlozmz.github.io/Portfolio/)
-[![Tech Stack](https://img.shields.io/badge/Stack-Vanilla_HTML5_•_CSS3_•_JS_ESNext-orange?style=for-the-badge)](https://developer.mozilla.org/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![Live Site](https://img.shields.io/badge/Live_Site-Visit_Portfolio-38bdf8?style=flat-square&logo=google-chrome&logoColor=white)](https://kmlozmz.github.io/Portfolio/)
+[![Language](https://img.shields.io/badge/Language-ES_%2F_EN-10b981?style=flat-square&logo=google-translate&logoColor=white)](https://kmlozmz.github.io/Portfolio/)
+[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)](https://developer.mozilla.org/)
+[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)](https://developer.mozilla.org/)
+[![JavaScript ESNext](https://img.shields.io/badge/JavaScript_ESNext-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](https://developer.mozilla.org/)
+
 
 Personal and engineering portfolio of **Camilo Pineda** (`Kmlozmz`). Designed with an open borderless cosmic aesthetic, deliberate typography, and high-fidelity micro-interactions. Built entirely on standard modern web technologies with zero framework overhead.
 
