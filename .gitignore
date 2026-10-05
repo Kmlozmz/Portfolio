@@ -2,6 +2,4 @@
 Thumbs.db
 node_modules/
 .vscode/
-
-# El ZIP de entrega se genera, no se versiona
-portafolio-camilo-pineda.zip
+scratch/
