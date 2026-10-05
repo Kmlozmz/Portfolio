@@ -687,7 +687,7 @@ const ART = {
       <div class="browser">
         <div class="br-bar"><i></i><i></i><i></i><span class="br-url" data-es="este sitio web" data-en="this website">este sitio web</span></div>
         <div class="br-body">
-          <img class="br-banner" src="assets/hero.gif" alt="" />
+          <img class="br-banner" src="assets/hero.webp" alt="" />
           <div class="br-id"><img src="assets/pfp.webp" alt="" /><div><b>Camilo Pineda</b><span data-es="Software Developer &amp; Entusiasta" data-en="Software Developer &amp; Enthusiast">Software Developer &amp; Entusiasta</span></div></div>
           <div class="mini-heat">${cells}</div>
         </div>

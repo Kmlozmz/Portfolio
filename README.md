@@ -74,7 +74,8 @@ portafolio/
 ├── js/
 │   └── main.js           # Core logic: cursor, star canvas, i18n, showcase, modals & pass
 ├── assets/
-│   ├── hero.gif          # Hero banner visual
+│   ├── hero.webp         # Animated hero banner visual (meteor shower)
+│   ├── hero.gif          # Fallback GIF banner visual
 │   ├── pfp.webp          # Optimized avatar image
 │   ├── unistack-mark.svg # Vector brand mark
 │   ├── fonts/            # Self-hosted typography
