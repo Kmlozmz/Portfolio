@@ -3,6 +3,19 @@
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
+// Coalesca eventos de scroll a un solo update por frame (evita thrash)
+const onScrollRaf = (fn) => {
+  let queued = false;
+  return () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => {
+      queued = false;
+      fn();
+    });
+  };
+};
+
 const prefersReducedMotion = window.matchMedia(
   "(prefers-reduced-motion: reduce)",
 ).matches;
@@ -410,7 +423,7 @@ function initNav() {
     }
   }
 
-  updateNavPillGlobal = (idx, immediate = true) => {
+  updateNavPillGlobal = (immediate = true) => {
     update(immediate);
   };
 
@@ -460,11 +473,12 @@ function initNav() {
     });
   });
 
-  // Listener pasivo de scroll continuo
-  window.addEventListener("scroll", () => update(false), { passive: true });
+  // Listener pasivo de scroll continuo (coalescado a 1 update por frame)
+  const updateOnScroll = onScrollRaf(() => update(false));
+  window.addEventListener("scroll", updateOnScroll, { passive: true });
 
   if (window.__lenis) {
-    window.__lenis.on("scroll", () => update(false));
+    window.__lenis.on("scroll", updateOnScroll);
   }
 
   window.addEventListener("resize", () => update(true), { passive: true });
@@ -486,8 +500,16 @@ function initLanguage() {
   if (!toggleBtn) return;
 
   let currentLang = "ES";
+  try {
+    const saved = localStorage.getItem("idioma");
+    if (saved === "EN" || saved === "ES") {
+      currentLang = saved;
+    }
+  } catch (e) {}
 
   const updateLanguageUI = () => {
+    document.documentElement.lang = currentLang.toLowerCase();
+
     if (esEl && enEl) {
       if (currentLang === "ES") {
         esEl.className = "lang-active";
@@ -501,10 +523,10 @@ function initLanguage() {
     if (heroTagline) {
       if (currentLang === "EN") {
         heroTagline.textContent =
-          "Software developer & builder crafting resilient mobile apps, interactive web experiences, and digital tools with meticulous care.";
+          "Growing software developer. I enjoy creating things and turning ideas into real projects. I like working on mobile apps, interactive web experiences, and above all, caring for those little details that make a project feel alive, unique, and special. The magic is in the details.";
       } else {
         heroTagline.textContent =
-          "Desarrollador de software y creador enfocado en aplicaciones móviles resilientes, experiencias web interactivas y herramientas con diseño meticuloso.";
+          "Desarrollador en crecimiento. Me gusta crear cosas y convertir ideas en proyectos reales. Disfruto trabajar en aplicaciones móviles, experiencias web interactivas y, sobre todo, cuidar esos pequeños detalles que hacen que un proyecto se sienta vivo, único y especial. La magia está en los detalles.";
       }
     }
 
@@ -521,13 +543,35 @@ function initLanguage() {
         currentLang === "EN"
           ? el.getAttribute("data-en")
           : el.getAttribute("data-es");
-      if (text) el.textContent = text;
+      if (text) {
+        if (el.id === "manBodyText" || text.includes("<")) {
+          el.innerHTML = text;
+        } else {
+          el.textContent = text;
+        }
+      }
+    });
+
+    $$("[data-aria-es][data-aria-en]").forEach((el) => {
+      const aria =
+        currentLang === "EN"
+          ? el.getAttribute("data-aria-en")
+          : el.getAttribute("data-aria-es");
+      if (aria) el.setAttribute("aria-label", aria);
+    });
+
+    $$("[data-title-es][data-title-en]").forEach((el) => {
+      const title =
+        currentLang === "EN"
+          ? el.getAttribute("data-title-en")
+          : el.getAttribute("data-title-es");
+      if (title) el.setAttribute("title", title);
     });
 
     // Recalibrate rail width for new text dimensions
     if (typeof updateNavPillGlobal === "function") {
       requestAnimationFrame(() => {
-        updateNavPillGlobal(currentNavIndex, true);
+        updateNavPillGlobal(true);
       });
     }
 
@@ -540,10 +584,19 @@ function initLanguage() {
     }
   };
 
+  window.updateLanguageGlobal = updateLanguageUI;
+  window.getCurrentLanguage = () => currentLang;
+
   toggleBtn.addEventListener("click", () => {
     currentLang = currentLang === "ES" ? "EN" : "ES";
+    try {
+      localStorage.setItem("idioma", currentLang);
+    } catch (e) {}
     updateLanguageUI();
   });
+
+  // Run on startup
+  updateLanguageUI();
 }
 
 /* ---------- Anclas suaves ---------- */
@@ -572,12 +625,12 @@ function initReveal() {
     (entries, o) => {
       entries.forEach((entry, i) => {
         if (!entry.isIntersecting) return;
-        entry.target.style.transitionDelay = `${Math.min(i, 4) * 70}ms`;
+        entry.target.style.transitionDelay = `${Math.min(i, 4) * 50}ms`;
         entry.target.classList.add("is-visible");
         o.unobserve(entry.target);
       });
     },
-    { threshold: 0.12, rootMargin: "0px 0px -60px 0px" },
+    { threshold: 0.08, rootMargin: "0px 0px 80px 0px" },
   );
   items.forEach((el) => obs.observe(el));
 }
@@ -593,37 +646,27 @@ const LANDING_URL = "https://unistack.srk-lab.workers.dev/";
 /* Capturas estáticas de los sitios (guardadas en assets/projects). */
 const sitePreview = (img, url, label) => `
   <div class="art">
-    <a class="browser wide" href="${url}" target="_blank" rel="noopener" aria-label="Open ${label}">
-      <div class="br-bar"><i></i><i></i><i></i><span class="br-url">${label}</span><span class="br-open">Open ↗</span></div>
+    <a class="browser wide" href="${url}" target="_blank" rel="noopener" aria-label="Open ${label}" data-aria-es="Abrir ${label}" data-aria-en="Open ${label}">
+      <div class="br-bar"><i></i><i></i><i></i><span class="br-url">${label}</span><span class="br-open" data-es="Abrir ↗" data-en="Open ↗">Abrir ↗</span></div>
       <div class="live-frame"><img src="${img}" alt="Screenshot of ${label}" loading="lazy" /></div>
     </a>
   </div>`;
 const ART = {
   unistack: () => `
-    <div class="art">
-      <div class="phones" style="--ap:${SWATCHES[0]}" id="unistackArt">
-        <div class="phone main">
-          <div class="ph-head">Semester <span class="ph-chip">Term 2</span></div>
-          <div class="ph-ring">
-            <svg viewBox="0 0 100 100"><circle class="track" cx="50" cy="50" r="42" fill="none" stroke-width="9"/><circle class="val" cx="50" cy="50" r="42" fill="none" stroke-width="9" stroke-dasharray="211 264"/></svg>
-            <b><span>4.3<small>WEIGHTED GPA</small></span></b>
-          </div>
-          <div class="ph-course"><span>Mathematics <em>4.6</em></span><div class="ph-bar"><i style="width:88%"></i></div></div>
-          <div class="ph-course"><span>History <em>4.1</em></span><div class="ph-bar"><i style="width:74%"></i></div></div>
-          <div class="ph-course"><span>Physics <em>4.2</em></span><div class="ph-bar"><i style="width:80%"></i></div></div>
-          <div class="ph-nav"><i class="on"></i><i></i><i></i><i></i></div>
+    <div class="art" id="unistackArt">
+      <div class="phones real-phones">
+        <div class="phone-device p-main" id="unistackMainPhone">
+          <img id="unistackScreenImg" src="assets/projects/unistack-inicio.webp" alt="Pantalla de UniStack" loading="lazy" />
         </div>
-        <div class="phone side">
-          <div class="ph-head">Themes <span class="ph-chip">28</span></div>
-          <div class="ph-aa">Aa</div>
-          <div class="ph-note">Font pairing</div>
-          <div class="ph-swatches">
-            ${SWATCHES.map((c, i) => `<button type="button" class="ph-swatch${i === 0 ? " is-on" : ""}" style="--c:${c}" data-accent="${c}" aria-label="Theme ${i + 1}"></button>`).join("")}
-          </div>
-          <div class="ph-note">Tap a color</div>
+        <div class="phone-device p-side" id="unistackSidePhone" title="Toca para alternar pantalla" data-title-es="Toca para alternar pantalla" data-title-en="Tap to cycle screen">
+          <img id="unistackSideImg" src="assets/projects/unistack-academico.webp" alt="Pantalla secundaria UniStack" loading="lazy" />
         </div>
       </div>
-      <p class="art-caption">ILLUSTRATIVE · SAMPLE DATA</p>
+      <button class="btn-zoom-4k" id="openPromoBtn" type="button" aria-haspopup="dialog" aria-label="Ver pieza promocional" data-aria-es="Ver pieza promocional" data-aria-en="View 4K promotional artwork">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+        <span data-es="Ver pieza promocional" data-en="View promotional artwork">Ver pieza promocional</span>
+      </button>
+      <p class="art-caption" data-es="CAPTURAS REALES DE LA APP · ANDROID" data-en="REAL APP SCREENSHOTS · ANDROID">CAPTURAS REALES DE LA APP · ANDROID</p>
     </div>`,
 
   landing: () => sitePreview("assets/projects/unistack-site.jpg", LANDING_URL, "unistack.srk-lab.workers.dev"),
@@ -642,10 +685,10 @@ const ART = {
     return `
     <div class="art">
       <div class="browser">
-        <div class="br-bar"><i></i><i></i><i></i><span class="br-url">this website</span></div>
+        <div class="br-bar"><i></i><i></i><i></i><span class="br-url" data-es="este sitio web" data-en="this website">este sitio web</span></div>
         <div class="br-body">
           <img class="br-banner" src="assets/hero.gif" alt="" />
-          <div class="br-id"><img src="assets/pfp.webp" alt="" /><div><b>Camilo Pineda</b><span>Software developer &amp; builder</span></div></div>
+          <div class="br-id"><img src="assets/pfp.webp" alt="" /><div><b>Camilo Pineda</b><span data-es="Software Developer &amp; Entusiasta" data-en="Software Developer &amp; Enthusiast">Software Developer &amp; Entusiasta</span></div></div>
           <div class="mini-heat">${cells}</div>
         </div>
       </div>
@@ -655,36 +698,49 @@ const ART = {
 
 const WORK = [
   {
-    title: "UniStack",
+    title: { es: "UniStack", en: "UniStack" },
     tag: "Android app",
-    kicker: "ANDROID APP",
-    status: "● Available now",
-    desc: "An Android app that puts your whole university life in one place: courses, assignments, exams, grades and expenses. It works without internet, saves everything in a single backup file, updates itself, and can be customized with 28 themes.",
+    kicker: { es: "APP ANDROID", en: "ANDROID APP" },
+    status: { es: "● Disponible ahora", en: "● Available now" },
+    desc: {
+      es: "Una app Android que reúne toda tu vida universitaria en un solo lugar: cursos, tareas, exámenes, notas y gastos. Funciona sin internet, guarda todo en una sola copia de seguridad, se actualiza sola y se puede personalizar con 28 temas.",
+      en: "An Android app that puts your whole university life in one place: courses, assignments, exams, grades and expenses. It works without internet, saves everything in a single backup file, updates itself, and can be customized with 28 themes.",
+    },
     made: ["Kotlin", "Jetpack Compose", "Room", "Hilt"],
     links: [
-      { label: "DOWNLOAD APK ↗", href: "https://github.com/Kmlozmz/UniStack-releases" },
-      { label: "VISIT WEBSITE ↗", href: LANDING_URL, ghost: true },
+      { label: { es: "CÓDIGO FUENTE ↗", en: "SOURCE CODE ↗" }, href: "https://github.com/Kmlozmz/UniStack" },
+      { label: { es: "VISITAR SITIO ↗", en: "VISIT WEBSITE ↗" }, href: LANDING_URL, ghost: true },
     ],
     art: "unistack",
   },
   {
-    title: "UniStack Website",
+    title: { es: "Sitio Web UniStack", en: "UniStack Website" },
     tag: "Web",
-    kicker: "WEBSITE",
-    status: "● Live",
-    desc: "The official website for UniStack. It explains what the app does, shows how it looks and lets anyone download the latest version.",
-    made: ["Web design", "Responsive", "Cloudflare"],
-    links: [{ label: "VISIT WEBSITE ↗", href: LANDING_URL }],
+    kicker: { es: "SITIO WEB", en: "WEBSITE" },
+    status: { es: "● En línea", en: "● Live" },
+    desc: {
+      es: "El sitio web oficial de UniStack. Explica qué hace la app, muestra cómo se ve y permite a cualquiera descargar la última versión.",
+      en: "The official website for UniStack. It explains what the app does, shows how it looks and lets anyone download the latest version.",
+    },
+    made: [
+      { es: "Diseño Web", en: "Web Design" },
+      { es: "Responsive", en: "Responsive" },
+      { es: "Cloudflare", en: "Cloudflare" },
+    ],
+    links: [{ label: { es: "VISITAR SITIO ↗", en: "VISIT WEBSITE ↗" }, href: LANDING_URL }],
     art: "landing",
   },
   {
-    title: "Personal Portfolio",
+    title: { es: "Portafolio Personal", en: "Personal Portfolio" },
     tag: "Web",
-    kicker: "WEBSITE",
-    status: "● You are here",
-    desc: "The website you are on right now: a place to show my work, tell who I am and make it easy to get in touch.",
+    kicker: { es: "SITIO WEB", en: "WEBSITE" },
+    status: { es: "● Estás aquí", en: "● You are here" },
+    desc: {
+      es: "El sitio web en el que estás ahora mismo: un lugar para mostrar mi trabajo, contar quién soy y facilitar el contacto.",
+      en: "The website you are on right now: a place to show my work, tell who I am and make it easy to get in touch.",
+    },
     made: ["HTML", "CSS", "JavaScript"],
-    links: [{ label: "VIEW SOURCE ↗", href: "https://github.com/Kmlozmz/Portafolio-JC" }],
+    links: [{ label: { es: "VER CÓDIGO ↗", en: "VIEW SOURCE ↗" }, href: "https://github.com/Kmlozmz/Portafolio-JC" }],
     art: "portfolio",
   },
 ];
@@ -705,7 +761,7 @@ function initWork() {
       <li role="presentation">
         <button class="work-tab${k === 0 ? " is-active" : ""}" type="button" role="tab" data-index="${k}" aria-selected="${k === 0 ? "true" : "false"}">
           <span class="tab-index">${String(k + 1).padStart(2, "0")}</span>
-          <span class="tab-title">${w.title}</span>
+          <span class="tab-title" data-es="${w.title.es}" data-en="${w.title.en}">${w.title.es}</span>
         </button>
       </li>`,
     ).join("")}
@@ -716,7 +772,7 @@ function initWork() {
   // 2. Pre-render all panels for instant, zero-flicker directional transitions
   panelsContainer.innerHTML = WORK.map(
     (w, k) => `
-    <div class="stage-panel${k === 0 ? " is-active" : ""}" id="stagePanel${k}" role="tabpanel" aria-label="${w.title}">
+    <div class="stage-panel${k === 0 ? " is-active" : ""}" id="stagePanel${k}" role="tabpanel" aria-label="${w.title.es}">
       <div class="stage-art">
         ${ART[w.art]()}
       </div>
@@ -724,25 +780,25 @@ function initWork() {
         <div class="stage-info-main">
           <div class="stage-meta">
             <span class="count">${String(k + 1).padStart(2, "0")} / ${String(WORK.length).padStart(2, "0")}</span>
-            <span>${w.kicker}</span>
-            <span class="stage-status">${w.status}</span>
+            <span class="work-kicker" data-es="${w.kicker.es}" data-en="${w.kicker.en}">${w.kicker.es}</span>
+            <span class="stage-status" data-es="${w.status.es}" data-en="${w.status.en}">${w.status.es}</span>
           </div>
-          <h3 class="work-title">${w.title}</h3>
-          <p class="work-desc">${w.desc}</p>
-          <ul class="made">${w.made.map((m) => `<li>${m}</li>`).join("")}</ul>
+          <h3 class="work-title" data-es="${w.title.es}" data-en="${w.title.en}">${w.title.es}</h3>
+          <p class="work-desc" data-es="${w.desc.es}" data-en="${w.desc.en}">${w.desc.es}</p>
+          <ul class="made">${w.made.map((m) => typeof m === "string" ? `<li>${m}</li>` : `<li><span data-es="${m.es}" data-en="${m.en}">${m.es}</span></li>`).join("")}</ul>
         </div>
         <div class="stage-actions">
           <div class="stage-links">
             ${w.links
               .map(
                 (l) =>
-                  `<a class="work-link${l.ghost ? " ghost" : ""}" href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`,
+                  `<a class="work-link${l.ghost ? " ghost" : ""}" href="${l.href}" target="_blank" rel="noopener" data-es="${l.label.es}" data-en="${l.label.en}">${l.label.es}</a>`,
               )
               .join("")}
           </div>
           <div class="work-nav">
-            <button class="arrow-btn" type="button" data-nav="-1" aria-label="Previous project">&lt;</button>
-            <button class="arrow-btn" type="button" data-nav="1" aria-label="Next project">&gt;</button>
+            <button class="arrow-btn" type="button" data-nav="-1" aria-label="Proyecto anterior" data-aria-es="Proyecto anterior" data-aria-en="Previous project">&lt;</button>
+            <button class="arrow-btn" type="button" data-nav="1" aria-label="Siguiente proyecto" data-aria-es="Siguiente proyecto" data-aria-en="Next project">&gt;</button>
           </div>
         </div>
       </div>
@@ -831,12 +887,33 @@ function initWork() {
       goToProject((activeIdx + dir + WORK.length) % WORK.length, dir);
       return;
     }
-    const sw = e.target.closest("[data-accent]");
-    if (sw) {
+    const sidePhone = e.target.closest("#unistackSidePhone");
+    if (sidePhone) {
       const activeArt = $(".stage-panel.is-active .art", stage);
-      const host = $("#unistackArt", activeArt);
-      if (host) host.style.setProperty("--ap", sw.getAttribute("data-accent"));
-      $$(".ph-swatch", activeArt).forEach((b) => b.classList.toggle("is-on", b === sw));
+      const mainImg = $("#unistackScreenImg", activeArt);
+      const sideImg = $("#unistackSideImg", activeArt);
+      if (!mainImg || !sideImg) return;
+
+      const screenOrder = [
+        { main: "assets/projects/unistack-inicio.webp", side: "assets/projects/unistack-academico.webp" },
+        { main: "assets/projects/unistack-academico.webp", side: "assets/projects/unistack-horario.webp" },
+        { main: "assets/projects/unistack-horario.webp", side: "assets/projects/unistack-gastos.webp" },
+        { main: "assets/projects/unistack-gastos.webp", side: "assets/projects/unistack-inicio.webp" },
+      ];
+
+      const currentSrc = mainImg.getAttribute("src") || "";
+      let curIdx = screenOrder.findIndex((s) => currentSrc.includes(s.main.replace("assets/projects/", "")));
+      if (curIdx === -1) curIdx = 0;
+      const next = screenOrder[(curIdx + 1) % screenOrder.length];
+
+      mainImg.style.opacity = "0.35";
+      mainImg.style.transform = "scale(0.98)";
+      setTimeout(() => {
+        mainImg.src = next.main;
+        sideImg.src = next.side;
+        mainImg.style.opacity = "1";
+        mainImg.style.transform = "scale(1)";
+      }, 120);
       return;
     }
   });
@@ -858,8 +935,18 @@ function initHeatmap() {
   const WEEKS = 53;
   const DAYS = 7;
   const MONTHS = [
-    "OCT", "NOV", "DEC", "JAN", "FEB", "MAR",
-    "APR", "MAY", "JUN", "JUL", "AUG", "SEP",
+    { es: "OCT", en: "OCT" },
+    { es: "NOV", en: "NOV" },
+    { es: "DIC", en: "DEC" },
+    { es: "ENE", en: "JAN" },
+    { es: "FEB", en: "FEB" },
+    { es: "MAR", en: "MAR" },
+    { es: "ABR", en: "APR" },
+    { es: "MAY", en: "MAY" },
+    { es: "JUN", en: "JUN" },
+    { es: "JUL", en: "JUL" },
+    { es: "AGO", en: "AUG" },
+    { es: "SEP", en: "SEP" },
   ];
   // Column distribution per month summing to 53
   const SPANS = [5, 4, 4, 5, 4, 4, 5, 4, 4, 5, 4, 5];
@@ -877,7 +964,9 @@ function initHeatmap() {
   months.appendChild(document.createElement("span"));
   MONTHS.forEach((m, k) => {
     const s = document.createElement("span");
-    s.textContent = m;
+    s.setAttribute("data-es", m.es);
+    s.setAttribute("data-en", m.en);
+    s.textContent = m.es;
     s.style.gridColumn = `span ${SPANS[k]}`;
     months.appendChild(s);
   });
@@ -887,11 +976,23 @@ function initHeatmap() {
   grid.setAttribute("aria-hidden", "true");
 
   // First column: day labels; then one column per week
-  const ROW_LABELS = ["MON", "", "WED", "", "FRI", "", ""];
+  const ROW_LABELS = [
+    { es: "LUN", en: "MON" },
+    { es: "", en: "" },
+    { es: "MIÉ", en: "WED" },
+    { es: "", en: "" },
+    { es: "VIE", en: "FRI" },
+    { es: "", en: "" },
+    { es: "", en: "" },
+  ];
   ROW_LABELS.forEach((t) => {
     const lab = document.createElement("span");
     lab.className = "hm-day";
-    lab.textContent = t;
+    if (t.es) {
+      lab.setAttribute("data-es", t.es);
+      lab.setAttribute("data-en", t.en);
+      lab.textContent = t.es;
+    }
     grid.appendChild(lab);
   });
 
@@ -918,15 +1019,89 @@ function initHeatmap() {
 
   root.replaceChildren(months, grid);
   const totalEl = $("#ghTotal");
-  if (totalEl)
-    totalEl.textContent = `${total} contributions in the last year`;
+  if (totalEl) {
+    totalEl.setAttribute("data-en", `${total} contributions in the last year`);
+    totalEl.setAttribute("data-es", `${total} contribuciones en el último año`);
+    const savedLang = localStorage.getItem("idioma") || "ES";
+    totalEl.textContent = savedLang === "EN" ? totalEl.getAttribute("data-en") : totalEl.getAttribute("data-es");
+  }
+
+  // Encendido progresivo + barrido de brillo, solo la primera vez
+  if (prefersReducedMotion) return;
+  root.classList.add("hm-arm");
+  const cells = Array.from(grid.children).filter((el) =>
+    el.classList.contains("hm-cell"),
+  );
+  cells.forEach((c, k) => {
+    const week = Math.floor(k / DAYS);
+    c.style.transitionDelay = `${week * 24}ms`;
+  });
+  const light = () => {
+    requestAnimationFrame(() => {
+      root.classList.remove("hm-arm");
+      root.classList.add("hm-lit");
+    });
+    setTimeout(() => {
+      cells.forEach((c) => c.style.removeProperty("transition-delay"));
+    }, WEEKS * 24 + 900);
+    // Ola de brillo cada 4s: recorre los dots columna por columna
+    // Solo satura celdas con actividad (l1-l4); las vacías se dejan quietas
+    const hasLevel = (cell) =>
+      cell.classList.contains("l1") ||
+      cell.classList.contains("l2") ||
+      cell.classList.contains("l3") ||
+      cell.classList.contains("l4");
+    const wave = () => {
+      for (let wcol = 0; wcol < WEEKS; wcol++) {
+        setTimeout(() => {
+          for (let d = 0; d < DAYS; d++) {
+            const cell = cells[wcol * DAYS + d];
+            if (cell && hasLevel(cell)) cell.classList.add("zap");
+          }
+        }, wcol * 18);
+        setTimeout(() => {
+          for (let d = 0; d < DAYS; d++) {
+            const cell = cells[wcol * DAYS + d];
+            if (cell) cell.classList.remove("zap");
+          }
+        }, wcol * 18 + 320);
+      }
+    };
+    wave();
+    window.setInterval(wave, 4000);
+  };
+  const obs = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        obs.disconnect();
+        light();
+      });
+    },
+    { threshold: 0.3 },
+  );
+  obs.observe(root);
+}
+
+function initAge() {
+  const el = $("#passAge");
+  if (!el) return;
+  const birthYear = 2007;
+  const birthMonth = 4;
+  const birthDay = 14;
+  const now = new Date();
+  let age = now.getFullYear() - birthYear;
+  const monthDiff = now.getMonth() - birthMonth;
+  if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birthDay)) age -= 1;
+  el.textContent = String(age);
 }
 
 /* ---------- Live Clock (Bogota) ---------- */
 function initClock() {
   const clock = $("#clock");
   const clockCOT = $("#liveClockCOT");
-  if (!clock && !clockCOT) return;
+  const contactClock = $("#contactClock");
+  if (!clock && !clockCOT && !contactClock) return;
   const fmt = new Intl.DateTimeFormat("en-US", {
     hour: "numeric",
     minute: "2-digit",
@@ -938,77 +1113,50 @@ function initClock() {
     const timeStr = fmt.format(new Date());
     if (clock) clock.textContent = timeStr;
     if (clockCOT) clockCOT.textContent = `${timeStr} COT (GMT-5)`;
+    if (contactClock) contactClock.textContent = timeStr;
   };
   tick();
   window.setInterval(tick, 1000);
 }
 
 /* ---------- Floating Controls ---------- */
-function initFabs() {
-  $("#toTop")?.addEventListener("click", () => {
-    if (window.__lenis) window.__lenis.scrollTo(0);
-    else window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
-  });
-
-  const btn = $("#quickMenuBtn");
-  const menu = $("#quickMenu");
-  if (!btn || !menu) return;
-  const setOpen = (open) => {
-    menu.classList.toggle("is-open", open);
-    btn.setAttribute("aria-expanded", String(open));
-  };
-  btn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    setOpen(!menu.classList.contains("is-open"));
-  });
-  document.addEventListener("click", (e) => {
-    if (!menu.contains(e.target)) setOpen(false);
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") setOpen(false);
-  });
-}
-
-/* ---------- Light / Dark Theme ---------- */
+/* ---------- Tema espacial: Vacío / Nebulosa ---------- */
 function initTheme() {
   const btn = $("#themeToggle");
   const label = $("#themeLabel");
   const root = document.documentElement;
-  const KEY = "tema";
-  const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
+  const KEY = "tema-v2";
+  const NEBULA = "nebula";
 
-  const isDark = () => {
+  const getTheme = () => {
     const chosen = root.getAttribute("data-theme");
-    return chosen ? chosen === "dark" : systemDark.matches;
+    return chosen === NEBULA ? NEBULA : "dark";
   };
 
   const sync = () => {
-    const dark = isDark();
-    btn?.setAttribute("aria-pressed", String(dark));
+    const neb = getTheme() === NEBULA;
+    root.classList.add("dark"); // entierra las reglas claras para siempre
+    btn?.setAttribute("aria-pressed", String(neb));
     btn?.setAttribute(
       "aria-label",
-      dark ? "Switch to light theme" : "Switch to dark theme",
+      neb ? "Switch to void theme" : "Switch to nebula theme",
     );
-    if (label) label.textContent = dark ? "LIGHT" : "DARK";
+    if (label) label.textContent = neb ? "VOID" : "NEBULA";
   };
 
   try {
     const stored = localStorage.getItem(KEY);
-    if (stored === "dark" || stored === "light")
-      root.setAttribute("data-theme", stored);
+    root.setAttribute("data-theme", stored === NEBULA ? NEBULA : "dark");
   } catch {
-    /* modo privado: se sigue sin persistencia */
+    root.setAttribute("data-theme", "dark");
   }
   sync();
-
-  systemDark.addEventListener("change", () => {
-    if (!root.getAttribute("data-theme")) sync();
-  });
 
   if (!btn) return;
 
   const apply = (next) => {
     root.setAttribute("data-theme", next);
+    root.classList.add("dark");
     try {
       localStorage.setItem(KEY, next);
     } catch {
@@ -1018,7 +1166,7 @@ function initTheme() {
   };
 
   btn.addEventListener("click", () => {
-    const next = isDark() ? "light" : "dark";
+    const next = getTheme() === NEBULA ? "dark" : NEBULA;
     if (!document.startViewTransition || prefersReducedMotion) {
       apply(next);
       return;
@@ -1196,7 +1344,7 @@ function initPassConstruction() {
     if (sobreMi) {
       startScroll = 40;
       // Complete assembly comfortably before/upon arrival at #sobre-mi (accounting for fixed header)
-      targetScroll = Math.max(450, sobreMi.offsetTop - 72);
+      targetScroll = Math.max(450, sobreMi.offsetTop - 180);
     }
 
     update();
@@ -1589,9 +1737,10 @@ function initPassConstruction() {
 
   updatePassConstruction = update;
 
-  window.addEventListener("scroll", update, { passive: true });
+  const passOnScroll = onScrollRaf(update);
+  window.addEventListener("scroll", passOnScroll, { passive: true });
   if (window.__lenis) {
-    window.__lenis.on("scroll", update);
+    window.__lenis.on("scroll", passOnScroll);
   }
   window.addEventListener("resize", measure, { passive: true });
 
@@ -1629,7 +1778,7 @@ function initPageProgressiveConstruction() {
   const ghCard = $("#ghCard");
 
   const contactTitle = $("#contactTitle");
-  const contactCards = $$("#contactGrid .card");
+  const contactCards = $$("#contactGrid .uplink");
 
   const step = (x, a, b) => {
     if (x <= a) return 0;
@@ -1705,7 +1854,9 @@ function initPageProgressiveConstruction() {
       if (expSticky) {
         const pSticky = step(pExpHeader, 0.10, 0.50);
         expSticky.style.opacity = String(pSticky);
-        expSticky.style.transform = `translateY(${(1 - pSticky) * 24}px)`;
+        // Sin translateY aquí: el sticky vive en .exp-left y un transform
+        // en el hijo pelearía con el fijado durante el scroll.
+        expSticky.style.removeProperty("transform");
       }
 
       // Categories & Skill Rows
@@ -1787,12 +1938,841 @@ function initPageProgressiveConstruction() {
     }
   };
 
-  window.addEventListener("scroll", update, { passive: true });
+  window.addEventListener("scroll", onScrollRaf(update), { passive: true });
   if (window.__lenis) {
-    window.__lenis.on("scroll", update);
+    window.__lenis.on("scroll", onScrollRaf(update));
   }
   window.addEventListener("resize", update, { passive: true });
   requestAnimationFrame(() => update());
+}
+
+/* ---------- Copiar email ---------- */
+function initCopyEmail() {
+  const btns = $$("[data-copy-email]");
+  if (!btns.length) return;
+  const checkSvg =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+  btns.forEach((btn) => {
+    const origSvg = btn.querySelector("svg")?.outerHTML || "";
+    btn.addEventListener("click", () => {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText("srkmlo16@gmail.com").catch(() => {});
+      }
+      btn.classList.add("ok");
+      const isEn = (localStorage.getItem("idioma") || "ES") === "EN";
+      btn.innerHTML = checkSvg + `<span> ${isEn ? "[ copied! ]" : "[ ¡copiado! ]"}</span>`;
+      setTimeout(() => {
+        btn.classList.remove("ok");
+        const curLang = localStorage.getItem("idioma") || "ES";
+        const copyText = curLang === "EN" ? "[ copy address ]" : "[ copiar dirección ]";
+        btn.innerHTML = (origSvg || checkSvg) + `<span data-es="[ copiar dirección ]" data-en="[ copy address ]">${copyText}</span>`;
+      }, 1400);
+    });
+  });
+}
+
+/* ---------- Fondo espacio exterior: estrellas + meteoritos ---------- */
+function initScrollBg() {
+  const canvas = $("#scrollBg");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  // Atlas profundo: constelaciones reales, galaxias, planetas-punto y un
+  // agujero negro. Las entidades nombradas muestran etiqueta al hover.
+  const COL = 1100;
+  let w = 0;
+  let h = 0;
+  let maxScroll = 0;
+  let dark = true;
+  let stars = [];
+  let constels = [];
+  let galaxies = [];
+  let wanderers = []; // planetas: solo puntos brillantes (deep space)
+  let pulsar = null; // faro cósmico con haces giratorios
+  let meteors = [];
+  let nextMeteor = 0;
+  let raf = 0;
+  let t = 0;
+  let prevY = window.scrollY || 0;
+  let sVel = 0; // velocidad de scroll suavizada (solo aviva brillo y meteoritos)
+  const mouse = { x: -9999, y: -9999, tx: -9999, ty: -9999 };
+  const spots = []; // {x, y, rad, text} candidatos a etiqueta este frame
+
+  const readTheme = () => {
+    dark = document.documentElement.getAttribute("data-theme") !== "light";
+  };
+
+  const buildCosmos = () => {
+    const margin = (w - COL) / 2;
+    stars = [];
+    constels = [];
+    galaxies = [];
+    wanderers = [];
+    pulsar = null;
+    maxScroll = Math.max(0, document.documentElement.scrollHeight - h);
+    if (margin < 120) return; // sin margen suficiente: limpio
+    const laneX = (side) => (side ? w - margin / 2 : margin / 2);
+    const span = maxScroll * 0.95 + h; // rango vertical a poblar
+    // Estrellas en laterales, posición fija en el documento
+    for (let i = 0; i < 320; i++) {
+      const side = i % 2 === 0 ? 0 : 1;
+      const hero = Math.random() < 0.08;
+      stars.push({
+        x: laneX(side) + (Math.random() - 0.5) * (margin - 50),
+        docY: Math.random() * span,
+        r: hero ? 2.0 + Math.random() * 0.9 : 0.6 + Math.random() * 1.6,
+        hero,
+        depth: 0.3 + Math.random() * 0.6, // paralaje: lo lejos se mueve menos
+        ph: Math.random() * 6.28,
+        tw: 1.5 + Math.random() * 3.5, // parpadeo propio de cada estrella
+        damp: 3 + Math.random() * 6, // deriva lenta, queda anclada
+        dsp: 0.1 + Math.random() * 0.25,
+        dph: Math.random() * 6.28,
+        accent: Math.random() < 0.18,
+        a: hero ? 0.6 + Math.random() * 0.25 : 0.25 + Math.random() * 0.35,
+        wide: false,
+      });
+    }
+    // Polvo estelar: micro-estrellas tenues a todo lo ancho (se ven en los
+    // huecos entre secciones y dan profundidad al viaje)
+    for (let i = 0; i < 110; i++) {
+      stars.push({
+        x: Math.random() * w,
+        docY: Math.random() * span,
+        r: 0.4 + Math.random() * 0.5,
+        hero: false,
+        depth: 0.15 + Math.random() * 0.25,
+        ph: Math.random() * 6.28,
+        tw: 1 + Math.random() * 2.5,
+        damp: 2 + Math.random() * 3,
+        dsp: 0.08 + Math.random() * 0.15,
+        dph: Math.random() * 6.28,
+        accent: Math.random() < 0.1,
+        a: 0.15 + Math.random() * 0.15,
+        wide: true,
+      });
+    }
+    // Constelaciones reales: TAURO (con Pléyades), ORIÓN y CASIOPEA.
+    // Rotación leve para que sigan reconociéndose; repartidas a lo alto.
+    const SHAPES = [
+      {
+        name: "TAURUS",
+        fit: 170, // compacta: los cuernos no se desparraman
+        pts: [
+          [0.9, 0.55], // 0 Aldebarán (héroe)
+          [0.35, 0.3], // 1
+          [-0.15, 0.05], // 2 vértice de las Híades
+          [0.3, 0.75], // 3 brazo inferior
+          [0.75, 1.05], // 4 punta inferior
+          [-0.5, -0.55], // 5 cuerno superior
+          [-0.95, -1.25], // 6 punta del cuerno
+          [-0.35, -0.7], // 7 cuerno inferior
+          [-0.75, -1.35], // 8 punta del cuerno
+          [0.55, -0.15], // 9 frente
+        ],
+        mags: [2.6, 1.3, 1.4, 1.3, 1.2, 1.2, 1.1, 1.2, 1.1, 1.2],
+        links: [[2, 1], [1, 0], [2, 3], [3, 4], [1, 9], [9, 3], [1, 5], [5, 6], [9, 7], [7, 8]],
+        heroes: [{ idx: 0, name: "ALDEBARAN", col: [255, 176, 102] }],
+        extra: [ // Pléyades: grupito suelto, tal cual se ven
+          [1.75, -0.95], [1.6, -0.8], [1.9, -0.78],
+          [1.7, -1.1], [1.85, -1.02], [1.56, -1.0],
+        ],
+      },
+      {
+        name: "ORION",
+        pts: [
+          [-1.0, -1.2], // 0 Betelgeuse (héroe)
+          [1.0, -1.05], // 1 Bellatrix
+          [-0.32, -0.1], // 2 cinturón
+          [0, 0], // 3
+          [0.32, 0.1], // 4
+          [0.02, 0.45], // 5 espada
+          [0.05, 0.78], // 6 espada
+          [0.95, 1.3], // 7 Rigel (héroe)
+          [-0.9, 1.25], // 8 Saiph
+        ],
+        mags: [2.6, 1.6, 1.8, 1.9, 1.8, 1.2, 1.0, 2.6, 1.5],
+        links: [[0, 2], [1, 4], [2, 3], [3, 4], [3, 5], [5, 6], [2, 8], [4, 7]],
+        heroes: [
+          { idx: 0, name: "BETELGEUSE", col: [255, 120, 90] },
+          { idx: 7, name: "RIGEL", col: [180, 200, 255] },
+        ],
+      },
+      {
+        name: "CASSIOPEIA",
+        pts: [
+          [-1.3, 0.25], [-0.65, -0.35], [0, 0.25], [0.65, -0.35], [1.3, 0.25],
+        ],
+        mags: [1.6, 1.4, 1.9, 1.4, 1.5],
+        links: [[0, 1], [1, 2], [2, 3], [3, 4]],
+        heroes: [{ idx: 2, name: "GAMMA CAS", col: [190, 210, 255] }],
+      },
+      {
+        name: "URSA MAJOR",
+        pts: [
+          [-1.3, -0.9], // 0 Dubhe
+          [-1.35, 0.1], // 1 Merak
+          [-0.35, 0.15], // 2 Phecda
+          [-0.3, -0.85], // 3 Megrez
+          [0.7, -0.7], // 4 Alioth
+          [1.6, -0.5], // 5 Mizar
+          [1.75, -0.32], // 6 Alcor (compañera diminuta)
+          [2.4, -0.2], // 7 Alkaid
+        ],
+        mags: [1.8, 1.6, 1.5, 1.4, 1.7, 1.8, 0.8, 1.7],
+        links: [[0, 1], [1, 2], [2, 3], [3, 0], [3, 4], [4, 5], [5, 7], [5, 6]],
+        heroes: [],
+      },
+      {
+        name: "LYRA",
+        pts: [
+          [0, -1.0], // 0 Vega (héroe)
+          [0.45, -0.25], // 1 Epsilon
+          [0.35, 0.45], // 2 Sheliak
+          [-0.35, 0.45], // 3 Sulafat
+          [-0.45, -0.25], // 4 Delta
+        ],
+        mags: [2.8, 1.3, 1.4, 1.4, 1.3],
+        links: [[0, 1], [0, 4], [1, 2], [2, 3], [3, 4]],
+        heroes: [{ idx: 0, name: "VEGA", col: [190, 210, 255] }],
+      },
+    ];
+    SHAPES.forEach((shape, k) => {
+      const side = k % 2 === 0 ? 0 : 1;
+      const ang = (Math.random() - 0.5) * 0.5; // leve: debe reconocerse
+      // Auto-ajuste: ninguna constelación supera los 200px (no invade contenido)
+      const bxs = shape.pts.map((p) => p[0]);
+      const bys = shape.pts.map((p) => p[1]);
+      const dim = Math.max(
+        Math.max(...bxs) - Math.min(...bxs),
+        Math.max(...bys) - Math.min(...bys),
+        0.001,
+      );
+      const sc = Math.min(75 + Math.random() * 30, (shape.fit || 200) / dim);
+      const cosA = Math.cos(ang);
+      const sinA = Math.sin(ang);
+      const cx = laneX(side) + (Math.random() - 0.5) * Math.max(30, margin - 260);
+      const cyy = (span * (k + 0.5)) / SHAPES.length + (Math.random() - 0.5) * 140;
+      const heroIdx = new Set(shape.heroes.map((hh) => hh.idx));
+      const pts = shape.pts.map(([px, py], idx) => [
+        cx + (px * cosA - py * sinA) * sc,
+        cyy + (px * sinA + py * cosA) * sc,
+        heroIdx.has(idx) ? 2.3 : 0.9 + shape.mags[idx] * 0.35,
+      ]);
+      constels.push({
+        name: shape.name,
+        pts,
+        links: shape.links,
+        heroes: shape.heroes,
+        extra: (shape.extra || []).map(([px, py]) => [
+          cx + (px * cosA - py * sinA) * sc,
+          cyy + (px * sinA + py * cosA) * sc,
+        ]),
+        depth: 0.35 + Math.random() * 0.2,
+        a: 0.22 + Math.random() * 0.12,
+      });
+    });
+    // Galaxias lejanas: resplandores difusos, casi quietas, respirando lento.
+    // ANDROMEDA va en un lateral del primer tercio: imposible no verla.
+    const G = ["241,165,160", "120,150,255", "90,200,190"];
+    const nG = 5 + Math.floor(Math.random() * 2);
+    const andSide = Math.random() < 0.5 ? 0 : 1;
+    for (let i = 0; i < nG; i++) {
+      const isAnd = i === 0;
+      galaxies.push({
+        x: isAnd
+          ? laneX(andSide) + (Math.random() - 0.5) * 80
+          : Math.random() * w,
+        docY: isAnd ? span * (0.18 + Math.random() * 0.12) : Math.random() * span,
+        rad: isAnd ? 230 + Math.random() * 90 : 140 + Math.random() * 240,
+        depth: 0.12 + Math.random() * 0.18,
+        col: G[i % G.length],
+        a: isAnd ? 0.13 + Math.random() * 0.05 : 0.09 + Math.random() * 0.07,
+        ph: Math.random() * 6.28,
+        name: isAnd ? "ANDROMEDA" : null,
+      });
+    }
+    // Planetas del espacio profundo: solo puntos brillantes
+    const PLANETS = [
+      { name: "KEPLER-186 f", col: [170, 200, 255] },
+      { name: "TRAPPIST-1 e", col: [255, 220, 170] },
+    ];
+    PLANETS.forEach((p, i) => {
+      const side = i % 2 === 0 ? 0 : 1;
+      wanderers.push({
+        x: laneX(side) + (Math.random() - 0.5) * Math.max(30, margin - 160),
+        docY: Math.random() * span,
+        depth: 0.45 + Math.random() * 0.15,
+        r: 1.6 + Math.random() * 0.5,
+        col: p.col,
+        ph: Math.random() * 6.28,
+        tw: 1 + Math.random() * 2,
+        name: p.name,
+      });
+    });
+    // Púlsar del Cangrejo: faro cósmico con haces giratorios, en un lateral
+    // de la zona media (pasas por él sí o sí al recorrer la página)
+    const psSide = Math.random() < 0.5 ? 0 : 1;
+    pulsar = {
+      x: laneX(psSide) + (Math.random() - 0.5) * Math.max(30, margin - 220),
+      docY: span * (0.4 + Math.random() * 0.2),
+      depth: 0.45,
+      r: 2.4,
+      ph: Math.random() * 6.28,
+      spin: 0.7 + Math.random() * 0.5,
+      name: "CRAB PULSAR",
+    };
+    // Atlas por consola: dónde cayó cada cosa en esta carga
+    try {
+      console.info(
+        "[cosmos] " +
+          constels.map((c) => `${c.name}@${Math.round(c.pts[0][1])}`).join(" · ") +
+          ` · ANDROMEDA@${Math.round(galaxies[0].docY)}` +
+          ` · ${pulsar.name}@${Math.round(pulsar.docY)}` +
+          " (docY px, con paralaje aparecen al hacer scroll)",
+      );
+    } catch (_) {
+      /* consola no disponible: el cielo sigue igual */
+    }
+  };
+
+  const resize = () => {
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    w = window.innerWidth;
+    h = window.innerHeight;
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    buildCosmos();
+  };
+
+  const colFor = (d) => {
+    if (d.accent) return dark ? "241,165,160" : "200,100,95";
+    return dark ? "200,200,215" : "70,60,85";
+  };
+
+  // Sprites pre-renderizados: el degradado se hornea una vez y por frame
+  // solo hay un drawImage barato (los gradientes por frame son caros)
+  const glowCache = {};
+  const glowSprite = (col, rad) => {
+    const r = Math.max(2, Math.round(rad));
+    const key = `${col}@${r}`;
+    let spr = glowCache[key];
+    if (!spr) {
+      if (Object.keys(glowCache).length > 24) {
+        for (const k in glowCache) delete glowCache[k];
+      }
+      spr = document.createElement("canvas");
+      spr.width = r * 2;
+      spr.height = r * 2;
+      const c = spr.getContext("2d");
+      const grad = c.createRadialGradient(r, r, 0, r, r, r);
+      grad.addColorStop(0, `rgba(${col},0.9)`);
+      grad.addColorStop(1, `rgba(${col},0)`);
+      c.fillStyle = grad;
+      c.fillRect(0, 0, r * 2, r * 2);
+      glowCache[key] = spr;
+    }
+    return spr;
+  };
+
+  const paint = (boost) => {
+    const y = window.scrollY || 0;
+    ctx.clearRect(0, 0, w, h);
+    spots.length = 0; // candidatos a etiqueta este frame
+    // Suma de luz: los brillos superpuestos se acumulan como en el cielo real
+    if (dark) ctx.globalCompositeOperation = "lighter";
+    // Galaxias: sprites enormes que respiran muy lento
+    galaxies.forEach((g) => {
+      const sy = g.docY - y * g.depth;
+      if (sy < -g.rad || sy > h + g.rad) return;
+      const breathe = 0.8 + 0.2 * Math.sin(t * 0.35 + g.ph);
+      ctx.globalAlpha = Math.min(1, (g.a + boost * 0.3) * breathe * 1.2);
+      ctx.drawImage(glowSprite(g.col, g.rad), g.x - g.rad, sy - g.rad);
+      ctx.globalAlpha = 1;
+      if (g.name) spots.push({ x: g.x, y: sy, rad: Math.min(80, g.rad * 0.4), text: g.name });
+    });
+    const margin = (w - COL) / 2;
+    if (margin < 120) {
+      ctx.globalCompositeOperation = "source-over";
+      return;
+    }
+    // Constelaciones reales: líneas + nodos con magnitud + héroes de color
+    constels.forEach((c) => {
+      const off = y * c.depth;
+      let vis = false;
+      const sp = c.pts.map(([px, py]) => {
+        const sy = py - off;
+        if (sy > -30 && sy < h + 30) vis = true;
+        return [px, sy];
+      });
+      if (!vis) return;
+      ctx.strokeStyle = `rgba(180,190,220, ${c.a})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      c.links.forEach(([a, b]) => {
+        ctx.moveTo(sp[a][0], sp[a][1]);
+        ctx.lineTo(sp[b][0], sp[b][1]);
+      });
+      ctx.stroke();
+      // Pléyades y cía: puntos sueltos sin unir, tal cual se ven
+      (c.extra || []).forEach(([px, py]) => {
+        const sy = py - off;
+        if (sy < -6 || sy > h + 6) return;
+        ctx.beginPath();
+        ctx.arc(px, sy, 0.9, 0, 6.2832);
+        ctx.fillStyle = "rgba(235,240,255, 0.7)";
+        ctx.fill();
+      });
+      const heroByIdx = {};
+      (c.heroes || []).forEach((hh) => {
+        heroByIdx[hh.idx] = hh;
+      });
+      sp.forEach(([px, sy, m], k) => {
+        if (sy < -8 || sy > h + 8) return;
+        const hh = heroByIdx[k];
+        if (hh) {
+          ctx.beginPath();
+          ctx.arc(px, sy, 2.3, 0, 6.2832);
+          ctx.fillStyle = `rgba(${hh.col[0]},${hh.col[1]},${hh.col[2]},0.95)`;
+          ctx.fill();
+          spots.push({ x: px, y: sy, rad: 30, text: hh.name });
+        } else {
+          ctx.beginPath();
+          ctx.arc(px, sy, m, 0, 6.2832);
+          ctx.fillStyle = `rgba(235,240,255, ${Math.min(0.95, c.a + 0.5)})`;
+          ctx.fill();
+          spots.push({ x: px, y: sy, rad: 22, text: c.name });
+        }
+      });
+    });
+    // Planetas del espacio profundo: solo puntos brillantes
+    wanderers.forEach((p) => {
+      const sy = p.docY - y * p.depth;
+      if (sy < -12 || sy > h + 12) return;
+      const twk = 0.75 + 0.25 * Math.sin(t * p.tw + p.ph);
+      ctx.fillStyle = `rgba(${p.col[0]},${p.col[1]},${p.col[2]}, ${0.14 * twk})`;
+      ctx.beginPath();
+      ctx.arc(p.x, sy, 8, 0, 6.2832);
+      ctx.fill();
+      ctx.fillStyle = `rgba(${p.col[0]},${p.col[1]},${p.col[2]}, ${0.22 * twk})`;
+      ctx.beginPath();
+      ctx.arc(p.x, sy, 4, 0, 6.2832);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(p.x, sy, p.r, 0, 6.2832);
+      ctx.fillStyle = `rgba(${p.col[0]},${p.col[1]},${p.col[2]}, ${0.95 * twk})`;
+      ctx.fill();
+      spots.push({ x: p.x, y: sy, rad: 24, text: p.name });
+    });
+    // Púlsar: núcleo parpadeante + doble haz giratorio estilo faro
+    if (pulsar) {
+      const ps = pulsar;
+      const sy = ps.docY - y * ps.depth;
+      if (sy > -130 && sy < h + 130) {
+        const ang = t * ps.spin + ps.ph;
+        const blink = 0.6 + 0.4 * Math.sin(t * 6 + ps.ph);
+        // Haces primero (detrás del núcleo)
+        ctx.save();
+        ctx.translate(ps.x, sy);
+        ctx.rotate(ang);
+        const beamLen = 70;
+        for (const s of [1, -1]) {
+          const grad = ctx.createLinearGradient(0, 0, s * beamLen, 0);
+          grad.addColorStop(0, `rgba(190,215,255, ${0.35 * blink})`);
+          grad.addColorStop(1, "rgba(190,215,255, 0)");
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.moveTo(0, -2.5);
+          ctx.lineTo(s * beamLen, -9);
+          ctx.lineTo(s * beamLen, 9);
+          ctx.lineTo(0, 2.5);
+          ctx.closePath();
+          ctx.fill();
+        }
+        ctx.restore();
+        // Halo + núcleo
+        const halo = ctx.createRadialGradient(ps.x, sy, 0, ps.x, sy, 16);
+        halo.addColorStop(0, `rgba(220,232,255, ${0.5 * blink})`);
+        halo.addColorStop(1, "rgba(220,232,255, 0)");
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(ps.x, sy, 16, 0, 6.2832);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(ps.x, sy, ps.r, 0, 6.2832);
+        ctx.fillStyle = `rgba(240,246,255, ${0.95 * blink})`;
+        ctx.fill();
+        spots.push({ x: ps.x, y: sy, rad: 60, text: ps.name });
+      }
+    }
+    // Estrellas: ancladas al cielo con deriva lenta + parpadeo profundo
+    stars.forEach((d) => {
+      const sy =
+        d.docY - y * d.depth + Math.cos(t * d.dsp * 0.8 + d.dph) * d.damp;
+      if (sy < -8 || sy > h + 8) return;
+      const sx = d.x + Math.sin(t * d.dsp + d.dph) * d.damp;
+      const twk = 0.6 + 0.4 * (0.5 + 0.5 * Math.sin(t * d.tw + d.ph));
+      const alpha = Math.min(0.95, (d.a + boost) * twk);
+      if (d.hero) {
+        ctx.fillStyle = `rgba(${colFor(d)}, ${alpha * 0.1})`;
+        ctx.beginPath();
+        ctx.arc(sx, sy, d.r * 4, 0, 6.2832);
+        ctx.fill();
+        ctx.fillStyle = `rgba(${colFor(d)}, ${alpha * 0.25})`;
+        ctx.beginPath();
+        ctx.arc(sx, sy, d.r * 2.4, 0, 6.2832);
+        ctx.fill();
+      }
+      ctx.beginPath();
+      ctx.arc(sx, sy, d.r, 0, 6.2832);
+      ctx.fillStyle = `rgba(${colFor(d)}, ${alpha})`;
+      ctx.fill();
+    });
+    ctx.globalCompositeOperation = "source-over";
+  };
+
+  // Meteorito: cabeza brillante + cola en degradado, diagonal aleatoria
+  const spawnMeteor = () => {
+    const ang = Math.PI / 4 + (Math.random() - 0.5) * 0.6; // ~45° ± 17°
+    const dir = Math.random() < 0.5 ? 1 : -1; // cae hacia der o izq
+    const speed = 9 + Math.random() * 7;
+    meteors.push({
+      x: Math.random() * w,
+      y: Math.random() * h * 0.7, // nace en cualquier parte del cielo
+      vx: Math.cos(ang) * speed * dir,
+      vy: Math.abs(Math.sin(ang)) * speed * 0.9 + 2,
+      life: 1,
+      decay: 0.008 + Math.random() * 0.01,
+      len: speed * (9 + Math.random() * 5),
+      wid: 1.2 + Math.random() * 1.2,
+    });
+    if (meteors.length > 4) meteors.shift();
+  };
+
+  const drawMeteor = (m) => {
+    const mag = Math.hypot(m.vx, m.vy) || 1;
+    const ux = m.vx / mag;
+    const uy = m.vy / mag;
+    const tx = m.x - ux * m.len;
+    const ty = m.y - uy * m.len;
+    const head = dark ? "235,240,255" : "70,60,90";
+    const mid = dark ? "150,170,220" : "200,100,95";
+    const grad = ctx.createLinearGradient(m.x, m.y, tx, ty);
+    grad.addColorStop(0, `rgba(${head}, ${0.9 * m.life})`);
+    grad.addColorStop(0.35, `rgba(${mid}, ${0.35 * m.life})`);
+    grad.addColorStop(1, `rgba(${mid}, 0)`);
+    ctx.save();
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = m.wid;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(m.x, m.y);
+    ctx.lineTo(tx, ty);
+    ctx.stroke();
+    ctx.restore();
+    // Cabeza con halo en capas (barato, sin shadowBlur)
+    ctx.beginPath();
+    ctx.arc(m.x, m.y, m.wid * 2.6, 0, 6.2832);
+    ctx.fillStyle = `rgba(${head}, ${0.18 * m.life})`;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(m.x, m.y, m.wid * 1.2, 0, 6.2832);
+    ctx.fillStyle = `rgba(${head}, ${0.95 * m.life})`;
+    ctx.fill();
+  };
+
+  // Etiqueta flotante para la entidad nombrada bajo el mouse
+  const drawLabel = (sx, sy, text) => {
+    ctx.save();
+    ctx.letterSpacing = "2px";
+    ctx.font = "600 11px ui-monospace, SFMono-Regular, Menlo, monospace";
+    const twd = ctx.measureText(text).width;
+    const padX = 10;
+    const padY = 7;
+    const bx = Math.min(
+      Math.max(sx, twd / 2 + padX + 8),
+      w - twd / 2 - padX - 8,
+    );
+    const by = Math.max(34, sy - 34);
+    ctx.fillStyle = dark ? "rgba(8,8,16,0.78)" : "rgba(255,255,255,0.9)";
+    ctx.strokeStyle = dark
+      ? "rgba(241,165,160,0.4)"
+      : "rgba(200,100,95,0.5)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    if (typeof ctx.roundRect === "function") {
+      ctx.roundRect(bx - twd / 2 - padX, by - padY, twd + padX * 2, 22, 11);
+    } else {
+      ctx.rect(bx - twd / 2 - padX, by - padY, twd + padX * 2, 22);
+    }
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = dark ? "#f3eff2" : "#1a1620";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, bx, by + 4);
+    ctx.restore();
+  };
+
+  const draw = () => {
+    t += 0.016;
+    // Scroll up/down: el signo arrastra en la dirección correspondiente
+    const y = window.scrollY || 0;
+    const vel = y - prevY;
+    prevY = y;
+    sVel += (vel - sVel) * 0.12;
+    mouse.x += (mouse.tx - mouse.x) * 0.25;
+    mouse.y += (mouse.ty - mouse.y) * 0.25;
+    // Cielo quieto: el scroll solo aviva el brillo un poco; el viaje lo
+    // pone la página al moverse entre las estrellas (nunca hay stretch aquí)
+    const boost = Math.min(0.4, Math.abs(sVel) * 0.015);
+    paint(boost);
+    // Meteoritos aleatorios: caen en cualquier momento y lugar (máx 3)
+    const now = performance.now();
+    if (now >= nextMeteor) {
+      spawnMeteor();
+      nextMeteor = now + 1200 + Math.random() * 3800; // cada 1–5s
+    }
+    meteors = meteors.filter(
+      (m) => m.life > 0 && m.x > -300 && m.x < w + 300 && m.y < h + 300,
+    );
+    meteors.forEach((m) => {
+      m.x += m.vx;
+      m.y += m.vy + sVel * 0.05; // el scroll también los perturba un poco
+      m.life -= m.decay;
+      if (m.life > 0) drawMeteor(m);
+    });
+    // Etiqueta: la entidad nombrada más cercana al mouse
+    let best = null;
+    let bestD = 1e9;
+    spots.forEach((s) => {
+      const sdx = mouse.x - s.x;
+      const sdy = mouse.y - s.y;
+      const sd = Math.sqrt(sdx * sdx + sdy * sdy);
+      if (sd < s.rad && sd < bestD) {
+        bestD = sd;
+        best = s;
+      }
+    });
+    if (best) drawLabel(best.x, best.y, best.text);
+    raf = requestAnimationFrame(draw);
+  };
+
+  if (prefersReducedMotion) {
+    readTheme();
+    resize();
+    paint(0); // una sola capa estática
+    window.addEventListener("resize", () => {
+      readTheme();
+      resize();
+      paint(0);
+    });
+    return;
+  }
+
+  window.addEventListener("resize", resize);
+  window.addEventListener(
+    "pointermove",
+    (e) => {
+      mouse.tx = e.clientX;
+      mouse.ty = e.clientY;
+    },
+    { passive: true },
+  );
+  const themeBtn = $("#themeToggle");
+  if (themeBtn)
+    themeBtn.addEventListener("click", () =>
+      setTimeout(() => {
+        readTheme();
+        buildCosmos();
+      }, 50),
+    );
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) cancelAnimationFrame(raf);
+    else {
+      prevY = window.scrollY || 0;
+      raf = requestAnimationFrame(draw);
+    }
+  });
+  readTheme();
+  resize();
+  prevY = window.scrollY || 0;
+  nextMeteor = performance.now() + 800; // el primero cae pronto
+  raf = requestAnimationFrame(draw);
+}
+
+/* Stretch elástico retirado: la página ya no cede en los extremos. */
+
+/* ---------- Modal del Developer Pass (clic para ver en detalle) ---------- */
+function initPassModal() {
+  const pass = $("#developerPass");
+  const modal = $("#passModal");
+  const body = $("#passModalBody");
+  if (!pass || !modal || !body) return;
+
+  let lastFocus = null;
+
+  const open = () => {
+    // Clon limpio: sin ids duplicados y sin estilos inline de la
+    // construcción progresiva (siempre se ve completo)
+    const clone = pass.cloneNode(true);
+    clone.removeAttribute("id");
+    clone.removeAttribute("style");
+    clone.removeAttribute("tabindex");
+    clone.removeAttribute("role");
+    clone.removeAttribute("aria-haspopup");
+    clone.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"));
+    clone.querySelectorAll("[style]").forEach((el) => el.removeAttribute("style"));
+    body.replaceChildren(clone);
+
+    lastFocus = document.activeElement;
+    modal.hidden = false;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => modal.classList.add("is-open"));
+    });
+    document.body.style.overflow = "hidden";
+    if (window.__lenis) window.__lenis.stop();
+  };
+
+  const close = () => {
+    modal.classList.remove("is-open");
+    document.body.style.overflow = "";
+    if (window.__lenis) window.__lenis.start();
+    window.setTimeout(() => {
+      modal.hidden = true;
+      body.replaceChildren();
+      if (lastFocus && typeof lastFocus.focus === "function") {
+        lastFocus.focus({ preventScroll: true });
+      }
+    }, 320);
+  };
+
+  pass.setAttribute("tabindex", "0");
+  pass.setAttribute("role", "button");
+  pass.setAttribute("aria-haspopup", "dialog");
+  pass.addEventListener("click", open);
+  pass.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      open();
+    }
+  });
+  modal.querySelector("[data-close]")?.addEventListener("click", close);
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !modal.hidden) close();
+  });
+}
+
+/* ---------- Modal de la Pieza Promocional 4K UniStack (Opción C) ---------- */
+function initPromoModal() {
+  const modal = $("#promoModal");
+  const modalImg = $("#promoModalImg");
+  if (!modal) return;
+
+  let lastFocus = null;
+
+  const open = () => {
+    lastFocus = document.activeElement;
+    const isLight = document.documentElement.getAttribute("data-theme") === "light";
+    if (modalImg) {
+      modalImg.src = isLight
+        ? "assets/projects/unistack-promocional-light-4k.webp"
+        : "assets/projects/unistack-promocional-4k.webp";
+    }
+    modal.hidden = false;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => modal.classList.add("is-open"));
+    });
+    document.body.style.overflow = "hidden";
+    if (window.__lenis) window.__lenis.stop();
+  };
+
+  const close = () => {
+    modal.classList.remove("is-open");
+    document.body.style.overflow = "";
+    if (window.__lenis) window.__lenis.start();
+    window.setTimeout(() => {
+      modal.hidden = true;
+      if (lastFocus && typeof lastFocus.focus === "function") {
+        lastFocus.focus({ preventScroll: true });
+      }
+    }, 320);
+  };
+
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("#openPromoBtn, [data-open-promo]")) {
+      e.preventDefault();
+      open();
+      return;
+    }
+    if (e.target.closest("#promoModal [data-close], #promoModal .promo-modal-backdrop")) {
+      close();
+      return;
+    }
+  });
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !modal.hidden) close();
+  });
+}
+
+/* ---------- Typewriter: solo la primera vez que se ve ---------- */
+function initTypewriter() {
+  const els = $$("[data-typewriter]");
+  if (!els.length) return;
+  if (prefersReducedMotion) return; // se muestra directo, sin teclear
+
+  const typeEl = (el) => {
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    let n;
+    while ((n = walker.nextNode())) {
+      if (n.nodeValue && n.nodeValue.length) nodes.push([n, n.nodeValue]);
+    }
+    if (!nodes.length) return;
+    nodes.forEach(([node]) => {
+      node.nodeValue = "";
+    });
+    const caret = document.createElement("span");
+    caret.className = "type-caret";
+    caret.setAttribute("aria-hidden", "true");
+    el.appendChild(caret);
+
+    const total = nodes.reduce((a, [, t]) => a + t.length, 0);
+    const perChar = Math.max(6, Math.min(22, 800 / Math.max(total, 1)));
+    let ni = 0;
+    let ci = 0;
+    const tick = () => {
+      if (ni >= nodes.length || !caret.isConnected) {
+        caret.remove();
+        return;
+      }
+      const [node, full] = nodes[ni];
+      node.nodeValue = full.slice(0, ++ci);
+      if (ci >= full.length) {
+        ni++;
+        ci = 0;
+      }
+      setTimeout(tick, perChar);
+    };
+    tick();
+  };
+
+  const obs = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        obs.unobserve(el);
+        el.removeAttribute("data-typewriter");
+        typeEl(el);
+      });
+    },
+    { threshold: 0.2, rootMargin: "0px 0px 120px 0px" },
+  );
+  els.forEach((el) => obs.observe(el));
 }
 
 /* ---------- Arranque ---------- */
@@ -1807,7 +2787,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initTheme();
   initLenis();
   initNav();
-  initLanguage();
   initCursor();
   initLens();
   initAnchors();
@@ -1815,8 +2794,14 @@ document.addEventListener("DOMContentLoaded", () => {
   initWork();
   initHeatmap();
   initClock();
+  initAge();
+  initLanguage();
+  initCopyEmail();
+  initScrollBg();
+  initPassModal();
+  initPromoModal();
+  initTypewriter();
   initPassConstruction();
   initPageProgressiveConstruction();
-  initFabs();
 });
 

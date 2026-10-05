@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark" data-theme="dark">
 
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>Camilo Pineda · Design. Code. Create.</title>
+	<title>Design. Code. Create.</title>
 	<meta name="description"
 		content="Portfolio of Camilo Pineda: Native Android engineering, high-performance web products, and deliberate interaction design." />
 	<meta name="theme-color" content="#08060d" />
@@ -30,29 +30,35 @@
 	<link
 		href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=Caveat:wght@500;600&display=swap"
 		rel="stylesheet" />
-	<link rel="stylesheet" href="css/styles.css" />
+	<link rel="stylesheet" href="css/styles.css?v=31" />
 
 	<!--
     Only inline script on the page, runs before first paint to prevent theme flash.
     -->
 	<script>
 		try {
-			var t = localStorage.getItem("tema");
-			if (t === "dark" || t === "light")
+			var t = localStorage.getItem("tema-v2");
+			document.documentElement.classList.add("dark");
+			if (t === "dark" || t === "nebula")
 				document.documentElement.setAttribute("data-theme", t);
-		} catch (e) { }
+			else document.documentElement.setAttribute("data-theme", "dark");
+		} catch (e) {
+			document.documentElement.classList.add("dark");
+			document.documentElement.setAttribute("data-theme", "dark");
+		}
 	</script>
 </head>
 
 <body>
-	<a class="skip-link" href="#main">Skip to content</a>
+	<a class="skip-link" href="#main" data-es="Saltar al contenido" data-en="Skip to content">Saltar al contenido</a>
+	<canvas id="scrollBg" aria-hidden="true"></canvas>
 
 	<!-- ================= 01. PERMANENT FIXED HEADER ================= -->
 	<header class="site-header" id="siteHeader">
 		<div class="header-inner">
 			<!-- Left: Terminal brand -->
 			<div class="header-left">
-				<a href="#inicio" class="terminal-brand" aria-label="Kmlozmz Home">
+				<a href="#inicio" class="terminal-brand" aria-label="Kmlozmz Home" data-aria-es="Inicio Kmlozmz" data-aria-en="Kmlozmz Home">
 					<span class="terminal-brand-sym">~&gt;</span>
 					<span>Kmlo_zmz</span>
 					<span class="terminal-cursor-beam" aria-hidden="true"></span>
@@ -60,7 +66,7 @@
 			</div>
 
 			<!-- Center: Navigation (Option 3: Riel Minimalista Luminous, 100% Dead-Centered) -->
-			<nav class="header-nav nav-style-line" id="mainHeaderNav" aria-label="Main Navigation">
+			<nav class="header-nav nav-style-line" id="mainHeaderNav" aria-label="Main Navigation" data-aria-es="Navegación principal" data-aria-en="Main Navigation">
 				<div class="nav-active-pill" id="navActivePill" aria-hidden="true"></div>
 				<a href="#inicio" class="nav-btn active" data-index="0" data-es="Inicio" data-en="Home">Inicio</a>
 				<a href="#sobre-mi" class="nav-btn" data-index="1" data-es="Sobre mí" data-en="About">Sobre mí</a>
@@ -71,27 +77,27 @@
 
 			<!-- Right: Crisp 6px tech buttons -->
 			<div class="header-controls">
-				<button class="tech-btn" id="langToggle" type="button" aria-label="Switch language">
+				<button class="tech-btn" id="langToggle" type="button" aria-label="Cambiar idioma" data-aria-es="Cambiar idioma" data-aria-en="Switch language">
 					<span id="langES" class="lang-active">ES</span>
 					<span class="lang-sep">/</span>
 					<span id="langEN" class="lang-muted">EN</span>
 				</button>
 
-				<button class="tech-btn theme-toggle-btn" id="themeToggle" type="button" aria-label="Switch to light theme"
-					aria-pressed="true">
+				<button class="tech-btn theme-toggle-btn" id="themeToggle" type="button" aria-label="Cambiar tema" data-aria-es="Cambiar tema" data-aria-en="Toggle theme"
+					aria-pressed="false">
 					<span class="theme-pill-icons" aria-hidden="true">
-						<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+						<svg class="icon-nebula" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
 							stroke-linecap="round" stroke-linejoin="round">
-							<circle cx="12" cy="12" r="5" />
 							<path
-								d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+								d="M12 2c.7 5.5 2.7 7.5 8.2 8.2-5.5.7-7.5 2.7-8.2 8.2-.7-5.5-2.7-7.5-8.2-8.2 5.5-.7 7.5-2.7 8.2-8.2z" />
+							<path d="M19 2v4M17 4h4" />
 						</svg>
 						<svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
 							stroke-linecap="round" stroke-linejoin="round">
 							<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
 						</svg>
 					</span>
-					<span class="theme-toggle-text" id="themeLabel">LIGHT</span>
+					<span class="theme-toggle-text" id="themeLabel">NEBULA</span>
 				</button>
 			</div>
 		</div>
@@ -136,7 +142,7 @@
 						<div class="hero-intro-col" id="heroIntroCol">
 							<h1 class="hero-name" id="heroName">Camilo Pineda <span class="hero-handle" id="heroHandle">/ Kmlo</span></h1>
 							<p class="hero-tagline" id="heroTagline">
-								Software developer &amp; builder crafting resilient mobile apps, interactive web experiences, and digital tools with meticulous care.
+								Desarrollador en crecimiento. Me gusta crear cosas y convertir ideas en proyectos reales. Disfruto trabajar en aplicaciones móviles, experiencias web interactivas y, sobre todo, cuidar esos pequeños detalles que hacen que un proyecto se sienta vivo, único y especial. La magia está en los detalles.
 							</p>
 						</div>
 
@@ -150,27 +156,28 @@
 											d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-.9-2.6c3-.3 6.2-1.5 6.2-6.7A5.2 5.2 0 0 0 20 4.8a4.9 4.9 0 0 0-.1-3.6s-1.1-.3-3.6 1.4a12.3 12.3 0 0 0-6.6 0C7.2.9 6.1 1.2 6.1 1.2A4.9 4.9 0 0 0 6 4.8a5.2 5.2 0 0 0-1.4 3.6c0 5.2 3.2 6.4 6.2 6.7a3.4 3.4 0 0 0-.9 2.6V22" />
 									</svg>
 								</a>
-								<a class="hero-icon-link" href="https://unistack.srk-lab.workers.dev/" target="_blank"
-									rel="noopener" aria-label="UniStack Website">
+								<a class="hero-icon-link" href="https://www.instagram.com/andrez.p_/" target="_blank"
+									rel="noopener" aria-label="Instagram">
 									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
 										stroke-linejoin="round" aria-hidden="true">
-										<circle cx="12" cy="12" r="9" />
-										<path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3z" />
+										<rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+										<path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+										<line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
 									</svg>
 								</a>
-								<a class="hero-icon-link" href="mailto:srkmlo16@gmail.com" aria-label="Email">
+								<a class="hero-icon-link" href="https://mail.google.com/mail/?view=cm&to=srkmlo16@gmail.com" target="_blank" rel="noopener" aria-label="Email">
 									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
 										stroke-linejoin="round" aria-hidden="true">
 										<rect x="3" y="5" width="18" height="14" rx="2" />
 										<path d="m3 7 9 6 9-6" />
 									</svg>
 								</a>
-								<a class="hero-icon-link" href="https://t.me/unistacksoporte" target="_blank" rel="noopener"
+								<a class="hero-icon-link" href="https://t.me/Kmlo_Zzz" target="_blank" rel="noopener"
 									aria-label="Telegram">
 									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
 										stroke-linejoin="round" aria-hidden="true">
-										<path d="M22 2 11 13" />
-										<path d="M22 2 15 22l-4-9-9-4 20-7z" />
+										<line x1="22" y1="2" x2="11" y2="13" />
+										<polygon points="22 2 15 22 11 13 2 9 22 2" />
 									</svg>
 								</a>
 							</div>
@@ -190,9 +197,9 @@
 							<circle cx="8" cy="12.5" r="2"/>
 							<path d="M13 11h5M13 14h3"/>
 						</svg>
-						<span class="kicker-text" data-es="ABOUT ME · EXPERIENCIA DINÁMICA" data-en="ABOUT ME · DYNAMIC EXPERIENCE">ABOUT ME · EXPERIENCIA DINÁMICA</span>
+						<span class="kicker-text" data-es="SOBRE MÍ · EXPERIENCIA DINÁMICA" data-en="ABOUT ME · DYNAMIC EXPERIENCE">SOBRE MÍ · EXPERIENCIA DINÁMICA</span>
 					</p>
-					<h2 class="giant" id="sobreMiTitle" data-es="Un poco sobre mí." data-en="A little bit about me">Un poco sobre mí.</h2>
+					<h2 class="giant" id="sobreMiTitle" data-typewriter data-es="Un poco sobre mí." data-en="A little bit about me">Un poco sobre mí.</h2>
 				</div>
 
 				<div class="about-spec-grid">
@@ -205,7 +212,7 @@
 									<polyline points="4 17 10 11 4 5"></polyline>
 									<line x1="12" y1="19" x2="20" y2="19"></line>
 								</svg>
-								<span class="pass-title-text">DEVELOPER SPEC</span>
+								<span class="pass-title-text">DEVELOPER ID</span>
 								<span class="pass-f1"></span>
 								<span class="pass-serial">ID // 0001</span>
 							</div>
@@ -215,12 +222,11 @@
 								<div class="pass-avatar-frame" id="passAvatarTarget">
 									<img src="assets/pfp.webp" alt="Avatar of Camilo Pineda" class="pass-avatar-img" width="76" height="76" />
 									<span class="pass-emoji" id="passEmoji" aria-hidden="true">⚡</span>
-									<span class="pass-online" id="passOnline" title="Activo"></span>
 								</div>
 								<div class="pass-info-slot" id="passInfoTarget">
 									<div class="pass-name" id="passName">Camilo Pineda</div>
 									<div class="pass-handle" id="passHandle">@Kmlozmz</div>
-									<div class="pass-tagline" id="passTagline" data-es="«Software builder creando productos digitales resilientes»" data-en="«Software builder turning ideas into resilient digital products»">«Software builder creando productos digitales resilientes»</div>
+									<div class="pass-tagline" id="passTagline" data-es="«Creando aplicaciones móviles, experiencias web interactivas y proyectos donde cada detalle importa.»" data-en="«Creating mobile apps, interactive web experiences, and projects where every little detail matters.»">«Creando aplicaciones móviles, experiencias web interactivas y proyectos donde cada detalle importa.»</div>
 								</div>
 							</div>
 
@@ -240,7 +246,7 @@
 									<polyline points="4 17 10 11 4 5"/>
 									<line x1="12" y1="19" x2="20" y2="19"/>
 								</svg>
-								<span>Mobile Architecture · Web Interfaces · Tooling</span>
+								<span data-es="Software Developer &amp; Entusiasta" data-en="Software Developer &amp; Enthusiast">Software Developer &amp; Entusiasta</span>
 							</div>
 
 							<!-- Specialty Chips -->
@@ -251,7 +257,7 @@
 										<svg class="chip-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 											<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
 										</svg>
-										Mobile Arch
+										<span data-es="Desarrollo Móvil" data-en="Mobile Development">Desarrollo Móvil</span>
 									</span>
 									<span class="pass-chip pass-chip--lead">
 										<svg class="chip-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -259,7 +265,7 @@
 											<line x1="3" y1="9" x2="21" y2="9"/>
 											<line x1="9" y1="21" x2="9" y2="9"/>
 										</svg>
-										Web Interfaces
+										<span data-es="Experiencias Web" data-en="Web Experiences">Experiencias Web</span>
 									</span>
 									<span class="pass-chip">
 										<svg class="chip-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -268,7 +274,7 @@
 											<line x1="6" y1="8" x2="6.01" y2="8"/>
 											<line x1="6" y1="18" x2="6.01" y2="18"/>
 										</svg>
-										Autonomous Systems
+										<span data-es="Herramientas &amp; Experimentos" data-en="Tools &amp; Experiments">Herramientas &amp; Experimentos</span>
 									</span>
 									<span class="pass-chip">
 										<svg class="chip-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -278,7 +284,7 @@
 											<circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
 											<path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2Z"/>
 										</svg>
-										Product Craft
+										<span data-es="Diseño &amp; UI/UX" data-en="UI/UX &amp; Design">Diseño &amp; UI/UX</span>
 									</span>
 								</div>
 							</div>
@@ -287,10 +293,10 @@
 
 							<!-- Pass Stats -->
 							<div class="pass-stats" id="passStats">
-								<div class="pass-stat-item"><b>4+</b><small data-es="Años código" data-en="Years Code">Años código</small></div>
-								<div class="pass-stat-item"><b>100%</b><small data-es="Foco producto" data-en="Product Focus">Foco producto</small></div>
-								<div class="pass-stat-item"><b>COT</b><small data-es="Bogotá Time" data-en="Bogota Time">Bogotá Time</small></div>
-								<div class="pass-stat-item"><b>Ship</b><small data-es="Producción" data-en="Production">Producción</small></div>
+								<div class="pass-stat-item"><b>Colombia</b><small data-es="Ubicación" data-en="Location">Ubicación</small></div>
+								<div class="pass-stat-item"><b id="passAge">19</b><small data-es="Edad" data-en="Age">Edad</small></div>
+								<div class="pass-stat-item"><b>EN / ES</b><small data-es="Idioma" data-en="Language">Idioma</small></div>
+								<div class="pass-stat-item"><b data-es="Aprendiendo &amp; Creando" data-en="Learning &amp; Building">Aprendiendo &amp; Creando</b><small data-es="Actualmente" data-en="Currently">Actualmente</small></div>
 							</div>
 						</div>
 					</div>
@@ -304,11 +310,11 @@
 									<line x1="8" y1="21" x2="16" y2="21"/>
 									<line x1="12" y1="17" x2="12" y2="21"/>
 								</svg>
-								<span data-es="MANIFIESTO DE INGENIERÍA" data-en="ENGINEERING MANIFESTO">MANIFIESTO DE INGENIERÍA</span>
+								<span data-es="NOTAS DE DESARROLLO" data-en="DEVELOPER NOTES">NOTAS DE DESARROLLO</span>
 							</div>
-							<h3 class="manifesto-h3" id="manH3" data-es="Construcción sin dogmas, arquitectura limpia y obsesión por la fluidez." data-en="Dogma-free building, clean architecture, and obsession with fluid craft.">Construcción sin dogmas, arquitectura limpia y obsesión por la fluidez.</h3>
-							<p class="manifesto-body" id="manBodyText" data-es="No me ato a tecnologías por moda o dogmas rígidos: elijo la herramienta exacta para cada desafío. Desde aplicaciones móviles con arquitectura sólida hasta interfaces web táctiles y automatización con agentes autónomos, combino lógica rigurosa con una artesanía visual donde cada microsegundo y cada interacción importan." data-en="I don't subscribe to tech dogmas or rigid stacks: I choose the exact tool for each challenge. From solid mobile architectures to tactile web interfaces and autonomous agent automation, I combine rigorous logic with meticulous visual craft where every microsecond and interaction matters.">
-								No me ato a tecnologías por moda o dogmas rígidos: <em class="man-em" id="manEm">elijo la herramienta exacta para cada desafío</em>. Desde aplicaciones móviles con arquitectura sólida hasta interfaces web táctiles y automatización con agentes autónomos, combino lógica rigurosa con una artesanía visual donde cada microsegundo y cada interacción importan.
+							<h3 class="manifesto-h3" id="manH3" data-typewriter data-es="Crear con libertad, cuidar cada detalle y hacer que todo se sienta natural." data-en="Building with freedom, caring for every detail, and making everything feel natural.">Crear con libertad, cuidar cada detalle y hacer que todo se sienta natural.</h3>
+							<p class="manifesto-body" id="manBodyText" data-es="No me gusta encasillarme en una sola tecnología. Me gusta probar herramientas, aprender cosas nuevas y &lt;em class=&quot;man-em&quot; id=&quot;manEm&quot;&gt;encontrar la que mejor encaje con cada proyecto&lt;/em&gt;. Desde aplicaciones móviles hasta interfaces web, disfruto explorar distintas formas de convertir una idea en algo real." data-en="I don't like boxing myself into a single technology. I enjoy exploring tools, learning new things, and &lt;em class=&quot;man-em&quot; id=&quot;manEm&quot;&gt;finding the right fit for each project&lt;/em&gt;. From mobile apps to web interfaces, I enjoy discovering different ways to turn an idea into reality.">
+								No me gusta encasillarme en una sola tecnología. Me gusta probar herramientas, aprender cosas nuevas y <em class="man-em" id="manEm">encontrar la que mejor encaje con cada proyecto</em>. Desde aplicaciones móviles hasta interfaces web, disfruto explorar distintas formas de convertir una idea en algo real.
 							</p>
 						</div>
 
@@ -319,15 +325,15 @@
 										<circle cx="12" cy="12" r="10"/>
 										<polyline points="12 6 12 12 16 14"/>
 									</svg>
-									<span data-es="TELEMETRÍA &amp; HORA LOCAL" data-en="TELEMETRY &amp; LOCAL TIME">TELEMETRÍA &amp; HORA LOCAL</span>
+									<span data-es="UBICACIÓN &amp; HORA" data-en="LOCATION &amp; TIME">UBICACIÓN &amp; HORA</span>
 								</div>
 								<div class="val-sub" id="telemCity">Barranquilla, CO</div>
 								<div class="clock-chip" id="telemClockChip">
 									<span class="clock-dot"></span>
 									<span id="liveClockCOT">17:45:00 COT (GMT-5)</span>
 								</div>
-								<p class="desc-sub" data-es="Disponible para contratos freelance, arquitecturas móviles e interfaces reactivas." data-en="Available for freelance contracts, mobile architectures, and reactive interfaces.">
-									Disponible para contratos freelance, arquitecturas móviles e interfaces reactivas.
+								<p class="desc-sub" data-es="Disponible para proyectos freelance, colaboraciones y cosas interesantes por construir." data-en="Available for freelance projects, collaborations, and interesting things to build.">
+									Disponible para proyectos freelance, colaboraciones y cosas interesantes por construir.
 								</p>
 							</div>
 
@@ -344,20 +350,20 @@
 										<line x1="9" y1="8" x2="15" y2="8"/>
 										<line x1="17" y1="16" x2="23" y2="16"/>
 									</svg>
-									<span data-es="PRINCIPIOS DE TRABAJO" data-en="CORE PRINCIPLES">PRINCIPIOS DE TRABAJO</span>
+									<span data-es="SIDE QUESTS" data-en="SIDE QUESTS">SIDE QUESTS</span>
 								</div>
 								<ul class="work-principles" id="principlesList">
 									<li class="principle-li" id="principle01">
 										<span class="principle-idx">01</span>
-										<span class="principle-txt"><strong data-es="Rendimiento &amp; Latencia:" data-en="Performance &amp; Latency:">Rendimiento &amp; Latencia:</strong> <span data-es="Cero bloqueos de render, animaciones a 60fps reales." data-en="Zero render locks, genuine 60fps animations.">Cero bloqueos de render, animaciones a 60fps reales.</span></span>
+										<span class="principle-txt"><strong data-es="CURIOSIDAD:" data-en="CURIOUS:">CURIOSIDAD:</strong> <span data-es="Explorar tecnologías, herramientas e ideas nuevas." data-en="Exploring new technologies, tools, and ideas.">Explorar tecnologías, herramientas e ideas nuevas.</span></span>
 									</li>
 									<li class="principle-li" id="principle02">
 										<span class="principle-idx">02</span>
-										<span class="principle-txt"><strong data-es="Diseño con Peso:" data-en="Tactile Design:">Diseño con Peso:</strong> <span data-es="Físicas táctiles elásticas sin depender de bordes genéricos." data-en="Elastic physics without generic borders.">Físicas táctiles elásticas sin depender de bordes genéricos.</span></span>
+										<span class="principle-txt"><strong data-es="CREACIÓN:" data-en="BUILDING:">CREACIÓN:</strong> <span data-es="Convertir ideas en proyectos reales." data-en="Turning ideas into real projects.">Convertir ideas en proyectos reales.</span></span>
 									</li>
 									<li class="principle-li" id="principle03">
 										<span class="principle-idx">03</span>
-										<span class="principle-txt"><strong data-es="Resiliencia:" data-en="Resilience:">Resiliencia:</strong> <span data-es="Código tipado, mantenible y probado de punta a punta." data-en="Typed, maintainable, end-to-end verified code.">Código tipado, mantenible y probado de punta a punta.</span></span>
+										<span class="principle-txt"><strong data-es="DISEÑO:" data-en="DESIGN:">DISEÑO:</strong> <span data-es="Crear interfaces que se vean bien y se sientan vivas y con personalidad." data-en="Creating interfaces that look good and feel alive with personality.">Crear interfaces que se vean bien y se sientan vivas y con personalidad.</span></span>
 									</li>
 								</ul>
 							</div>
@@ -368,11 +374,11 @@
 
 			<!-- PROJECTS -->
 			<section class="block" id="proyectos">
-				<p class="label prog-build" id="projLabel">SELECTED WORK</p>
-				<h2 class="giant prog-build" id="projTitle">Featured Projects</h2>
+				<p class="label prog-build" id="projLabel" data-es="TRABAJOS DESTACADOS" data-en="SELECTED WORK">TRABAJOS DESTACADOS</p>
+				<h2 class="giant prog-build" id="projTitle" data-typewriter data-es="Proyectos destacados." data-en="Featured Projects.">Proyectos destacados.</h2>
 
 				<div class="showcase prog-build" id="workStageContainer">
-					<ol class="showcase-list" id="workTabs" role="tablist" aria-label="Projects"></ol>
+					<ol class="showcase-list" id="workTabs" role="tablist" aria-label="Proyectos" data-aria-es="Proyectos" data-aria-en="Projects"></ol>
 					<div class="showcase-stage" id="workStage" aria-live="polite">
 						<div class="stage-panels" id="stagePanels"></div>
 					</div>
@@ -383,255 +389,162 @@
 			<section class="block">
 				<article class="card creative prog-build" id="collabCard">
 					<div>
-						<p class="label accent">// COLLABORATION &amp; WORK</p>
-						<h3 class="creative-title">
-							Have an ambitious project or challenge in mind?
+						<p class="label accent" data-es="// COLABORACIÓN &amp; TRABAJO" data-en="// COLLABORATION &amp; WORK">// COLABORACIÓN &amp; TRABAJO</p>
+						<h3 class="creative-title" data-typewriter data-es="¿Tienes un proyecto ambicioso o un reto en mente?" data-en="Have an ambitious project or challenge in mind?">
+							¿Tienes un proyecto ambicioso o un reto en mente?
 						</h3>
-						<p class="muted">
-							Available for freelance contracts, mobile architectures, web interfaces, and tooling automation. Let's build something solid.
+						<p class="muted" data-es="Disponible para proyectos freelance, desarrollo móvil, interfaces web y herramientas de software. Construyamos algo sólido." data-en="Available for freelance contracts, mobile architectures, web interfaces, and tooling automation. Let's build something solid.">
+							Disponible para proyectos freelance, desarrollo móvil, interfaces web y herramientas de software. Construyamos algo sólido.
 						</p>
 					</div>
 					<div class="creative-btns">
-						<a class="btn-ghost2" href="mailto:srkmlo16@gmail.com">GET IN TOUCH &#8599;</a>
-						<a class="btn-solid" href="https://github.com/Kmlozmz" target="_blank" rel="noopener">VIEW GITHUB &#8599;</a>
+						<a class="btn-ghost2" href="https://mail.google.com/mail/?view=cm&to=srkmlo16@gmail.com" target="_blank" rel="noopener" data-es="ENVIAR MENSAJE &#8599;" data-en="GET IN TOUCH &#8599;">ENVIAR MENSAJE &#8599;</a>
+						<a class="btn-solid" href="https://github.com/Kmlozmz" target="_blank" rel="noopener" data-es="VER GITHUB &#8599;" data-en="VIEW GITHUB &#8599;">VER GITHUB &#8599;</a>
 					</div>
 				</article>
 			</section>
 
 			<!-- EXPERTISE -->
 			<section class="block" id="habilidades">
-				<p class="label prog-build" id="expLabel">MY EXPERTISE</p>
 				<div class="grid-exp">
 					<div class="exp-left">
+						<p class="label prog-build" id="expLabel" data-es="ENFOQUE &amp; HABILIDADES" data-en="CRAFT &amp; SKILLS">ENFOQUE &amp; HABILIDADES</p>
 						<div class="exp-sticky prog-build" id="expSticky">
-							<h2 class="giant">
-								Building functional software with precision &amp; craft.
+							<h2 class="giant" data-typewriter data-es="Crear software que funcione impecable y se sienta vivo." data-en="Building software that works flawlessly and feels alive.">
+								Crear software que funcione impecable y se sienta vivo.
 							</h2>
-							<p class="muted">
-								Combining solid architecture, reactive concurrency, responsive interfaces, and the small details that make digital products feel instant, deliberate, and dependable.
+							<p class="muted" data-es="Combino lógica sólida, interfaces fluidas y una atención obsesiva por esos pequeños detalles que convierten una aplicación normal en algo memorable y agradable de usar." data-en="Combining solid architecture, fluid interfaces, and an obsessive attention to the small details that turn everyday apps into memorable experiences.">
+								Combino lógica sólida, interfaces fluidas y una atención obsesiva por esos pequeños detalles que convierten una aplicación normal en algo memorable y agradable de usar.
 							</p>
 							<p class="note">
 								<span class="spark" aria-hidden="true">✦</span>
-								Always exploring new platforms, automation tools, and ambitious ideas.
+								<span data-es="Siempre aprendiendo, probando nuevas herramientas y llevando ideas a producción." data-en="Always learning, testing new tooling, and shipping ideas to production.">Siempre aprendiendo, probando nuevas herramientas y llevando ideas a producción.</span>
 							</p>
 						</div>
 					</div>
 					<div class="exp-right" id="expRight">
-						<p class="label prog-build">01 / Mobile &amp; App Development</p>
+						<p class="label prog-build" data-es="01 / Desarrollo Móvil &amp; Apps" data-en="01 / Mobile &amp; App Development">01 / Desarrollo Móvil &amp; Apps</p>
 						<ul class="skill-rows prog-build">
-							<li><span class="n">01</span>Production Mobile Architecture &amp; Modular Engineering</li>
-							<li><span class="n">02</span>Reactive State Flow, Concurrency &amp; UDF Patterns</li>
-							<li><span class="n">03</span>Declarative Layouts, Gesture Pacing &amp; Motion Tuning</li>
-							<li><span class="n">04</span>Offline-First Data Persistence, Migrations &amp; Backups</li>
+							<li><span class="n">01</span><span data-es="Arquitectura móvil de producción &amp; modularización" data-en="Production Mobile Architecture &amp; Modular Engineering">Arquitectura móvil de producción &amp; modularización</span></li>
+							<li><span class="n">02</span><span data-es="Flujo de estado reactivo, concurrencia &amp; patrones UDF" data-en="Reactive State Flow, Concurrency &amp; UDF Patterns">Flujo de estado reactivo, concurrencia &amp; patrones UDF</span></li>
+							<li><span class="n">03</span><span data-es="Layouts declarativos, ritmo gestual &amp; ajustes de animación" data-en="Declarative Layouts, Gesture Pacing &amp; Motion Tuning">Layouts declarativos, ritmo gestual &amp; ajustes de animación</span></li>
+							<li><span class="n">04</span><span data-es="Integración de APIs REST, sincronización de datos y cache" data-en="REST API integration, data synchronization &amp; caching">Integración de APIs REST, sincronización de datos y cache</span></li>
 						</ul>
-						<p class="label prog-build">02 / Web Engineering &amp; Interfaces</p>
+						<p class="label prog-build" data-es="02 / Ingeniería Web &amp; Interfaces" data-en="02 / Web Engineering &amp; Interfaces">02 / Ingeniería Web &amp; Interfaces</p>
 						<ul class="skill-rows prog-build">
-							<li><span class="n">05</span>Standards-Based Semantic HTML &amp; Accessible Architecture</li>
-							<li><span class="n">06</span>Performance-First CSS, Design Token Scaling &amp; Fluid Grids</li>
-							<li><span class="n">07</span>View Transitions API, Micro-Interactions &amp; Physics</li>
-							<li><span class="n">08</span>High-Fidelity Interactive UI/UX Prototyping</li>
+							<li><span class="n">05</span><span data-es="HTML semántico basado en estándares &amp; accesibilidad" data-en="Standards-Based Semantic HTML &amp; Accessible Architecture">HTML semántico basado en estándares &amp; accesibilidad</span></li>
+							<li><span class="n">06</span><span data-es="CSS moderno de alto rendimiento, layouts adaptables y sistemas de diseño con temas" data-en="Modern high-performance CSS, adaptive layouts &amp; theme-driven design systems">CSS moderno de alto rendimiento, layouts adaptables y sistemas de diseño con temas</span></li>
+							<li><span class="n">07</span><span data-es="Animaciones fluidas, microinteracciones y transiciones dinámicas de interfaz" data-en="Smooth animations, micro-interactions &amp; dynamic UI transitions">Animaciones fluidas, microinteracciones y transiciones dinámicas de interfaz</span></li>
+							<li><span class="n">08</span><span data-es="Diseño UI/UX interactivo y desarrollo de interfaces funcionales" data-en="Interactive UI/UX design &amp; functional interface development">Diseño UI/UX interactivo y desarrollo de interfaces funcionales</span></li>
 						</ul>
-						<p class="label prog-build">03 / Automation, Tooling &amp; Workflows</p>
+						<p class="label prog-build" data-es="03 / Automatización, Herramientas &amp; Flujos" data-en="03 / Automation, Tooling &amp; Workflows">03 / Automatización, Herramientas &amp; Flujos</p>
 						<ul class="skill-rows prog-build">
-							<li><span class="n">09</span>Custom Build Verification Plugins &amp; AST Code Checks</li>
-							<li><span class="n">10</span>Automated In-App OTA Update Engines &amp; Release Packaging</li>
-							<li><span class="n">11</span>Git &amp; Terminal Automation for Clean Production Workflows</li>
-							<li><span class="n">12</span>Utility Scripting (Python/Shell) &amp; Automation Pipelines</li>
+							<li><span class="n">09</span><span data-es="Automatización de builds, verificación de código y flujos de integración continua (CI)" data-en="Build automation, code verification &amp; continuous integration (CI) workflows">Automatización de builds, verificación de código y flujos de integración continua (CI)</span></li>
+							<li><span class="n">10</span><span data-es="Preparación de releases de producción, entrega continua y sistemas de actualización" data-en="Production release builds, continuous delivery &amp; update systems">Preparación de releases de producción, entrega continua y sistemas de actualización</span></li>
+							<li><span class="n">11</span><span data-es="Automatización con Git &amp; terminal para flujos limpios" data-en="Git &amp; Terminal Automation for Clean Production Workflows">Automatización con Git &amp; terminal para flujos limpios</span></li>
+							<li><span class="n">12</span><span data-es="Scripts de utilidad (Python/Shell) &amp; pipelines de automatización" data-en="Utility Scripting (Python/Shell) &amp; Automation Pipelines">Scripts de utilidad (Python/Shell) &amp; pipelines de automatización</span></li>
 						</ul>
-						<p class="label prog-build">04 / Product Craft &amp; Pragmatism</p>
+						<p class="label prog-build" data-es="04 / Enfoque de Producto &amp; Pragmatismo" data-en="04 / Product Craft &amp; Pragmatism">04 / Enfoque de Producto &amp; Pragmatismo</p>
 						<ul class="skill-rows prog-build">
-							<li><span class="n">13</span>Rapid Technology Adoption Without Rigid Dogmas</li>
-							<li><span class="n">14</span>Meticulous Attention to Visual Hierarchy &amp; Feel</li>
-							<li><span class="n">15</span>Shipping Real, Functional Software from Concept to Release</li>
-							<li><span class="n">16</span>Balancing Architecture, Performance &amp; User Delight</li>
+							<li><span class="n">13</span><span data-es="Rápida adopción tecnológica sin dogmas rígidos" data-en="Rapid Technology Adoption Without Rigid Dogmas">Rápida adopción tecnológica sin dogmas rígidos</span></li>
+							<li><span class="n">14</span><span data-es="Atención meticulosa a la jerarquía visual &amp; experiencia" data-en="Meticulous Attention to Visual Hierarchy &amp; Feel">Atención meticulosa a la jerarquía visual &amp; experiencia</span></li>
+							<li><span class="n">15</span><span data-es="Desarrollo de punta a punta: convertir ideas en productos terminados y listos para usar" data-en="End-to-end development: turning ideas into finished, production-ready products">Desarrollo de punta a punta: convertir ideas en productos terminados y listos para usar</span></li>
+							<li><span class="n">16</span><span data-es="Equilibrio entre arquitectura, rendimiento y disfrute del usuario" data-en="Balancing Architecture, Performance &amp; User Delight">Equilibrio entre arquitectura, rendimiento y disfrute del usuario</span></li>
 						</ul>
 					</div>
 				</div>
 			</section>
 
-			<!-- SERVICES -->
-			<section class="block" id="servicios">
-				<p class="label prog-build" id="servLabel">SERVICES</p>
-				<h2 class="giant prog-build" id="servTitle">What I can do for you.</h2>
-				<p class="muted max prog-build" id="servDesc">
-					From technical discovery to shipped production software: domain architecture, responsive interfaces, and the critical systems that guarantee reliability.
-					<br />
-					<span class="spark" aria-hidden="true">✦</span>
-					Direct engineer-to-client collaboration: transparent, accountable, and focused on tangible outcomes.
-				</p>
-				<div class="grid-setup" id="servGrid">
-					<article class="card setup prog-build">
-						<div class="setup-top">
-							<p class="label">// 01 · ANDROID</p>
-							<span class="setup-icon" aria-hidden="true">▣</span>
-						</div>
-						<h3 class="setup-title">End-to-End Android Development</h3>
-						<p class="muted">
-							Production Android apps built with modern declarative UI and solid architecture: offline-first data persistence, robust background syncing, and fluid 120Hz gesture interaction.
-						</p>
-						<ul class="pills small">
-							<li>Kotlin</li>
-							<li>Compose</li>
-							<li>Clean Architecture</li>
-							<li>Offline-First</li>
-						</ul>
-					</article>
-					<article class="card setup prog-build">
-						<div class="setup-top">
-							<p class="label">// 02 · WEB</p>
-							<span class="setup-icon" aria-hidden="true">⌨</span>
-						</div>
-						<h3 class="setup-title">Web Products &amp; Landing Pages</h3>
-						<p class="muted">
-							High-performance, accessible web applications and product showcases designed to present software clearly, convert users, and feel responsive on any form factor.
-						</p>
-						<ul class="pills small">
-							<li>Responsive Design</li>
-							<li>Web Standards</li>
-							<li>Modern CSS</li>
-							<li>High Performance</li>
-						</ul>
-					</article>
-					<article class="card setup prog-build">
-						<div class="setup-top">
-							<p class="label">// 03 · SYSTEMS</p>
-							<span class="setup-icon" aria-hidden="true">◐</span>
-						</div>
-						<h3 class="setup-title">Design Systems &amp; Token Architecture</h3>
-						<p class="muted">
-							Bridging interface design and codebases: scalable color palettes, fluid typography, and shape systems backed by build checks to guarantee visual coherence across screens.
-						</p>
-						<ul class="pills small">
-							<li>Design Tokens</li>
-							<li>Theming Engines</li>
-							<li>Compile-Time Checks</li>
-							<li>Visual Consistency</li>
-						</ul>
-					</article>
-					<article class="card setup prog-build">
-						<div class="setup-top">
-							<p class="label">// 04 · TOOLING</p>
-							<span class="setup-icon" aria-hidden="true">⚙</span>
-						</div>
-						<h3 class="setup-title">Tooling, Build Checks &amp; Automation</h3>
-						<p class="muted">
-							Eliminating human error through code: custom Gradle verification plugins, automated release distribution, OTA update checks, and developer scripts.
-						</p>
-						<ul class="pills small">
-							<li>Gradle Plugins</li>
-							<li>Release Pipelines</li>
-							<li>Static Checks</li>
-							<li>Python Automation</li>
-						</ul>
-					</article>
-				</div>
-				<p class="note note-center prog-build">
-					<span class="spark" aria-hidden="true">✦</span>
-					Have an ambitious project in mind? If it runs on mobile, web, or backend — <a href="#contacto">let's talk &rarr;</a>
-				</p>
-			</section>
-
 			<!-- GITHUB -->
 			<section class="block" id="github">
-				<h2 class="giant prog-build" id="ghTitle">GitHub Activity.</h2>
+				<h2 class="giant prog-build" id="ghTitle" data-typewriter data-es="Actividad en GitHub." data-en="GitHub Activity.">Actividad en GitHub.</h2>
 				<article class="card prog-build" id="ghCard">
 					<div class="gh-head">
 						<p class="gh-user">
 							<span class="pulse pink" aria-hidden="true"></span>
 							GITHUB / KMLOZMZ
 						</p>
-						<span class="gh-badge">ACTIVE CONTRIBUTIONS</span>
+						<span class="gh-badge" data-es="CONTRIBUCIONES ACTIVAS" data-en="ACTIVE CONTRIBUTIONS">CONTRIBUCIONES ACTIVAS</span>
 					</div>
-					<div class="heatmap" id="heatmap" role="img" aria-label="Contributions map for the last year"></div>
-					<p class="muted" id="ghTotal">129 contributions in the last year</p>
+					<div class="heatmap" id="heatmap" role="img" aria-label="Mapa de contribuciones del último año" data-aria-es="Mapa de contribuciones del último año" data-aria-en="Contributions map for the last year"></div>
+					<p class="muted" id="ghTotal" data-es="129 contribuciones en el último año" data-en="129 contributions in the last year">129 contribuciones en el último año</p>
 				</article>
 			</section>
 
 			<!-- CONTACT -->
 			<section class="block" id="contacto">
-				<h2 class="giant prog-build" id="contactTitle">Let's talk.</h2>
+				<h2 class="giant prog-build" id="contactTitle" data-typewriter data-es="Hablemos." data-en="Let's talk.">Hablemos.</h2>
 				<div class="grid-contact" id="contactGrid">
-					<article class="card prog-build">
-						<h3 class="card-title">Let's build something.</h3>
-						<p class="muted">
-							Looking for a premium interface, an Android app that feels alive, or a digital design that stands out? Let's collaborate.
-						</p>
-						<ul class="pills">
-							<li>Freelance</li>
-							<li>Contracts</li>
-							<li>Full-time</li>
-						</ul>
-					</article>
-					<article class="card prog-build">
-						<p class="label">CURRENT STATUS</p>
-						<p class="status">
-							<span class="pulse green" aria-hidden="true"></span>
-							Available for new opportunities
-						</p>
-						<p class="label gap">LOCATION</p>
-						<p class="based">Barranquilla, Colombia <span class="co">CO</span></p>
-					</article>
-					<article class="card prog-build">
-						<p class="label">DIRECT EMAIL</p>
-						<p class="email">srkmlo16@gmail.com</p>
-						<a class="btn-solid" href="mailto:srkmlo16@gmail.com">SEND MESSAGE &#8599;</a>
-					</article>
-					<article class="card prog-build">
-						<p class="label">DIGITAL SPACES</p>
-						<ul class="spaces">
-							<li>
-								<a href="https://github.com/Kmlozmz" target="_blank" rel="noopener">GitHub <span
-										aria-hidden="true">&#8599;</span></a>
-							</li>
-							<li>
-								<a href="https://unistack.srk-lab.workers.dev/" target="_blank" rel="noopener">UniStack <span
-										aria-hidden="true">&#8599;</span></a>
-							</li>
-							<li>
-								<a href="mailto:srkmlo16@gmail.com">Email <span aria-hidden="true">&#8599;</span></a>
-							</li>
-							<li>
-								<a href="https://t.me/unistacksoporte" target="_blank" rel="noopener">Telegram <span
-										aria-hidden="true">&#8599;</span></a>
-							</li>
-						</ul>
-					</article>
+					<div class="uplink prog-build">
+						<div class="uplink-bar" aria-hidden="true">
+							<i></i>
+							<i></i>
+							<i></i>
+							<span data-es="uplink — contacto" data-en="uplink — contact">uplink — contacto</span>
+						</div>
+						<div class="uplink-body">
+							<p class="uplink-status">
+								<span class="uplink-l">
+									<span class="uplink-dot" aria-hidden="true"></span>
+									<strong data-es="disponible" data-en="available">disponible</strong>
+									<span data-es="· freelance / contratos / proyectos" data-en="· freelance / contracts / full-time">· freelance / contratos / proyectos</span>
+								</span>
+							</p>
+							<div class="uplink-hero">
+								<p class="uplink-mail">srkmlo16@gmail.com<span class="uplink-caret" aria-hidden="true"></span></p>
+								<div class="uplink-actions">
+									<button class="uplink-copy" type="button" data-copy-email title="Copiar email" aria-label="Copiar email" data-aria-es="Copiar email" data-aria-en="Copy email" data-title-es="Copiar email" data-title-en="Copy email">
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+											<rect x="9" y="9" width="12" height="12" rx="2" />
+											<path d="M5 15V5a2 2 0 0 1 2-2h10" />
+										</svg>
+										<span data-es="[ copiar dirección ]" data-en="[ copy address ]">[ copiar dirección ]</span>
+									</button>
+									<a class="uplink-ghost" href="https://mail.google.com/mail/?view=cm&to=srkmlo16@gmail.com" target="_blank" rel="noopener" title="Abrir Gmail" aria-label="Abrir Gmail" data-aria-es="Abrir Gmail" data-aria-en="Open Gmail" data-title-es="Abrir Gmail" data-title-en="Open Gmail">
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+											<rect x="3" y="5" width="18" height="14" rx="2" />
+											<path d="m3 7 9 6 9-6" />
+										</svg>
+										<span data-es="[ abrir gmail ]" data-en="[ open gmail ]">[ abrir gmail ]</span>
+									</a>
+								</div>
+							</div>
+							<div class="uplink-social">
+								<a class="uplink-soc" href="https://github.com/Kmlozmz" target="_blank" rel="noopener">
+									<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+									<span>github</span>
+								</a>
+								<span class="uplink-sep" aria-hidden="true">·</span>
+								<a class="uplink-soc" href="https://www.instagram.com/andrez.p_/" target="_blank" rel="noopener">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg>
+									<span>instagram</span>
+								</a>
+								<span class="uplink-sep" aria-hidden="true">·</span>
+								<a class="uplink-soc" href="https://t.me/Kmlo_Zzz" target="_blank" rel="noopener">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
+									<span>telegram</span>
+								</a>
+								<span class="uplink-sep" aria-hidden="true">·</span>
+								<a class="uplink-soc" href="https://wa.me/573043195176" target="_blank" rel="noopener">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20.5l1.7-5.2A8.5 8.5 0 1 1 21 11.5z" /><path d="M8.9 9.1c.4 2 1.9 3.6 3.9 4.3l1-1.1 2.1 1-.5 1.6c-3 .4-6.6-2.5-7.6-5.9l1.6-.5 1 1z" /></svg>
+									<span>whatsapp</span>
+								</a>
+							</div>
+						</div>
+					</div>
 				</div>
 			</section>
 		</main>
 
 		<!-- FOOTER -->
 		<footer class="footer">
-			<div class="foot-grid">
-				<div>
-					<p class="label">CRAFTED BY</p>
-					<p class="foot-mono">Kmlo_zmz<br />ALL RIGHTS RESERVED.</p>
-				</div>
-				<div>
-					<p class="label">POWERED BY</p>
-					<p class="foot-mono">HTML + CSS + JS<br />(and a lot of coffee)</p>
-				</div>
-				<nav aria-label="Footer navigation">
-					<p class="label">NAVIGATION</p>
-					<ul class="foot-mono foot-nav">
-						<li><a href="#inicio">// HOME</a></li>
-						<li><a href="#sobre-mi">// ABOUT</a></li>
-						<li><a href="#proyectos">// PROJECTS</a></li>
-						<li><a href="#contacto">// CONTACT</a></li>
-					</ul>
-				</nav>
-				<div class="foot-right">
-					<p class="label">THANKS</p>
-					<p class="cya">Cya!</p>
-				</div>
+			<div class="foot-top">
+				<p class="label" data-es="GRACIAS" data-en="THANKS">GRACIAS</p>
+				<p class="cya" data-es="¡Nos vemos!" data-en="Cya!">¡Nos vemos!</p>
 			</div>
 			<div class="foot-bar">
-				<p class="foot-status">
-					<span class="pulse green" aria-hidden="true"></span>
-					Available for freelance and collaborations
-				</p>
 				<p class="foot-credit">
-					Design &amp; interaction concepts inspired by <a href="https://notayan.in" target="_blank" rel="noopener">Ayan</a>
+					<span data-es="Conceptos de diseño e interacción inspirados por" data-en="Design &amp; interaction concepts inspired by">Conceptos de diseño e interacción inspirados por</span> <a href="https://notayan.in" target="_blank" rel="noopener">Ayan</a>
 				</p>
 				<p class="foot-clock">
 					Barranquilla, Colombia — <span id="clock">--:--:--</span>
@@ -640,33 +553,33 @@
 		</footer>
 	</div>
 
-	<!-- Floating Buttons -->
-	<div class="fabs">
-		<button class="fab" id="toTop" type="button" aria-label="Back to top">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-				stroke-linejoin="round" aria-hidden="true">
-				<path d="m18 15-6-6-6 6" />
-			</svg>
-		</button>
-		<button class="fab" id="quickMenuBtn" type="button" aria-label="Open quick menu" aria-expanded="false"
-			aria-controls="quickMenu">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-				aria-hidden="true">
-				<path d="M12 5v14M5 12h14" />
-			</svg>
-		</button>
-		<nav class="quick-menu" id="quickMenu" aria-label="Quick menu">
-			<a href="#inicio">// HOME</a>
-			<a href="#sobre-mi">// ABOUT</a>
-			<a href="#proyectos">// PROJECTS</a>
-			<a href="#habilidades">// SKILLS</a>
-			<a href="#github">// GITHUB</a>
-			<a href="#contacto">// CONTACT</a>
-		</nav>
+	<!-- Modal: Developer Pass en detalle -->
+	<div class="pass-modal" id="passModal" role="dialog" aria-modal="true" aria-label="Developer pass en detalle" data-aria-es="Developer pass en detalle" data-aria-en="Developer pass in detail" hidden>
+		<div class="pass-modal-backdrop" data-close></div>
+		<div class="pass-modal-panel" role="document">
+			<div class="pass-modal-body" id="passModalBody"></div>
+		</div>
+	</div>
+
+	<!-- Modal: UniStack Pieza Promocional -->
+	<div class="promo-modal" id="promoModal" role="dialog" aria-modal="true" aria-label="Pieza promocional de UniStack" data-aria-es="Pieza promocional de UniStack" data-aria-en="UniStack promotional artwork" hidden>
+		<div class="promo-modal-backdrop" data-close></div>
+		<div class="promo-modal-panel" role="document">
+			<div class="promo-modal-header">
+				<span class="promo-modal-tag" data-es="PIEZA PROMOCIONAL OFICIAL" data-en="OFFICIAL PROMOTIONAL ARTWORK">PIEZA PROMOCIONAL OFICIAL</span>
+				<div class="promo-modal-actions">
+					<a class="promo-modal-link" href="assets/projects/unistack-promocional-4k.png" target="_blank" rel="noopener" download="unistack-promocional-4k.png" data-es="Descargar" data-en="Download">Descargar</a>
+					<button class="promo-modal-close" type="button" data-close aria-label="Cerrar modal" data-aria-es="Cerrar modal" data-aria-en="Close modal">&times;</button>
+				</div>
+			</div>
+			<div class="promo-modal-body">
+				<img id="promoModalImg" src="assets/projects/unistack-promocional-4k.webp" alt="UniStack Promotional Artwork" loading="lazy" />
+			</div>
+		</div>
 	</div>
 
 	<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-	<script src="js/main.js"></script>
+	<script src="js/main.js?v=31"></script>
 </body>
 
 </html>
