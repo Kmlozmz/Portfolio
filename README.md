@@ -27,6 +27,7 @@ assets/
 
 ## Related Projects
 
+- [UniStack](https://github.com/Kmlozmz/UniStack): Main source code repository for the UniStack Android application.
 - [UniStack-releases](https://github.com/Kmlozmz/UniStack-releases): Official releases repository and APK downloads for UniStack.
 - [UniStack-landing_page](https://github.com/Kmlozmz/UniStack-landing_page): Dedicated product landing page for UniStack.
 
