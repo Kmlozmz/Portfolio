@@ -3043,6 +3043,7 @@ body::before {
   letter-spacing: -0.02em;
   overflow-wrap: anywhere;
   color: var(--text-dark);
+  min-height: 1.3em;
 }
 
 .uplink-caret {
@@ -3053,6 +3054,11 @@ body::before {
   margin-left: 4px;
   background: var(--accent);
   animation: uplinkBlink 1.1s steps(1) infinite;
+}
+
+.uplink-caret.is-typing {
+  animation: none;
+  opacity: 1;
 }
 
 @keyframes uplinkBlink {

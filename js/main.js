@@ -2775,6 +2775,76 @@ function initTypewriter() {
   els.forEach((el) => obs.observe(el));
 }
 
+/* ---------- Typewriter para el correo del terminal (Uplink) ---------- */
+function initUplinkTypewriter() {
+  const mailEl = $("#uplinkMail") || $(".uplink-mail");
+  if (!mailEl) return;
+  if (prefersReducedMotion) return;
+
+  const targetEmail = "srkmlo16@gmail.com";
+  const caret = mailEl.querySelector(".uplink-caret");
+  let textSpan = mailEl.querySelector(".uplink-text");
+  if (!textSpan) {
+    textSpan = document.createElement("span");
+    textSpan.className = "uplink-text";
+    mailEl.insertBefore(textSpan, caret);
+  }
+
+  // Se inicia vacío para que la animación escriba al llegar a la sección
+  textSpan.textContent = "";
+
+  let isTyping = false;
+  let hasTyped = false;
+
+  const startTypewriter = () => {
+    if (isTyping) return;
+    isTyping = true;
+    textSpan.textContent = "";
+    if (caret) caret.classList.add("is-typing");
+
+    let i = 0;
+    const typeChar = () => {
+      if (i < targetEmail.length) {
+        textSpan.textContent += targetEmail[i];
+        i++;
+        const prevChar = targetEmail[i - 1];
+        // Pausa ligera y natural en '@' y '.'
+        const delay = (prevChar === "@" || prevChar === ".") ? 130 : 45 + Math.random() * 25;
+        setTimeout(typeChar, delay);
+      } else {
+        isTyping = false;
+        hasTyped = true;
+        if (caret) caret.classList.remove("is-typing");
+      }
+    };
+
+    setTimeout(typeChar, 320);
+  };
+
+  const uplinkCard = mailEl.closest(".uplink") || mailEl;
+  const obs = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && !hasTyped) {
+          obs.unobserve(entry.target);
+          startTypewriter();
+        }
+      });
+    },
+    { threshold: 0.25, rootMargin: "0px 0px -40px 0px" }
+  );
+
+  obs.observe(uplinkCard);
+
+  // Replay interactivo al hacer clic en el correo
+  mailEl.style.cursor = "pointer";
+  mailEl.addEventListener("click", () => {
+    if (!isTyping) {
+      startTypewriter();
+    }
+  });
+}
+
 /* ---------- Arranque ---------- */
 document.addEventListener("DOMContentLoaded", () => {
   try {
@@ -2801,6 +2871,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initPassModal();
   initPromoModal();
   initTypewriter();
+  initUplinkTypewriter();
   initPassConstruction();
   initPageProgressiveConstruction();
 });
