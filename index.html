@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="dark" data-theme="dark">
+<html lang="en" class="dark" data-theme="nebula">
 
 <head>
 	<meta charset="UTF-8" />
@@ -7,7 +7,8 @@
 	<title>Design. Code. Create.</title>
 	<meta name="description"
 		content="Portfolio of Camilo Pineda: Native Android engineering, high-performance web products, and deliberate interaction design." />
-	<meta name="theme-color" content="#08060d" />
+	<meta name="theme-color" content="#0d0f1e" />
+	<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
 
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content="website" />
@@ -41,10 +42,10 @@
 			document.documentElement.classList.add("dark");
 			if (t === "dark" || t === "nebula")
 				document.documentElement.setAttribute("data-theme", t);
-			else document.documentElement.setAttribute("data-theme", "dark");
+			else document.documentElement.setAttribute("data-theme", "nebula");
 		} catch (e) {
 			document.documentElement.classList.add("dark");
-			document.documentElement.setAttribute("data-theme", "dark");
+			document.documentElement.setAttribute("data-theme", "nebula");
 		}
 	</script>
 </head>

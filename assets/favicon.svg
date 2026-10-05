@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="destelloGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="45%" stop-color="#818cf8"/>
+      <stop offset="80%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#F1A5A0"/>
+    </linearGradient>
+  </defs>
+  <!-- Subtle halo layer -->
+  <path d="M16 1 C16 9.3 9.3 16 1 16 C9.3 16 16 22.7 16 31 C16 22.7 22.7 16 31 16 C22.7 16 16 9.3 16 1 Z" fill="url(#destelloGrad)" opacity="0.25"/>
+  <!-- Pure crisp spark -->
+  <path d="M16 2 C16 9.7 9.7 16 2 16 C9.7 16 16 22.3 16 30 C16 22.3 22.3 16 30 16 C22.3 16 16 9.7 16 2 Z" fill="url(#destelloGrad)"/>
+</svg>

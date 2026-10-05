@@ -1146,9 +1146,9 @@ function initTheme() {
 
   try {
     const stored = localStorage.getItem(KEY);
-    root.setAttribute("data-theme", stored === NEBULA ? NEBULA : "dark");
+    root.setAttribute("data-theme", stored === "dark" ? "dark" : NEBULA);
   } catch {
-    root.setAttribute("data-theme", "dark");
+    root.setAttribute("data-theme", NEBULA);
   }
   sync();
 
