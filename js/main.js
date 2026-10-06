@@ -3,7 +3,7 @@
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-// Coalesca eventos de scroll a un solo update por frame (evita thrash)
+// Sincroniza las actualizaciones de scroll con requestAnimationFrame
 const onScrollRaf = (fn) => {
   let queued = false;
   return () => {
@@ -21,7 +21,7 @@ const prefersReducedMotion = window.matchMedia(
 ).matches;
 const finePointer = window.matchMedia("(pointer: fine)").matches;
 
-/* ---------- Cursor notayan: pointer (inmediato) + trail (lerp) ---------- */
+/* ---------- Cursor personalizado: puntero directo y estela suavizada ---------- */
 function initCursor() {
   if (prefersReducedMotion || !finePointer) return;
 
@@ -171,7 +171,7 @@ function initCursor() {
   };
 }
 
-/* ---------- Lens: zoom + blur en hero (notayan 1:1) ---------- */
+/* ---------- Efecto de zoom y desenfoque interactivo en el banner hero ---------- */
 function initLens() {
   if (prefersReducedMotion) return;
 
@@ -263,7 +263,7 @@ function scrollToTarget(target) {
   }
 }
 
-/* ---------- Navigation (Option 3: Riel Minimalista Luminous + Desplazamiento Directo y a la Par) ---------- */
+/* ---------- Navegación del header e indicador de posición activo ---------- */
 let updateNavPillGlobal = null;
 
 function initNav() {
@@ -329,7 +329,7 @@ function initNav() {
     return { targets, maxScroll };
   }
 
-  // Progreso continuo 1:1 con el scroll sin paradas intermedias ni mesetas
+  // Progreso continuo proporcional a la posición de scroll
   function getProgress(scrollY, targets, maxScroll) {
     if (scrollY <= 0) return 0;
     if (maxScroll > 0 && scrollY >= maxScroll - 30) return targets.length - 1;
@@ -473,7 +473,7 @@ function initNav() {
     });
   });
 
-  // Listener pasivo de scroll continuo (coalescado a 1 update por frame)
+  // Listener pasivo de scroll coordinado por rAF
   const updateOnScroll = onScrollRaf(() => update(false));
   window.addEventListener("scroll", updateOnScroll, { passive: true });
 
@@ -755,7 +755,7 @@ function initWork() {
 
   let activeIdx = 0;
 
-  // 1. Build tabs markup with the luminous rail indicator (Style 3)
+  // 1. Estructura de pestañas e indicador deslizante
   list.innerHTML = `
     <div class="work-sliding-pill" id="workSlidingPill" aria-hidden="true"></div>
     ${WORK.map(
@@ -771,7 +771,7 @@ function initWork() {
   const tabs = $$(".work-tab", list);
   const pill = $("#workSlidingPill", list);
 
-  // 2. Pre-render all panels for instant, zero-flicker directional transitions
+  // 2. Renderizado previo de paneles para transiciones fluidas
   panelsContainer.innerHTML = WORK.map(
     (w, k) => `
     <div class="stage-panel${k === 0 ? " is-active" : ""}" id="stagePanel${k}" role="tabpanel" aria-label="${w.title.es}">
@@ -843,11 +843,11 @@ function initWork() {
     const prevPanel = panels[prevIdx];
     const nextPanel = panels[newIdx];
 
-    // Clear any pending transition timers to prevent stale states
+    // Limpiar temporizadores previos
     clearTimeout(deconstructTimer);
     clearTimeout(reconstructTimer);
 
-    // Phase 1: Deconstruct current project pieces
+    // Fase 1: salida visual del proyecto actual
     panels.forEach((p, i) => {
       p.classList.remove("is-reconstructing");
       if (i === prevIdx) {
@@ -857,7 +857,7 @@ function initWork() {
       }
     });
 
-    // Phase 2: After 200ms, swap active state and reconstruct new project pieces
+    // Fase 2: entrada visual del nuevo proyecto
     deconstructTimer = setTimeout(() => {
       panels.forEach((p, i) => {
         p.classList.remove("is-deconstructing", "is-reconstructing");
@@ -1157,7 +1157,7 @@ function initTheme() {
 
   const sync = () => {
     const neb = getTheme() === NEBULA;
-    root.classList.add("dark"); // entierra las reglas claras para siempre
+    root.classList.add("dark");
     btn?.setAttribute("aria-pressed", String(neb));
     btn?.setAttribute(
       "aria-label",
@@ -1228,7 +1228,7 @@ function initTheme() {
   });
 }
 
-/* ---------- Developer Pass: Progressive Morphological Construction & Flight Docking ---------- */
+/* ---------- Developer Pass: acoplamiento de identidad y animación en scroll ---------- */
 let updatePassConstruction = null;
 
 function initPassConstruction() {
@@ -1254,7 +1254,7 @@ function initPassConstruction() {
   const passStatItems = $$("#passStats .pass-stat-item");
   const manifestoRight = $("#manifestoRight");
 
-  // Right Column Modular Elements
+  // Elementos de la columna derecha
   const manCard = $("#manCard");
   const manSubLabel = $("#manSubLabel");
   const manH3 = $("#manH3");
@@ -1270,18 +1270,18 @@ function initPassConstruction() {
   const principle02 = $("#principle02");
   const principle03 = $("#principle03");
 
-  // Flight layer elements: Living Identity Unit (Avatar + Name/Handle)
+  // Elementos animados en transición: avatar y nombre
   const flightAvatar = $("#flightAvatar");
   const flightInfo = $("#flightInfo");
   const flightName = $("#flightName");
   const flightHandleHero = $("#flightHandleHero");
   const flightHandlePass = $("#flightHandlePass");
 
-  // Sobre Mi header elements for progressive construction
+  // Encabezado de Sobre Mí
   const sobreMiKicker = $("#sobreMiKicker");
   const sobreMiTitle = $("#sobreMiTitle");
 
-  // Elements inside pass socket
+  // Elementos internos del contenedor del pass
   const passAvatarImg = passAvatarTarget ? $("img", passAvatarTarget) : null;
   const passOnline = $("#passOnline");
   const passEmoji = $("#passEmoji");
@@ -1290,7 +1290,7 @@ function initPassConstruction() {
 
   if (!developerPass || !sobreMi || !flightAvatar) return;
 
-  // Specular spotlight tracking for cards (NO 3D tilt distortion - clean, flat, premium feel)
+  // Resaltado dinámico (spotlight) en tarjetas
   const setupCardSpotlight = (cardEl) => {
     if (!cardEl) return;
     cardEl.addEventListener("pointermove", (e) => {
@@ -1318,7 +1318,7 @@ function initPassConstruction() {
   const measure = () => {
     if (!pageWrapper || !heroAvatarWrap || !passAvatarTarget || !heroName || !passInfoTarget) return;
 
-    // Temporarily clear any active transforms so we measure pure layout coordinates
+    // Limpiar transforms temporales para medir coordenadas absolutas
     const savedPassTransform = developerPass.style.transform;
     const savedHeroTransform = heroAvatarWrap.style.transform;
     const savedHeroBannerTransform = heroVisualCard ? heroVisualCard.style.transform : "";
@@ -1366,14 +1366,14 @@ function initPassConstruction() {
 
     if (sobreMi) {
       startScroll = 40;
-      // Complete assembly comfortably before/upon arrival at #sobre-mi (accounting for fixed header)
+      // Ajuste de scroll de destino antes de llegar a #sobre-mi
       targetScroll = Math.max(450, sobreMi.offsetTop - 180);
     }
 
     update();
   };
 
-  // Smoothstep interpolation helper: maps value x in [a, b] to [0, 1] with cubic ease
+  // Interpolación cúbica smoothstep entre a y b
   const step = (x, a, b) => {
     if (x <= a) return 0;
     if (x >= b) return 1;
@@ -1447,12 +1447,12 @@ function initPassConstruction() {
     const rawP = (scrollY - startScroll) / (targetScroll - startScroll);
     const p = Math.max(0, Math.min(1, rawP));
 
-    // Dynamic flight trajectory: smoothly spans p from 0.18 to 0.78 (400px of scroll travel!)
-    // Smooth, gentle pace matching scroll naturally without rushing ahead
+    // Trayectoria de desplazamiento coordinada con el scroll
+    // Avance gradual sincronizado con el desplazamiento
     const pFlight = step(p, 0.18, 0.78);
 
     // ========================================================
-    // 1. HERO DECONSTRUCTION (Desarmando al bajar / Armando al subir)
+    // 1. Salida visual del Hero
     // ========================================================
     const pHero = step(p, 0.10, 0.55);
     if (heroVisualCard) {
@@ -1474,12 +1474,12 @@ function initPassConstruction() {
     }
 
     // ========================================================
-    // 2. LIVING IDENTITY UNIT (Avatar + Name/Handle moving together)
+    // 2. Transición del avatar y nombre hacia el Developer Pass
     // ========================================================
     const isDocked = p >= 0.78;
 
-    // Smooth invisible crossfade across p in [0.12, 0.19]
-    // The hero avatar and name stay anchored in the hero until liftoff begins!
+    // Fundido entre el hero y los elementos en transición
+    // El avatar y nombre permanecen anclados hasta iniciar el movimiento
     const pFade = step(p, 0.12, 0.19);
 
     if (p <= 0.11) {
@@ -1496,7 +1496,7 @@ function initPassConstruction() {
       if (flightInfo) flightInfo.style.opacity = isDocked ? "0" : String(pFade);
     }
 
-    // Avatar flight trajectory
+    // Trayectoria del avatar
     const curAvX = originAv.x + (targetAv.x - originAv.x) * pFlight;
     const curAvY = originAv.y + (targetAv.y - originAv.y) * pFlight;
     const curAvScale = 1.0 + (targetAv.w / originAv.w - 1.0) * pFlight;
@@ -1505,19 +1505,19 @@ function initPassConstruction() {
     flightAvatar.style.transform = `translate3d(${curAvX}px, ${curAvY}px, 0) scale(${curAvScale})`;
     flightAvatar.style.borderWidth = `${curBorderW}px`;
 
-    // Text flight trajectory (Moves synchronized with avatar)
+    // Trayectoria del nombre y handle
     if (flightInfo) {
       const curInfoX = originInfo.x + (targetInfo.x - originInfo.x) * pFlight;
       const curInfoY = originInfo.y + (targetInfo.y - originInfo.y) * pFlight;
-      const targetScaleInfo = 0.50; // Scaled to 21px pass text size
+      const targetScaleInfo = 0.50;
       const curInfoScale = 1.0 + (targetScaleInfo - 1.0) * pFlight;
       flightInfo.style.transform = `translate3d(${curInfoX}px, ${curInfoY}px, 0) scale(${curInfoScale})`;
 
-      // Dissolve of '/ Kmlo' as unit lifts off:
+      // Transición del handle del hero
       const pDissolveHero = step(p, 0.18, 0.36);
       if (flightHandleHero) flightHandleHero.style.opacity = String(1 - pDissolveHero);
 
-      // Pass handle '@Kmlozmz' fades in smoothly as unit approaches dock:
+      // Aparición del handle en el pass
       const pFadePass = step(p, 0.55, 0.76);
       if (flightHandlePass) {
         flightHandlePass.style.opacity = String(pFadePass);
@@ -1525,12 +1525,12 @@ function initPassConstruction() {
       }
     }
 
-    // Static Pass elements handoff at p >= 0.78 (Dock complete)
+    // Activación definitiva de elementos en el pass al finalizar acople
     if (passAvatarImg) passAvatarImg.style.opacity = isDocked ? "1" : "0";
     if (passName) passName.style.opacity = isDocked ? "1" : "0";
     if (passHandle) passHandle.style.opacity = isDocked ? "1" : "0";
 
-    // Progressive Construction of Sobre Mí Header:
+    // Encabezado de Sobre Mí
     const pKicker = step(p, 0.42, 0.62);
     if (sobreMiKicker) {
       sobreMiKicker.style.opacity = String(pKicker);
@@ -1543,9 +1543,9 @@ function initPassConstruction() {
     }
 
     // ========================================================
-    // 3. PROGRESSIVE MORPHOLOGICAL PASS ASSEMBLY (Left Column)
+    // 3. Ensamblado visual del Developer Pass
     // ========================================================
-    // Pass Chassis: Gentle vertical rise & settle
+    // Contenedor principal del pass
     const pCard = step(p, 0.22, 0.60);
     const cardScale = 0.97 + 0.03 * pCard;
     const cardY = (1 - pCard) * 26;
@@ -1557,14 +1557,14 @@ function initPassConstruction() {
     }
     developerPass.style.opacity = String(cardOp);
 
-    // Header Spec (>_ DEVELOPER SPEC // ID 0001)
+    // Identificador superior del pass
     const pHd = step(p, 0.28, 0.62);
     if (passHd) {
       passHd.style.opacity = String(pHd);
       passHd.style.transform = `translateY(${(1 - pHd) * -14}px)`;
     }
 
-    // Avatar Badges: Bloom when identity unit docks
+    // Insignias del avatar
     const pBadge = step(p, 0.76, 0.85);
     if (passEmoji) {
       passEmoji.style.transform = `scale(${pBadge})`;
@@ -1575,21 +1575,21 @@ function initPassConstruction() {
       passOnline.style.opacity = String(pBadge);
     }
 
-    // Tagline inside pass: Materializes as identity settles
+    // Tagline del pass
     const pTag = step(p, 0.77, 0.86);
     if (passTagline) {
       passTagline.style.opacity = String(pTag);
       passTagline.style.transform = `translateY(${(1 - pTag) * 12}px)`;
     }
 
-    // Laser Cut 1: Perforated ticket line draws across
+    // Línea divisoria superior
     const pPerf1 = step(p, 0.80, 0.88);
     if (passPerf1) {
       passPerf1.style.transform = `scaleX(${pPerf1})`;
       passPerf1.style.opacity = String(pPerf1);
     }
 
-    // Telemetry rows: Barranquilla & Mobile Arch slide in
+    // Filas de datos técnicos
     const pLi1 = step(p, 0.82, 0.90);
     if (passLi1) {
       passLi1.style.opacity = String(pLi1);
@@ -1601,7 +1601,7 @@ function initPassConstruction() {
       passLi2.style.transform = `translateX(${(1 - pLi2) * -16}px)`;
     }
 
-    // Specialties label & chips: Sockets plug in
+    // Chips de especialidades
     const pSec = step(p, 0.86, 0.93);
     if (passSecLabel) {
       passSecLabel.style.opacity = String(pSec);
@@ -1616,14 +1616,14 @@ function initPassConstruction() {
       });
     }
 
-    // Laser Cut 2
+    // Línea divisoria inferior
     const pPerf2 = step(p, 0.91, 0.96);
     if (passPerf2) {
       passPerf2.style.transform = `scaleX(${pPerf2})`;
       passPerf2.style.opacity = String(pPerf2);
     }
 
-    // Pass Stats Footer: 4 Metrics rise into place
+    // Métricas del pie del pass
     if (passStatItems && passStatItems.length) {
       passStatItems.forEach((stat, i) => {
         const start = 0.92 + i * 0.016;
@@ -1635,13 +1635,13 @@ function initPassConstruction() {
     }
 
     // ========================================================
-    // 4. PROGRESSIVE DYNAMIC RIGHT COLUMN (Manifesto & Telemetry)
+    // 4. Columna derecha (Manifiesto y telemetría)
     // ========================================================
     if (manifestoRight) {
       manifestoRight.style.opacity = "1";
     }
 
-    // 4a. Manifesto Card (#manCard)
+    // 4a. Tarjeta de manifiesto
     const pManCard = step(p, 0.26, 0.62);
     if (manCard) {
       manCard.style.opacity = String(pManCard);
@@ -1678,7 +1678,7 @@ function initPassConstruction() {
       manEm.style.setProperty("--em-op", String(pManEm));
     }
 
-    // 4b. Clock Telemetry Card (#telemClockCard)
+    // 4b. Tarjeta de hora local
     const pClockCard = step(p, 0.48, 0.76);
     if (telemClockCard) {
       telemClockCard.style.opacity = String(pClockCard);
@@ -1702,14 +1702,14 @@ function initPassConstruction() {
       telemCity.style.opacity = String(pCity);
       telemCity.style.transform = `translateX(${(1 - pCity) * -10}px)`;
     }
-    // Clock Chip Pop & Bloom
+    // Indicador de hora
     const pClockChip = step(p, 0.58, 0.76);
     if (telemClockChip) {
       telemClockChip.style.opacity = String(pClockChip);
       telemClockChip.style.transform = `translateY(${(1 - pClockChip) * 8}px) scale(${0.85 + 0.15 * pClockChip})`;
     }
 
-    // 4c. Principles Card (#telemPrinciplesCard)
+    // 4c. Tarjeta de principios
     const pPrinciplesCard = step(p, 0.54, 0.82);
     if (telemPrinciplesCard) {
       telemPrinciplesCard.style.opacity = String(pPrinciplesCard);
@@ -1728,7 +1728,7 @@ function initPassConstruction() {
       telemPrinciplesSub.style.transform = `translateX(${(1 - pPrincSub) * -10}px)`;
     }
 
-    // 4d. The 3 Core Principles (Tactical staggered slide-in)
+    // 4d. Principios con entrada escalonada
     const pP1 = step(p, 0.65, 0.80);
     if (principle01) {
       principle01.style.opacity = String(pP1);
@@ -1767,17 +1767,17 @@ function initPassConstruction() {
   }
   window.addEventListener("resize", measure, { passive: true });
 
-  // Initial measurement after layout pass
+  // Medición inicial de dimensiones
   requestAnimationFrame(() => {
     setTimeout(measure, 80);
   });
 }
 
-/* ---------- Whole-Page Progressive Construction Engine (Armando al bajar / Desarmando al subir) ---------- */
+/* ---------- Animaciones de revelado en scroll por secciones ---------- */
 function initPageProgressiveConstruction() {
   if (prefersReducedMotion) return;
 
-  // Cache elements across all sections
+  // Referencias a elementos
   const projLabel = $("#projLabel");
   const projTitle = $("#projTitle");
   const workStageContainer = $("#workStageContainer");
@@ -2688,7 +2688,7 @@ function initPassModal() {
   });
 }
 
-/* ---------- Modal de la Pieza Promocional 4K UniStack (Opción C) ---------- */
+/* ---------- Modal de la imagen promocional UniStack ---------- */
 function initPromoModal() {
   const modal = $("#promoModal");
   const modalImg = $("#promoModalImg");
