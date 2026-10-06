@@ -74,7 +74,9 @@ portafolio/
 ├── js/
 │   └── main.js           # Core logic: cursor, star canvas, i18n, showcase, modals & pass
 ├── assets/
-│   ├── hero.gif          # Hero banner visual
+│   ├── hero-nebula.gif   # Dynamic hero visual for Nebula theme (Sakura Cyberpunk)
+│   ├── hero-void.gif     # Dynamic hero visual for Void theme (Gargantua Black Hole)
+│   ├── hero.gif          # Default hero banner visual
 │   ├── pfp.webp          # Optimized avatar image
 │   ├── unistack-mark.svg # Vector brand mark
 │   ├── fonts/            # Self-hosted typography

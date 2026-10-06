@@ -682,12 +682,14 @@ const ART = {
       const r = rand();
       cells += `<i class="${r > 0.86 ? "l3" : r > 0.7 ? "l2" : r > 0.5 ? "l1" : ""}"></i>`;
     }
+    const isVoid = document.documentElement.getAttribute("data-theme") === "dark";
+    const bannerFile = isVoid ? "assets/hero-void.gif" : "assets/hero-nebula.gif";
     return `
     <div class="art">
       <div class="browser">
         <div class="br-bar"><i></i><i></i><i></i><span class="br-url" data-es="este sitio web" data-en="this website">este sitio web</span></div>
         <div class="br-body">
-          <img class="br-banner" src="assets/hero.gif" alt="" />
+          <img class="br-banner" src="${bannerFile}" alt="" />
           <div class="br-id"><img src="assets/pfp.webp" alt="" /><div><b>Camilo Pineda</b><span data-es="Software Developer &amp; Entusiasta" data-en="Software Developer &amp; Enthusiast">Software Developer &amp; Entusiasta</span></div></div>
           <div class="mini-heat">${cells}</div>
         </div>
@@ -1133,6 +1135,26 @@ function initTheme() {
     return chosen === NEBULA ? NEBULA : "dark";
   };
 
+  const updateBannerForTheme = () => {
+    const isNeb = getTheme() === NEBULA;
+    const targetBanner = isNeb ? "assets/hero-nebula.gif" : "assets/hero-void.gif";
+
+    const heroImg = document.querySelector(".hero-banner-image");
+    if (heroImg && heroImg.getAttribute("src") !== targetBanner) {
+      heroImg.src = targetBanner;
+    }
+
+    const zoomImg = document.querySelector(".lens-overlay-zoom img");
+    if (zoomImg && zoomImg.getAttribute("src") !== targetBanner) {
+      zoomImg.src = targetBanner;
+    }
+
+    const brBanner = document.querySelector(".br-banner");
+    if (brBanner && brBanner.getAttribute("src") !== targetBanner) {
+      brBanner.src = targetBanner;
+    }
+  };
+
   const sync = () => {
     const neb = getTheme() === NEBULA;
     root.classList.add("dark"); // entierra las reglas claras para siempre
@@ -1142,6 +1164,7 @@ function initTheme() {
       neb ? "Switch to void theme" : "Switch to nebula theme",
     );
     if (label) label.textContent = neb ? "VOID" : "NEBULA";
+    updateBannerForTheme();
   };
 
   try {

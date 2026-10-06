@@ -667,15 +667,23 @@ body::before {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center center;
+  object-position: center 32%;
   display: block;
   user-select: none;
   pointer-events: none;
 }
 
+[data-theme="dark"] .lens>img {
+  object-position: center center;
+}
+
 @media (max-width: 767px) {
   .lens>img {
-    object-position: left center;
+    object-position: center 25%;
+  }
+
+  [data-theme="dark"] .lens>img {
+    object-position: center center;
   }
 }
 
@@ -733,8 +741,23 @@ body::before {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 32%;
   transform: scale(1.5);
   transform-origin: 200px 150px;
+}
+
+[data-theme="dark"] .lens-overlay-zoom>img {
+  object-position: center center;
+}
+
+@media (max-width: 767px) {
+  .lens-overlay-zoom>img {
+    object-position: center 25%;
+  }
+
+  [data-theme="dark"] .lens-overlay-zoom>img {
+    object-position: center center;
+  }
 }
 
 /* Avatar */
