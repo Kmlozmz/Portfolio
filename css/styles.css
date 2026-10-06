@@ -1,8 +1,8 @@
 /* ═══════════════════════════════════════════════════════════════
-   Portafolio · Camilo Pineda
+   Portfolio · Camilo Pineda
    ═══════════════════════════════════════════════════════════════ */
 
-/* ---------- Variables y fuentes ---------- */
+/* ---------- Variables & Fonts ---------- */
 @font-face {
   font-family: "Aspekta";
   src: url("../assets/fonts/AspektaVF.woff2") format("woff2");
@@ -12,7 +12,7 @@
 }
 
 :root {
-  /* Vacío (default): negro espacial profundo */
+  /* Void (default): deep space black */
   --bg-tan: #121212;
   --text-dark: #f3eff2;
   --text-muted: #b2adb7;
@@ -36,7 +36,7 @@
   --scrollbar-thumb: rgba(255, 255, 255, 0.22);
   --scrollbar-thumb-hover: var(--accent);
 
-  /* GitHub Heatmap - verdes oficiales sobre negro */
+  /* GitHub Heatmap - green accents over dark */
   --contrib-bg-0: rgba(255, 255, 255, 0.07);
   --contrib-border-0: rgba(255, 255, 255, 0.06);
   --contrib-bg-1: #0e4429;
@@ -60,7 +60,7 @@
   color-scheme: dark;
 }
 
-/* Nebulosa: variante azul-violeta profunda del espacio */
+/* Nebula: deep cosmic blue-violet palette */
 :root[data-theme="nebula"] {
   --bg-tan: #0d0f1e;
   --text-dark: #eef0ff;
@@ -85,7 +85,7 @@
   --scrollbar-thumb: rgba(170, 180, 255, 0.25);
   --scrollbar-thumb-hover: var(--accent);
 
-  /* GitHub Heatmap - mismos verdes, sobre azul profundo */
+  /* GitHub Heatmap - green accents over deep blue */
   --contrib-bg-0: rgba(255, 255, 255, 0.07);
   --contrib-border-0: rgba(255, 255, 255, 0.06);
   --contrib-bg-1: #0e4429;
@@ -97,7 +97,7 @@
   color-scheme: dark;
 }
 
-/* Solo temas espaciales: Vacío por defecto, Nebulosa con data-theme="nebula". */
+/* Cosmic themes: Void by default, Nebula with data-theme="nebula" */
 /* ---------- Base ---------- */
 *,
 *::before,
@@ -105,7 +105,7 @@
   box-sizing: border-box;
 }
 
-/* Scrollbar personalizada */
+/* Custom scrollbar */
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 72px;
@@ -113,7 +113,7 @@ html {
   scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
-/* Chromium, Edge, Safari, Brave custom scrollbar */
+/* Webkit custom scrollbar (Chromium, Edge, Safari) */
 ::-webkit-scrollbar,
 *::-webkit-scrollbar {
   width: 9px;
@@ -144,7 +144,7 @@ html {
   background: var(--scrollbar-track);
 }
 
-/* Remove retro Windows arrows/stepper buttons */
+/* Remove default scrollbar stepper buttons */
 ::-webkit-scrollbar-button,
 *::-webkit-scrollbar-button {
   display: none !important;
@@ -228,7 +228,7 @@ img {
   left: 0;
 }
 
-/* ---------- Cursor personalizado ---------- */
+/* ---------- Custom Cursor ---------- */
 .custom-cursor-pointer,
 .custom-cursor-trail,
 .custom-cursor-pulse {
@@ -241,7 +241,7 @@ img {
   will-change: transform, opacity;
 }
 
-/* Pointer: 16px, blanco, diferencia, va INMEDIATO al mouse */
+/* Pointer: immediate mouse position */
 .custom-cursor-pointer {
   z-index: 2147483647 !important;
   background: #fff;
@@ -253,7 +253,7 @@ img {
   pointer-events: none !important;
 }
 
-/* Trail: 40px, blanco, diferencia, opacity 0.85, glow coral, lerp 0.15 */
+/* Trail: smoothed spring lerp ring */
 .custom-cursor-trail {
   z-index: 2147483646 !important;
   background: #fff;
@@ -268,7 +268,7 @@ img {
   pointer-events: none !important;
 }
 
-/* Pulse click: 40px, borde blanco, diferencia, escala 0.5→2.5 */
+/* Click pulse effect */
 .custom-cursor-pulse {
   width: 40px;
   height: 40px;
@@ -283,7 +283,7 @@ img {
     opacity 0.4s cubic-bezier(0.1, 0.8, 0.3, 1);
 }
 
-/* Oculto en móvil / pointer coarse */
+/* Hidden on mobile / touch devices */
 @media (pointer: coarse),
 (max-width: 760px) {
 
@@ -300,13 +300,13 @@ img {
   }
 }
 
-/* View transition para que no parpadee al cambiar tema */
+/* View transitions for smooth theme toggling */
 ::view-transition-group(custom-cursor-pointer),
 ::view-transition-group(custom-cursor-trail) {
   animation-duration: 0s !important;
 }
 
-/* Selección de texto */
+/* Text selection */
 ::selection {
   background: var(--text-dark);
   color: var(--bg-tan);
@@ -317,7 +317,7 @@ img {
   color: var(--bg-tan);
 }
 
-/* ---------- Fondos interactivos (scroll + mouse) ---------- */
+/* ---------- Interactive Background Canvas ---------- */
 #scrollBg {
   position: fixed;
   inset: 0;
@@ -343,7 +343,7 @@ img {
 }
 
 /* ============================================================
-   ESTRUCTURA PRINCIPAL (page-wrapper)
+   MAIN STRUCTURE (page-wrapper)
    ============================================================ */
 .page-wrapper {
   position: relative;
@@ -358,7 +358,7 @@ img {
   padding-top: 56px;
 }
 
-/* ---------- Header fijo ---------- */
+/* ---------- Fixed Header ---------- */
 .site-header {
   position: fixed !important;
   top: 0 !important;
@@ -373,7 +373,7 @@ img {
   transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
-/* Fundido superior: el contenido se disuelve debajo del header libre */
+/* Header top fade mask */
 body::before {
   content: "";
   position: fixed;
@@ -451,7 +451,7 @@ body::before {
   50% { opacity: 0; }
 }
 
-/* Navegación */
+/* Center: Navigation */
 .header-nav {
   justify-self: center;
   position: relative;
@@ -595,7 +595,7 @@ body::before {
   transform: none;
 }
 
-/* ---------- Sección Hero ---------- */
+/* ---------- Hero Section ---------- */
 .hero-section {
   flex-grow: 1;
   display: flex;
@@ -630,7 +630,7 @@ body::before {
   box-sizing: border-box;
 }
 
-/* Banner Card con Lens */
+/* Hero banner card with lens */
 .hero-visual-card {
   position: relative;
   width: 100%;
@@ -910,7 +910,7 @@ body::before {
   transform: translateY(0);
 }
 
-/* ---------- Bloques ---------- */
+/* ---------- Content Blocks ---------- */
 .block {
   width: 100%;
   padding: 56px 48px;
@@ -994,7 +994,7 @@ body::before {
   margin-top: 1rem;
 }
 
-/* ---------- Tarjetas ---------- */
+/* ---------- Cards ---------- */
 .card {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
@@ -1075,7 +1075,7 @@ body::before {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   DEVELOPER PASS & PROGRESSIVE ASSEMBLY (NO PURPLE)
+   DEVELOPER PASS & PROGRESSIVE ASSEMBLY
    ═══════════════════════════════════════════════════════════════ */
 
 /* ---------- Grid Layout in #sobre-mi ---------- */
@@ -1087,7 +1087,7 @@ body::before {
   align-items: stretch;
 }
 
-/* ---------- Animación de vuelo del avatar ---------- */
+/* ---------- Avatar Flight Animation Layer ---------- */
 .flight-avatar-wrap {
   position: absolute;
   top: 0;
@@ -1208,7 +1208,7 @@ body::before {
   box-shadow: 0 20px 50px rgba(8, 6, 13, 0.08), inset 0 0 0 1px rgba(8, 6, 13, 0.08);
 }
 
-/* Efecto de brillo sutil */
+/* Subtle spotlight border */
 .developer-pass::after {
   content: "";
   position: absolute;
@@ -1232,7 +1232,7 @@ body::before {
   42%, 100% { background-position: -50% 0; }
 }
 
-/* Iluminación de tarjeta */
+/* Card radial spotlight */
 .developer-pass::before {
   content: "";
   position: absolute;
@@ -1547,7 +1547,7 @@ body::before {
   color: var(--text-muted);
 }
 
-/* ---------- Manifiesto y telemetría ---------- */
+/* ---------- Manifesto & Telemetry ---------- */
 .about-manifesto-col {
   display: flex;
   flex-direction: column;
@@ -1569,7 +1569,7 @@ body::before {
   box-shadow: 0 4px 20px rgba(8, 6, 13, 0.04);
 }
 
-/* Tarjetas de manifiesto */
+/* Manifesto cards */
 .prog-card {
   position: relative;
   overflow: hidden;
@@ -1787,7 +1787,7 @@ body::before {
   font-weight: 600;
 }
 
-/* ---------- Proyectos ---------- */
+/* ---------- Projects Showcase ---------- */
 .showcase {
   display: flex;
   flex-direction: column;
@@ -1821,7 +1821,7 @@ body::before {
   flex-shrink: 0;
 }
 
-/* Indicador de pestaña activa */
+/* Active sliding tab indicator */
 .work-sliding-pill {
   position: absolute;
   left: 0;
@@ -1929,7 +1929,7 @@ body::before {
   }
 }
 
-/* Transiciones de contenido */
+/* Content transitions */
 .stage-panel .art {
   will-change: transform, opacity, filter;
   transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.25, 1),
@@ -1949,7 +1949,7 @@ body::before {
               opacity 0.24s ease;
 }
 
-/* Salida de panel */
+/* Panel exit transition */
 .stage-panel.is-deconstructing .art {
   opacity: 0;
   transform: translateY(-24px) scale(0.92) rotate(-1.5deg);
@@ -1966,7 +1966,7 @@ body::before {
   transform: translateY(12px);
 }
 
-/* Entrada de panel */
+/* Panel entry transition */
 .stage-panel.is-reconstructing {
   opacity: 1;
   pointer-events: auto;
@@ -2059,7 +2059,7 @@ body::before {
   color: var(--text-muted);
 }
 
-/* Dispositivos móviles */
+/* Mobile device mockups */
 .phones.real-phones {
   display: flex;
   align-items: center;
@@ -2116,7 +2116,7 @@ body::before {
   box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
-/* Botón de vista previa */
+/* Preview button */
 .btn-zoom-4k {
   display: inline-flex;
   align-items: center;
@@ -2159,7 +2159,7 @@ body::before {
   color: #4f46e5;
 }
 
-/* Mockups de navegador */
+/* Browser mockups */
 .browser {
   display: block;
   text-decoration: none;
@@ -2418,7 +2418,7 @@ body::before {
   pointer-events: none;
 }
 
-/* Información del proyecto */
+/* Project info & details */
 .stage-info {
   display: flex;
   flex-direction: column;
@@ -2581,7 +2581,7 @@ body::before {
   background: var(--button-hover);
 }
 
-/* ---------- Tira creativa ---------- */
+/* ---------- Creative Strip ---------- */
 .creative {
   display: flex;
   align-items: center;
@@ -2646,7 +2646,7 @@ body::before {
   opacity: 0.92;
 }
 
-/* ---------- Experiencia ---------- */
+/* ---------- Experience & Skills ---------- */
 .grid-exp {
   display: grid;
   grid-template-columns: 0.9fr 1.1fr;
@@ -2657,12 +2657,11 @@ body::before {
 
 .exp-left {
   position: sticky;
-  /* 56px header + 56px padding del bloque + etiqueta + margen del grid:
-     así se clava justo donde aparece en pantalla, sin viajar hacia arriba. */
+  /* Sticky column positioning aligned with header offset */
   top: 120px;
   align-self: start;
   z-index: 2;
-  /* Sin fondo: el cosmos se ve a través de toda la columna. */
+  /* Transparent background: canvas stars remain visible */
   background: transparent;
 }
 
@@ -2758,7 +2757,7 @@ body::before {
   color: var(--text-muted);
 }
 
-/* ---------- Setup ---------- */
+/* ---------- Services / Setup ---------- */
 .grid-setup {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -2784,7 +2783,7 @@ body::before {
   margin-top: 0.5rem;
 }
 
-/* ---------- GitHub ---------- */
+/* ---------- GitHub Contributions ---------- */
 #github .card {
   margin-top: 2.5rem;
 }
@@ -2827,7 +2826,7 @@ body::before {
   overflow: hidden;
 }
 
-/* Encendido progresivo por columnas (solo primera vista) */
+/* Progressive column fade-in on first reveal */
 .heatmap.hm-arm .hm-cell {
   opacity: 0;
   transform: scale(0.3);
@@ -2891,8 +2890,7 @@ body::before {
   position: relative;
 }
 
-/* Ola de brillo: satura el verde propio del dot, confinado a la propia celda.
-   Sin halo exterior: así las casillas vacías vecinas siguen grises puros. */
+/* Glow wave: brightens active cells column by column without overflowing */
 .hm-cell.zap {
   transform: scale(1.18);
   filter: saturate(2.4) brightness(1.18) contrast(1.05);
@@ -2901,7 +2899,7 @@ body::before {
   position: relative;
 }
 
-/* Defensa: aunque el JS ya filtra, una celda vacía nunca debe brillar */
+/* Ensure empty cells never receive glow animation */
 .hm-cell.zap:not(.l1):not(.l2):not(.l3):not(.l4) {
   transform: none;
   filter: none;
@@ -2930,7 +2928,7 @@ body::before {
   border-top: 1px solid var(--border-color);
 }
 
-/* ---------- Contacto: panel uplink ---------- */
+/* ---------- Contact: Uplink Panel ---------- */
 .grid-contact {
   display: grid;
   gap: 0;
@@ -3237,7 +3235,7 @@ a.uplink-soc:hover {
   color: var(--text-muted);
 }
 
-/* ---------- Pie ---------- */
+/* ---------- Footer ---------- */
 .footer {
   box-sizing: border-box;
   padding: 34px 48px 26px;
@@ -3292,7 +3290,7 @@ a.uplink-soc:hover {
   gap: 0.55rem;
 }
 
-/* ---------- Flotantes ---------- */
+/* ---------- Floating Controls ---------- */
 .fabs {
   position: fixed;
   right: 1.4rem;
@@ -3368,13 +3366,13 @@ a.uplink-soc:hover {
   color: var(--accent);
 }
 
-/* ---------- Animaciones de scroll ---------- */
+/* ---------- Scroll Animations ---------- */
 .prog-build {
   will-change: transform, opacity;
   transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.16s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ---------- Revelado ---------- */
+/* ---------- Scroll Reveal Utilities ---------- */
 .reveal {
   opacity: 0;
   transform: translateY(26px);
@@ -3388,7 +3386,7 @@ a.uplink-soc:hover {
   transform: none;
 }
 
-/* ---------- Transición circular del tema ---------- */
+/* ---------- Circular Theme Reveal Transition ---------- */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
@@ -3405,7 +3403,7 @@ a.uplink-soc:hover {
   transition: clip-path 620ms var(--ease);
 }
 
-/* ---------- Adaptación ---------- */
+/* ---------- Responsive Breakpoints ---------- */
 @media (max-width: 960px) {
   .about-spec-grid {
     grid-template-columns: 1fr;
@@ -3487,7 +3485,7 @@ a.uplink-soc:hover {
   color: var(--accent);
 }
 
-/* ---------- Movimiento reducido ---------- */
+/* ---------- Reduced Motion Accessibility ---------- */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -3512,7 +3510,7 @@ a.uplink-soc:hover {
   }
 }
 
-/* ---------- Modal del Developer Pass (detalle centrado) ---------- */
+/* ---------- Developer Pass Modal ---------- */
 .pass-modal[hidden] {
   display: none;
 }
@@ -3548,7 +3546,7 @@ a.uplink-soc:hover {
   transition: opacity 0.3s ease;
 }
 
-/* Detalle agrandado: el pase se ve grande y vertical en cualquier pantalla */
+/* Expanded modal layout for all screen sizes */
 .pass-modal-body {
   zoom: 1.3;
 }
@@ -3574,7 +3572,7 @@ a.uplink-soc:hover {
   outline-offset: 4px;
 }
 
-/* ---------- Modal de proyecto ---------- */
+/* ---------- Project Promo Modal ---------- */
 .promo-modal[hidden] {
   display: none;
 }

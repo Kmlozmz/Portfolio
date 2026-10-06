@@ -33,7 +33,7 @@
 		rel="stylesheet" />
 	<link rel="stylesheet" href="css/styles.css?v=31" />
 
-	<!-- Inicialización de tema antes del render -->
+	<!-- Theme initialization before render -->
 	<script>
 		try {
 			var t = localStorage.getItem("tema-v2");
@@ -55,7 +55,7 @@
 	<!-- Header -->
 	<header class="site-header" id="siteHeader">
 		<div class="header-inner">
-			<!-- Logo -->
+			<!-- Brand / Logo -->
 			<div class="header-left">
 				<a href="#inicio" class="terminal-brand" aria-label="Kmlozmz Home" data-aria-es="Inicio Kmlozmz" data-aria-en="Kmlozmz Home">
 					<span class="terminal-brand-sym">~&gt;</span>
@@ -64,7 +64,7 @@
 				</a>
 			</div>
 
-			<!-- Navegación -->
+			<!-- Navigation -->
 			<nav class="header-nav nav-style-line" id="mainHeaderNav" aria-label="Main Navigation" data-aria-es="Navegación principal" data-aria-en="Main Navigation">
 				<div class="nav-active-pill" id="navActivePill" aria-hidden="true"></div>
 				<a href="#inicio" class="nav-btn active" data-index="0" data-es="Inicio" data-en="Home">Inicio</a>
@@ -74,7 +74,7 @@
 				<a href="#contacto" class="nav-btn" data-index="4" data-es="Contacto" data-en="Contact">Contacto</a>
 			</nav>
 
-			<!-- Controles de tema e idioma -->
+			<!-- Theme and language controls -->
 			<div class="header-controls">
 				<button class="tech-btn" id="langToggle" type="button" aria-label="Cambiar idioma" data-aria-es="Cambiar idioma" data-aria-en="Switch language">
 					<span id="langES" class="lang-active">ES</span>
@@ -102,12 +102,12 @@
 		</div>
 	</header>
 
-	<!-- Cursor personalizado -->
+	<!-- Custom cursor -->
 	<div class="custom-cursor-pointer" id="cursorPointer" aria-hidden="true"></div>
 	<div class="custom-cursor-trail" id="cursorTrail" aria-hidden="true"></div>
 
 	<div class="page-wrapper">
-		<!-- Capa de vuelo del avatar -->
+		<!-- Avatar flight transition layer -->
 		<div class="flight-avatar-wrap" id="flightAvatar" aria-hidden="true">
 			<img src="assets/pfp.webp" alt="Avatar flight" class="flight-avatar-img" width="136" height="136" />
 		</div>
@@ -123,7 +123,7 @@
 			<!-- Hero -->
 			<section class="hero-section" id="inicio">
 				<div class="hero-container">
-					<!-- Banner con lente interactiva -->
+					<!-- Banner with interactive lens -->
 					<div class="hero-visual-card">
 						<div class="lens" id="heroLens">
 							<img src="assets/hero-nebula.gif" alt="Hero Banner" class="hero-banner-image" width="1280" height="620" />
@@ -136,7 +136,7 @@
 							height="338" />
 					</div>
 
-					<!-- Datos principales y redes -->
+					<!-- Main intro & social links -->
 					<div class="hero-details-row" id="heroDetailsRow">
 						<div class="hero-intro-col" id="heroIntroCol">
 							<h1 class="hero-name" id="heroName">Camilo Pineda <span class="hero-handle" id="heroHandle">/ Kmlo</span></h1>
@@ -186,7 +186,7 @@
 
 			</section>
 
-			<!-- Sobre mí -->
+			<!-- About me -->
 			<section class="block" id="sobre-mi">
 				<div class="sobre-mi-header" id="sobreMiHeader">
 					<p class="kicker" id="sobreMiKicker">
@@ -216,7 +216,7 @@
 								<span class="pass-serial">ID // 0001</span>
 							</div>
 
-							<!-- Socket del avatar -->
+							<!-- Avatar socket -->
 							<div class="pass-face-row" id="passFaceRow">
 								<div class="pass-avatar-frame" id="passAvatarTarget">
 									<img src="assets/pfp.webp" alt="Avatar of Camilo Pineda" class="pass-avatar-img" width="76" height="76" />
@@ -229,10 +229,10 @@
 								</div>
 							</div>
 
-							<!-- Separador perforado -->
+							<!-- Perforated tear line -->
 							<div class="pass-tear-perf" id="passPerf1"></div>
 
-							<!-- Telemetría y estado -->
+							<!-- Telemetry & status -->
 							<div class="pass-li" id="passLi1">
 								<svg class="pass-li-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 									<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
@@ -248,7 +248,7 @@
 								<span data-es="Software Developer &amp; Entusiasta" data-en="Software Developer &amp; Enthusiast">Software Developer &amp; Entusiasta</span>
 							</div>
 
-							<!-- Especialidades -->
+							<!-- Specialties -->
 							<div class="pass-sec-wrap" id="passSecWrap">
 								<span class="pass-sec" id="passSecLabel" data-es="ESPECIALIDADES" data-en="SPECIALTIES">ESPECIALIDADES</span>
 								<div class="pass-chips" id="passChips">
@@ -290,7 +290,7 @@
 
 							<div class="pass-tear-perf" id="passPerf2"></div>
 
-							<!-- Métricas del pase -->
+							<!-- Pass stats -->
 							<div class="pass-stats" id="passStats">
 								<div class="pass-stat-item"><b>Colombia</b><small data-es="Ubicación" data-en="Location">Ubicación</small></div>
 								<div class="pass-stat-item"><b id="passAge">19</b><small data-es="Edad" data-en="Age">Edad</small></div>
@@ -300,7 +300,7 @@
 						</div>
 					</div>
 
-					<!-- Manifiesto y principios -->
+					<!-- Manifesto & principles -->
 					<div class="about-manifesto-col" id="manifestoRight">
 						<div class="tonal-manifesto prog-card" id="manCard">
 							<div class="sub-label" id="manSubLabel">
@@ -371,7 +371,7 @@
 				</div>
 			</section>
 
-			<!-- Proyectos -->
+			<!-- Projects -->
 			<section class="block" id="proyectos">
 				<p class="label prog-build" id="projLabel" data-es="TRABAJOS DESTACADOS" data-en="SELECTED WORK">TRABAJOS DESTACADOS</p>
 				<h2 class="giant prog-build" id="projTitle" data-typewriter data-es="Proyectos destacados." data-en="Featured Projects.">Proyectos destacados.</h2>
@@ -384,7 +384,7 @@
 				</div>
 			</section>
 
-			<!-- Banner de contacto -->
+			<!-- Collaboration banner -->
 			<section class="block">
 				<article class="card creative prog-build" id="collabCard">
 					<div>
@@ -403,7 +403,7 @@
 				</article>
 			</section>
 
-			<!-- Habilidades -->
+			<!-- Skills -->
 			<section class="block" id="habilidades">
 				<div class="grid-exp">
 					<div class="exp-left">
@@ -470,7 +470,7 @@
 				</article>
 			</section>
 
-			<!-- Contacto -->
+			<!-- Contact -->
 			<section class="block" id="contacto">
 				<h2 class="giant prog-build" id="contactTitle" data-es="Hablemos." data-en="Let's talk.">Hablemos.</h2>
 				<div class="grid-contact" id="contactGrid">
@@ -560,7 +560,7 @@
 		</div>
 	</div>
 
-	<!-- Modal: Vista previa de proyecto -->
+	<!-- Modal: Project preview -->
 	<div class="promo-modal" id="promoModal" role="dialog" aria-modal="true" aria-label="Pieza promocional de UniStack" data-aria-es="Pieza promocional de UniStack" data-aria-en="UniStack promotional artwork" hidden>
 		<div class="promo-modal-backdrop" data-close></div>
 		<div class="promo-modal-panel" role="document">

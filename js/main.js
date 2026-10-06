@@ -3,7 +3,7 @@
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-// Sincroniza las actualizaciones de scroll con requestAnimationFrame
+// Coalesce scroll updates to a single requestAnimationFrame tick
 const onScrollRaf = (fn) => {
   let queued = false;
   return () => {
@@ -21,7 +21,7 @@ const prefersReducedMotion = window.matchMedia(
 ).matches;
 const finePointer = window.matchMedia("(pointer: fine)").matches;
 
-/* ---------- Cursor personalizado: puntero directo y estela suavizada ---------- */
+/* ---------- Custom Cursor: direct pointer + smoothed trail ---------- */
 function initCursor() {
   if (prefersReducedMotion || !finePointer) return;
 
@@ -171,7 +171,7 @@ function initCursor() {
   };
 }
 
-/* ---------- Efecto de zoom y desenfoque interactivo en el banner hero ---------- */
+/* ---------- Interactive Hero Banner Lens Zoom Effect ---------- */
 function initLens() {
   if (prefersReducedMotion) return;
 
@@ -230,7 +230,7 @@ function initLens() {
   lens.addEventListener("mousemove", handleMouseMove);
 }
 
-/* ---------- Lenis: scroll con inercia ---------- */
+/* ---------- Lenis: smooth inertial scrolling ---------- */
 function initLenis() {
   if (prefersReducedMotion || typeof Lenis === "undefined") return null;
 
@@ -263,7 +263,7 @@ function scrollToTarget(target) {
   }
 }
 
-/* ---------- Navegación del header e indicador de posición activo ---------- */
+/* ---------- Header Navigation & Active Position Indicator ---------- */
 let updateNavPillGlobal = null;
 
 function initNav() {
@@ -329,7 +329,7 @@ function initNav() {
     return { targets, maxScroll };
   }
 
-  // Progreso continuo proporcional a la posición de scroll
+  // Continuous progress proportional to scroll position
   function getProgress(scrollY, targets, maxScroll) {
     if (scrollY <= 0) return 0;
     if (maxScroll > 0 && scrollY >= maxScroll - 30) return targets.length - 1;
@@ -345,7 +345,7 @@ function initNav() {
     return targets.length - 1;
   }
 
-  // Interpola posición x y ancho w exactamente a la par
+  // Simultaneously interpolates x position and width
   function calculateTarget(progress, metrics) {
     if (!metrics.length) return { x: 0, width: 0, activeIdx: 0 };
 
@@ -427,7 +427,7 @@ function initNav() {
     update(immediate);
   };
 
-  // Manejador de clics en la navegación: deslizamiento visible, fluido y elegante directo al destino
+  // Navigation click handler: smooth slide transition to target position
   navButtons.forEach((btn, idx) => {
     btn.addEventListener("click", () => {
       const metrics = getNavMetrics();
@@ -438,10 +438,10 @@ function initNav() {
       targetW = dest.width;
       activeIndex = idx;
 
-      // Iluminar botón de destino inmediatamente
+      // Highlight target button immediately
       navButtons.forEach((b, i) => b.classList.toggle("active", i === idx));
 
-      // Pausar el loop LERP para permitir que la transición CSS ejecute el deslizamiento visible
+      // Pause LERP loop while CSS transition slides the pill
       if (rafId) cancelAnimationFrame(rafId);
       isLooping = false;
       isManualClick = true;
@@ -457,7 +457,7 @@ function initNav() {
         return;
       }
 
-      // Deslizamiento con trayectoria visible de 460ms (ni instantáneo ni lento, perfectamente perceptible)
+      // 460ms smooth slide trajectory
       navPill.style.transition = "transform 0.46s cubic-bezier(0.22, 1, 0.36, 1), width 0.42s cubic-bezier(0.22, 1, 0.36, 1)";
       navPill.style.transform = `translateX(${targetX}px)`;
       navPill.style.width = `${targetW}px`;
@@ -465,7 +465,7 @@ function initNav() {
       currentX = targetX;
       currentW = targetW;
 
-      // Restablecer sin transición una vez completado el deslizamiento para el scroll manual
+      // Reset transition once slide finishes to resume smooth scroll tracking
       manualClickTimer = setTimeout(() => {
         isManualClick = false;
         navPill.style.transition = "none";
@@ -473,7 +473,7 @@ function initNav() {
     });
   });
 
-  // Listener pasivo de scroll coordinado por rAF
+  // Passive scroll listener coordinated via requestAnimationFrame
   const updateOnScroll = onScrollRaf(() => update(false));
   window.addEventListener("scroll", updateOnScroll, { passive: true });
 
@@ -483,7 +483,7 @@ function initNav() {
 
   window.addEventListener("resize", () => update(true), { passive: true });
 
-  // Disparo inicial tras pintar el layout
+  // Initial update after DOM layout
   requestAnimationFrame(() => {
     setTimeout(() => update(true), 60);
   });
@@ -599,7 +599,7 @@ function initLanguage() {
   updateLanguageUI();
 }
 
-/* ---------- Anclas suaves ---------- */
+/* ---------- Smooth Anchor Links ---------- */
 function initAnchors() {
   $$('a[href^="#"]').forEach((a) => {
     a.addEventListener("click", (e) => {
@@ -613,7 +613,7 @@ function initAnchors() {
   });
 }
 
-/* ---------- Revelado ---------- */
+/* ---------- Scroll Reveal ---------- */
 function initReveal() {
   const items = $$(".reveal");
   if (!items.length) return;
@@ -635,7 +635,7 @@ function initReveal() {
   items.forEach((el) => obs.observe(el));
 }
 
-/* ---------- Showcase de proyectos ---------- */
+/* ---------- Projects Showcase ---------- */
 const SWATCHES = [
   "#F1A5A0", "#7c8cf8", "#4ec9a4", "#f0b35a",
   "#c78bf2", "#5ab0ee", "#ef6b6b", "#9aa5b1",
@@ -643,7 +643,7 @@ const SWATCHES = [
 
 const LANDING_URL = "https://unistack.srk-lab.workers.dev/";
 
-/* Capturas estáticas de los sitios (guardadas en assets/projects). */
+/* Static screenshots stored in assets/projects */
 const sitePreview = (img, url, label) => `
   <div class="art">
     <a class="browser wide" href="${url}" target="_blank" rel="noopener" aria-label="Open ${label}" data-aria-es="Abrir ${label}" data-aria-en="Open ${label}">
@@ -755,7 +755,7 @@ function initWork() {
 
   let activeIdx = 0;
 
-  // 1. Estructura de pestañas e indicador deslizante
+  // 1. Build tabs markup and sliding pill indicator
   list.innerHTML = `
     <div class="work-sliding-pill" id="workSlidingPill" aria-hidden="true"></div>
     ${WORK.map(
@@ -771,7 +771,7 @@ function initWork() {
   const tabs = $$(".work-tab", list);
   const pill = $("#workSlidingPill", list);
 
-  // 2. Renderizado previo de paneles para transiciones fluidas
+  // 2. Pre-render panels for smooth transitions
   panelsContainer.innerHTML = WORK.map(
     (w, k) => `
     <div class="stage-panel${k === 0 ? " is-active" : ""}" id="stagePanel${k}" role="tabpanel" aria-label="${w.title.es}">
@@ -843,11 +843,11 @@ function initWork() {
     const prevPanel = panels[prevIdx];
     const nextPanel = panels[newIdx];
 
-    // Limpiar temporizadores previos
+    // Clear pending transition timers
     clearTimeout(deconstructTimer);
     clearTimeout(reconstructTimer);
 
-    // Fase 1: salida visual del proyecto actual
+    // Phase 1: exit transition for current project
     panels.forEach((p, i) => {
       p.classList.remove("is-reconstructing");
       if (i === prevIdx) {
@@ -857,7 +857,7 @@ function initWork() {
       }
     });
 
-    // Fase 2: entrada visual del nuevo proyecto
+    // Phase 2: enter transition for new project
     deconstructTimer = setTimeout(() => {
       panels.forEach((p, i) => {
         p.classList.remove("is-deconstructing", "is-reconstructing");
@@ -1028,7 +1028,7 @@ function initHeatmap() {
     totalEl.textContent = savedLang === "EN" ? totalEl.getAttribute("data-en") : totalEl.getAttribute("data-es");
   }
 
-  // Encendido progresivo + barrido de brillo, solo la primera vez
+  // Progressive fade-in + glow sweep on initial view
   if (prefersReducedMotion) return;
   root.classList.add("hm-arm");
   const cells = Array.from(grid.children).filter((el) =>
@@ -1046,8 +1046,8 @@ function initHeatmap() {
     setTimeout(() => {
       cells.forEach((c) => c.style.removeProperty("transition-delay"));
     }, WEEKS * 24 + 900);
-    // Ola de brillo cada 4s: recorre los dots columna por columna
-    // Solo satura celdas con actividad (l1-l4); las vacías se dejan quietas
+    // Glow wave every 4s sweeping column by column
+    // Only brighten active cells (l1-l4); leave empty cells unaffected
     const hasLevel = (cell) =>
       cell.classList.contains("l1") ||
       cell.classList.contains("l2") ||
@@ -1122,7 +1122,7 @@ function initClock() {
 }
 
 /* ---------- Floating Controls ---------- */
-/* ---------- Tema espacial: Vacío / Nebulosa ---------- */
+/* ---------- Cosmic Theme: Void / Nebula ---------- */
 function initTheme() {
   const btn = $("#themeToggle");
   const label = $("#themeLabel");
@@ -1183,7 +1183,7 @@ function initTheme() {
     try {
       localStorage.setItem(KEY, next);
     } catch {
-      /* sin persistencia, pero el cambio se aplica igual */
+      /* apply theme even if localStorage is restricted */
     }
     sync();
   };
@@ -1195,7 +1195,7 @@ function initTheme() {
       return;
     }
 
-    // El círculo nace en el centro de la píldora
+    // Circle originates from the center of the toggle pill
     const box = btn.getBoundingClientRect();
     const x = box.left + box.width / 2;
     const y = box.top + box.height / 2;
@@ -1218,7 +1218,7 @@ function initTheme() {
         });
       })
       .catch(() => {
-        /* si el navegador aborta, el tema ya quedó aplicado */
+        /* theme applied even if transition aborts */
       });
     transition.finished.finally(() => {
       root.style.removeProperty("--reveal-x");
@@ -1228,7 +1228,7 @@ function initTheme() {
   });
 }
 
-/* ---------- Developer Pass: acoplamiento de identidad y animación en scroll ---------- */
+/* ---------- Developer Pass: identity docking & scroll animation ---------- */
 let updatePassConstruction = null;
 
 function initPassConstruction() {
@@ -1254,7 +1254,7 @@ function initPassConstruction() {
   const passStatItems = $$("#passStats .pass-stat-item");
   const manifestoRight = $("#manifestoRight");
 
-  // Elementos de la columna derecha
+  // Right column elements
   const manCard = $("#manCard");
   const manSubLabel = $("#manSubLabel");
   const manH3 = $("#manH3");
@@ -1270,18 +1270,18 @@ function initPassConstruction() {
   const principle02 = $("#principle02");
   const principle03 = $("#principle03");
 
-  // Elementos animados en transición: avatar y nombre
+  // Transition elements: avatar and name
   const flightAvatar = $("#flightAvatar");
   const flightInfo = $("#flightInfo");
   const flightName = $("#flightName");
   const flightHandleHero = $("#flightHandleHero");
   const flightHandlePass = $("#flightHandlePass");
 
-  // Encabezado de Sobre Mí
+  // About section header
   const sobreMiKicker = $("#sobreMiKicker");
   const sobreMiTitle = $("#sobreMiTitle");
 
-  // Elementos internos del contenedor del pass
+  // Internal elements inside pass socket
   const passAvatarImg = passAvatarTarget ? $("img", passAvatarTarget) : null;
   const passOnline = $("#passOnline");
   const passEmoji = $("#passEmoji");
@@ -1290,7 +1290,7 @@ function initPassConstruction() {
 
   if (!developerPass || !sobreMi || !flightAvatar) return;
 
-  // Resaltado dinámico (spotlight) en tarjetas
+  // Dynamic spotlight hover on cards
   const setupCardSpotlight = (cardEl) => {
     if (!cardEl) return;
     cardEl.addEventListener("pointermove", (e) => {
@@ -1318,7 +1318,7 @@ function initPassConstruction() {
   const measure = () => {
     if (!pageWrapper || !heroAvatarWrap || !passAvatarTarget || !heroName || !passInfoTarget) return;
 
-    // Limpiar transforms temporales para medir coordenadas absolutas
+    // Temporarily clear transforms to measure absolute coordinates
     const savedPassTransform = developerPass.style.transform;
     const savedHeroTransform = heroAvatarWrap.style.transform;
     const savedHeroBannerTransform = heroVisualCard ? heroVisualCard.style.transform : "";
@@ -1366,14 +1366,14 @@ function initPassConstruction() {
 
     if (sobreMi) {
       startScroll = 40;
-      // Ajuste de scroll de destino antes de llegar a #sobre-mi
+      // Target scroll offset before arriving at #sobre-mi
       targetScroll = Math.max(450, sobreMi.offsetTop - 180);
     }
 
     update();
   };
 
-  // Interpolación cúbica smoothstep entre a y b
+  // Cubic smoothstep interpolation between a and b
   const step = (x, a, b) => {
     if (x <= a) return 0;
     if (x >= b) return 1;
@@ -1447,12 +1447,12 @@ function initPassConstruction() {
     const rawP = (scrollY - startScroll) / (targetScroll - startScroll);
     const p = Math.max(0, Math.min(1, rawP));
 
-    // Trayectoria de desplazamiento coordinada con el scroll
-    // Avance gradual sincronizado con el desplazamiento
+    // Coordinated scroll flight trajectory
+    // Gradual movement synced with scroll progress
     const pFlight = step(p, 0.18, 0.78);
 
     // ========================================================
-    // 1. Salida visual del Hero
+    // 1. Hero visual exit transition
     // ========================================================
     const pHero = step(p, 0.10, 0.55);
     if (heroVisualCard) {
@@ -1474,12 +1474,12 @@ function initPassConstruction() {
     }
 
     // ========================================================
-    // 2. Transición del avatar y nombre hacia el Developer Pass
+    // 2. Avatar & name flight transition to Developer Pass
     // ========================================================
     const isDocked = p >= 0.78;
 
-    // Fundido entre el hero y los elementos en transición
-    // El avatar y nombre permanecen anclados hasta iniciar el movimiento
+    // Crossfade between hero and flight elements
+    // Avatar and name remain anchored until liftoff
     const pFade = step(p, 0.12, 0.19);
 
     if (p <= 0.11) {
@@ -1496,7 +1496,7 @@ function initPassConstruction() {
       if (flightInfo) flightInfo.style.opacity = isDocked ? "0" : String(pFade);
     }
 
-    // Trayectoria del avatar
+    // Avatar flight trajectory
     const curAvX = originAv.x + (targetAv.x - originAv.x) * pFlight;
     const curAvY = originAv.y + (targetAv.y - originAv.y) * pFlight;
     const curAvScale = 1.0 + (targetAv.w / originAv.w - 1.0) * pFlight;
@@ -1505,7 +1505,7 @@ function initPassConstruction() {
     flightAvatar.style.transform = `translate3d(${curAvX}px, ${curAvY}px, 0) scale(${curAvScale})`;
     flightAvatar.style.borderWidth = `${curBorderW}px`;
 
-    // Trayectoria del nombre y handle
+    // Name and handle flight trajectory
     if (flightInfo) {
       const curInfoX = originInfo.x + (targetInfo.x - originInfo.x) * pFlight;
       const curInfoY = originInfo.y + (targetInfo.y - originInfo.y) * pFlight;
@@ -1513,11 +1513,11 @@ function initPassConstruction() {
       const curInfoScale = 1.0 + (targetScaleInfo - 1.0) * pFlight;
       flightInfo.style.transform = `translate3d(${curInfoX}px, ${curInfoY}px, 0) scale(${curInfoScale})`;
 
-      // Transición del handle del hero
+      // Hero handle fade transition
       const pDissolveHero = step(p, 0.18, 0.36);
       if (flightHandleHero) flightHandleHero.style.opacity = String(1 - pDissolveHero);
 
-      // Aparición del handle en el pass
+      // Pass handle fade-in
       const pFadePass = step(p, 0.55, 0.76);
       if (flightHandlePass) {
         flightHandlePass.style.opacity = String(pFadePass);
@@ -1525,12 +1525,12 @@ function initPassConstruction() {
       }
     }
 
-    // Activación definitiva de elementos en el pass al finalizar acople
+    // Activate static pass elements once docked
     if (passAvatarImg) passAvatarImg.style.opacity = isDocked ? "1" : "0";
     if (passName) passName.style.opacity = isDocked ? "1" : "0";
     if (passHandle) passHandle.style.opacity = isDocked ? "1" : "0";
 
-    // Encabezado de Sobre Mí
+    // About section header
     const pKicker = step(p, 0.42, 0.62);
     if (sobreMiKicker) {
       sobreMiKicker.style.opacity = String(pKicker);
@@ -1543,9 +1543,9 @@ function initPassConstruction() {
     }
 
     // ========================================================
-    // 3. Ensamblado visual del Developer Pass
+    // 3. Developer Pass visual assembly
     // ========================================================
-    // Contenedor principal del pass
+    // Pass chassis container
     const pCard = step(p, 0.22, 0.60);
     const cardScale = 0.97 + 0.03 * pCard;
     const cardY = (1 - pCard) * 26;
@@ -1557,14 +1557,14 @@ function initPassConstruction() {
     }
     developerPass.style.opacity = String(cardOp);
 
-    // Identificador superior del pass
+    // Top identifier badge
     const pHd = step(p, 0.28, 0.62);
     if (passHd) {
       passHd.style.opacity = String(pHd);
       passHd.style.transform = `translateY(${(1 - pHd) * -14}px)`;
     }
 
-    // Insignias del avatar
+    // Avatar badges
     const pBadge = step(p, 0.76, 0.85);
     if (passEmoji) {
       passEmoji.style.transform = `scale(${pBadge})`;
@@ -1575,21 +1575,21 @@ function initPassConstruction() {
       passOnline.style.opacity = String(pBadge);
     }
 
-    // Tagline del pass
+    // Pass tagline
     const pTag = step(p, 0.77, 0.86);
     if (passTagline) {
       passTagline.style.opacity = String(pTag);
       passTagline.style.transform = `translateY(${(1 - pTag) * 12}px)`;
     }
 
-    // Línea divisoria superior
+    // Top divider line
     const pPerf1 = step(p, 0.80, 0.88);
     if (passPerf1) {
       passPerf1.style.transform = `scaleX(${pPerf1})`;
       passPerf1.style.opacity = String(pPerf1);
     }
 
-    // Filas de datos técnicos
+    // Technical telemetry rows
     const pLi1 = step(p, 0.82, 0.90);
     if (passLi1) {
       passLi1.style.opacity = String(pLi1);
@@ -1601,7 +1601,7 @@ function initPassConstruction() {
       passLi2.style.transform = `translateX(${(1 - pLi2) * -16}px)`;
     }
 
-    // Chips de especialidades
+    // Specialty chips
     const pSec = step(p, 0.86, 0.93);
     if (passSecLabel) {
       passSecLabel.style.opacity = String(pSec);
@@ -1616,14 +1616,14 @@ function initPassConstruction() {
       });
     }
 
-    // Línea divisoria inferior
+    // Bottom divider line
     const pPerf2 = step(p, 0.91, 0.96);
     if (passPerf2) {
       passPerf2.style.transform = `scaleX(${pPerf2})`;
       passPerf2.style.opacity = String(pPerf2);
     }
 
-    // Métricas del pie del pass
+    // Pass footer metrics
     if (passStatItems && passStatItems.length) {
       passStatItems.forEach((stat, i) => {
         const start = 0.92 + i * 0.016;
@@ -1635,13 +1635,13 @@ function initPassConstruction() {
     }
 
     // ========================================================
-    // 4. Columna derecha (Manifiesto y telemetría)
+    // 4. Right column (Manifesto & telemetry)
     // ========================================================
     if (manifestoRight) {
       manifestoRight.style.opacity = "1";
     }
 
-    // 4a. Tarjeta de manifiesto
+    // 4a. Manifesto card
     const pManCard = step(p, 0.26, 0.62);
     if (manCard) {
       manCard.style.opacity = String(pManCard);
@@ -1678,7 +1678,7 @@ function initPassConstruction() {
       manEm.style.setProperty("--em-op", String(pManEm));
     }
 
-    // 4b. Tarjeta de hora local
+    // 4b. Local clock card
     const pClockCard = step(p, 0.48, 0.76);
     if (telemClockCard) {
       telemClockCard.style.opacity = String(pClockCard);
@@ -1702,14 +1702,14 @@ function initPassConstruction() {
       telemCity.style.opacity = String(pCity);
       telemCity.style.transform = `translateX(${(1 - pCity) * -10}px)`;
     }
-    // Indicador de hora
+    // Clock indicator chip
     const pClockChip = step(p, 0.58, 0.76);
     if (telemClockChip) {
       telemClockChip.style.opacity = String(pClockChip);
       telemClockChip.style.transform = `translateY(${(1 - pClockChip) * 8}px) scale(${0.85 + 0.15 * pClockChip})`;
     }
 
-    // 4c. Tarjeta de principios
+    // 4c. Principles card
     const pPrinciplesCard = step(p, 0.54, 0.82);
     if (telemPrinciplesCard) {
       telemPrinciplesCard.style.opacity = String(pPrinciplesCard);
@@ -1728,7 +1728,7 @@ function initPassConstruction() {
       telemPrinciplesSub.style.transform = `translateX(${(1 - pPrincSub) * -10}px)`;
     }
 
-    // 4d. Principios con entrada escalonada
+    // 4d. Principles staggered entrance
     const pP1 = step(p, 0.65, 0.80);
     if (principle01) {
       principle01.style.opacity = String(pP1);
@@ -1767,17 +1767,17 @@ function initPassConstruction() {
   }
   window.addEventListener("resize", measure, { passive: true });
 
-  // Medición inicial de dimensiones
+  // Initial measurement after layout pass
   requestAnimationFrame(() => {
     setTimeout(measure, 80);
   });
 }
 
-/* ---------- Animaciones de revelado en scroll por secciones ---------- */
+/* ---------- Scroll reveal animations for sections ---------- */
 function initPageProgressiveConstruction() {
   if (prefersReducedMotion) return;
 
-  // Referencias a elementos
+  // Element references
   const projLabel = $("#projLabel");
   const projTitle = $("#projTitle");
   const workStageContainer = $("#workStageContainer");
@@ -1867,7 +1867,7 @@ function initPageProgressiveConstruction() {
       }
     }
 
-    // --- 3. HABILIDADES / EXPERTISE ---
+    // --- 3. SKILLS / EXPERTISE ---
     if (expSec) {
       const pExpHeader = getViewportProgress(expLabel || expSec, 0.94, 0.45);
       if (expLabel) {
@@ -1877,8 +1877,7 @@ function initPageProgressiveConstruction() {
       if (expSticky) {
         const pSticky = step(pExpHeader, 0.10, 0.50);
         expSticky.style.opacity = String(pSticky);
-        // Sin translateY aquí: el sticky vive en .exp-left y un transform
-        // en el hijo pelearía con el fijado durante el scroll.
+        // Avoid translateY here: sticky positioning lives on .exp-left and transforms would break sticky scrolling.
         expSticky.style.removeProperty("transform");
       }
 
@@ -1902,7 +1901,7 @@ function initPageProgressiveConstruction() {
       });
     }
 
-    // --- 4. SERVICIOS (4 Setup Cards) ---
+    // --- 4. SERVICES / SETUP CARDS ---
     if (servTitle || setupCards.length) {
       const pServHeader = getViewportProgress(servLabel || servTitle, 0.94, 0.45);
       if (servLabel) {
@@ -1946,7 +1945,7 @@ function initPageProgressiveConstruction() {
       }
     }
 
-    // --- 6. CONTACTO ---
+    // --- 6. CONTACT ---
     if (contactTitle || contactCards.length) {
       const pContact = getViewportProgress(contactTitle || contactCards[0], 0.94, 0.45);
       if (contactTitle) {
@@ -1969,7 +1968,7 @@ function initPageProgressiveConstruction() {
   requestAnimationFrame(() => update());
 }
 
-/* ---------- Copiar email ---------- */
+/* ---------- Copy email to clipboard ---------- */
 function initCopyEmail() {
   const btns = $$("[data-copy-email]");
   if (!btns.length) return;
@@ -1994,15 +1993,15 @@ function initCopyEmail() {
   });
 }
 
-/* ---------- Fondo espacio exterior: estrellas + meteoritos ---------- */
+/* ---------- Deep space background: stars & meteors ---------- */
 function initScrollBg() {
   const canvas = $("#scrollBg");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
 
-  // Atlas profundo: constelaciones reales, galaxias, planetas-punto y un
-  // agujero negro. Las entidades nombradas muestran etiqueta al hover.
+  // Deep space atlas: constellations, galaxies, planet points, and black hole.
+  // Named celestial entities display hover labels.
   const COL = 1100;
   let w = 0;
   let h = 0;
@@ -2011,16 +2010,16 @@ function initScrollBg() {
   let stars = [];
   let constels = [];
   let galaxies = [];
-  let wanderers = []; // planetas: solo puntos brillantes (deep space)
-  let pulsar = null; // faro cósmico con haces giratorios
+  let wanderers = []; // Planets: bright points in deep space
+  let pulsar = null; // Cosmic pulsar with rotating beams
   let meteors = [];
   let nextMeteor = 0;
   let raf = 0;
   let t = 0;
   let prevY = window.scrollY || 0;
-  let sVel = 0; // velocidad de scroll suavizada (solo aviva brillo y meteoritos)
+  let sVel = 0; // Smoothed scroll velocity for brightness and meteor rate
   const mouse = { x: -9999, y: -9999, tx: -9999, ty: -9999 };
-  const spots = []; // {x, y, rad, text} candidatos a etiqueta este frame
+  const spots = []; // {x, y, rad, text} candidates for hover tooltip this frame
 
   const readTheme = () => {
     dark = document.documentElement.getAttribute("data-theme") !== "light";
@@ -2034,10 +2033,10 @@ function initScrollBg() {
     wanderers = [];
     pulsar = null;
     maxScroll = Math.max(0, document.documentElement.scrollHeight - h);
-    if (margin < 120) return; // sin margen suficiente: limpio
+    if (margin < 120) return; // Insufficient margin: skip
     const laneX = (side) => (side ? w - margin / 2 : margin / 2);
-    const span = maxScroll * 0.95 + h; // rango vertical a poblar
-    // Estrellas en laterales, posición fija en el documento
+    const span = maxScroll * 0.95 + h; // Vertical range to populate
+    // Lateral stars with fixed document coordinates
     for (let i = 0; i < 320; i++) {
       const side = i % 2 === 0 ? 0 : 1;
       const hero = Math.random() < 0.08;
@@ -2046,10 +2045,10 @@ function initScrollBg() {
         docY: Math.random() * span,
         r: hero ? 2.0 + Math.random() * 0.9 : 0.6 + Math.random() * 1.6,
         hero,
-        depth: 0.3 + Math.random() * 0.6, // paralaje: lo lejos se mueve menos
+        depth: 0.3 + Math.random() * 0.6, // Parallax: distant stars move slower
         ph: Math.random() * 6.28,
-        tw: 1.5 + Math.random() * 3.5, // parpadeo propio de cada estrella
-        damp: 3 + Math.random() * 6, // deriva lenta, queda anclada
+        tw: 1.5 + Math.random() * 3.5, // Unique twinkle cycle per star
+        damp: 3 + Math.random() * 6, // Slow drift while remaining anchored
         dsp: 0.1 + Math.random() * 0.25,
         dph: Math.random() * 6.28,
         accent: Math.random() < 0.18,
@@ -2057,8 +2056,7 @@ function initScrollBg() {
         wide: false,
       });
     }
-    // Polvo estelar: micro-estrellas tenues a todo lo ancho (se ven en los
-    // huecos entre secciones y dan profundidad al viaje)
+    // Stardust: subtle micro-stars across the full canvas providing cosmic depth
     for (let i = 0; i < 110; i++) {
       stars.push({
         x: Math.random() * w,
@@ -2076,28 +2074,28 @@ function initScrollBg() {
         wide: true,
       });
     }
-    // Constelaciones reales: TAURO (con Pléyades), ORIÓN y CASIOPEA.
-    // Rotación leve para que sigan reconociéndose; repartidas a lo alto.
+    // Real constellations: Taurus, Orion, Ursa Major, Lyra, Cassiopeia.
+    // Preserves recognizable shapes with subtle rotation.
     const SHAPES = [
       {
         name: "TAURUS",
-        fit: 170, // compacta: los cuernos no se desparraman
+        fit: 170, // Compact horns
         pts: [
-          [0.9, 0.55], // 0 Aldebarán (héroe)
+          [0.9, 0.55], // 0 Aldebaran (hero)
           [0.35, 0.3], // 1
-          [-0.15, 0.05], // 2 vértice de las Híades
-          [0.3, 0.75], // 3 brazo inferior
-          [0.75, 1.05], // 4 punta inferior
-          [-0.5, -0.55], // 5 cuerno superior
-          [-0.95, -1.25], // 6 punta del cuerno
-          [-0.35, -0.7], // 7 cuerno inferior
-          [-0.75, -1.35], // 8 punta del cuerno
-          [0.55, -0.15], // 9 frente
+          [-0.15, 0.05], // 2 Hyades vertex
+          [0.3, 0.75], // 3 Lower arm
+          [0.75, 1.05], // 4 Lower tip
+          [-0.5, -0.55], // 5 Upper horn
+          [-0.95, -1.25], // 6 Horn tip
+          [-0.35, -0.7], // 7 Lower horn
+          [-0.75, -1.35], // 8 Horn tip
+          [0.55, -0.15], // 9 Forehead
         ],
         mags: [2.6, 1.3, 1.4, 1.3, 1.2, 1.2, 1.1, 1.2, 1.1, 1.2],
         links: [[2, 1], [1, 0], [2, 3], [3, 4], [1, 9], [9, 3], [1, 5], [5, 6], [9, 7], [7, 8]],
         heroes: [{ idx: 0, name: "ALDEBARAN", col: [255, 176, 102] }],
-        extra: [ // Pléyades: grupito suelto, tal cual se ven
+        extra: [ // Pleiades star cluster
           [1.75, -0.95], [1.6, -0.8], [1.9, -0.78],
           [1.7, -1.1], [1.85, -1.02], [1.56, -1.0],
         ],
@@ -2105,14 +2103,14 @@ function initScrollBg() {
       {
         name: "ORION",
         pts: [
-          [-1.0, -1.2], // 0 Betelgeuse (héroe)
+          [-1.0, -1.2], // 0 Betelgeuse (hero)
           [1.0, -1.05], // 1 Bellatrix
-          [-0.32, -0.1], // 2 cinturón
+          [-0.32, -0.1], // 2 Orion belt
           [0, 0], // 3
           [0.32, 0.1], // 4
-          [0.02, 0.45], // 5 espada
-          [0.05, 0.78], // 6 espada
-          [0.95, 1.3], // 7 Rigel (héroe)
+          [0.02, 0.45], // 5 Orion sword
+          [0.05, 0.78], // 6 Orion sword
+          [0.95, 1.3], // 7 Rigel (hero)
           [-0.9, 1.25], // 8 Saiph
         ],
         mags: [2.6, 1.6, 1.8, 1.9, 1.8, 1.2, 1.0, 2.6, 1.5],
@@ -2140,7 +2138,7 @@ function initScrollBg() {
           [-0.3, -0.85], // 3 Megrez
           [0.7, -0.7], // 4 Alioth
           [1.6, -0.5], // 5 Mizar
-          [1.75, -0.32], // 6 Alcor (compañera diminuta)
+          [1.75, -0.32], // 6 Alcor (dim companion star)
           [2.4, -0.2], // 7 Alkaid
         ],
         mags: [1.8, 1.6, 1.5, 1.4, 1.7, 1.8, 0.8, 1.7],
@@ -2150,7 +2148,7 @@ function initScrollBg() {
       {
         name: "LYRA",
         pts: [
-          [0, -1.0], // 0 Vega (héroe)
+          [0, -1.0], // 0 Vega (hero)
           [0.45, -0.25], // 1 Epsilon
           [0.35, 0.45], // 2 Sheliak
           [-0.35, 0.45], // 3 Sulafat
@@ -2163,8 +2161,8 @@ function initScrollBg() {
     ];
     SHAPES.forEach((shape, k) => {
       const side = k % 2 === 0 ? 0 : 1;
-      const ang = (Math.random() - 0.5) * 0.5; // leve: debe reconocerse
-      // Auto-ajuste: ninguna constelación supera los 200px (no invade contenido)
+      const ang = (Math.random() - 0.5) * 0.5; // Subtle rotation: easily recognizable
+      // Auto-scale: limit constellation size to prevent content overlap
       const bxs = shape.pts.map((p) => p[0]);
       const bys = shape.pts.map((p) => p[1]);
       const dim = Math.max(
@@ -2196,8 +2194,8 @@ function initScrollBg() {
         a: 0.22 + Math.random() * 0.12,
       });
     });
-    // Galaxias lejanas: resplandores difusos, casi quietas, respirando lento.
-    // ANDROMEDA va en un lateral del primer tercio: imposible no verla.
+    // Distant galaxies: soft diffuse nebulae breathing slowly.
+    // Andromeda positioned in the lateral upper third.
     const G = ["241,165,160", "120,150,255", "90,200,190"];
     const nG = 5 + Math.floor(Math.random() * 2);
     const andSide = Math.random() < 0.5 ? 0 : 1;
@@ -2216,7 +2214,7 @@ function initScrollBg() {
         name: isAnd ? "ANDROMEDA" : null,
       });
     }
-    // Planetas del espacio profundo: solo puntos brillantes
+    // Deep space planets: bright pinpoints
     const PLANETS = [
       { name: "KEPLER-186 f", col: [170, 200, 255] },
       { name: "TRAPPIST-1 e", col: [255, 220, 170] },
@@ -2234,8 +2232,7 @@ function initScrollBg() {
         name: p.name,
       });
     });
-    // Púlsar del Cangrejo: faro cósmico con haces giratorios, en un lateral
-    // de la zona media (pasas por él sí o sí al recorrer la página)
+    // Crab Pulsar: cosmic lighthouse with rotating light beams in the mid lateral area
     const psSide = Math.random() < 0.5 ? 0 : 1;
     pulsar = {
       x: laneX(psSide) + (Math.random() - 0.5) * Math.max(30, margin - 220),
@@ -2246,7 +2243,7 @@ function initScrollBg() {
       spin: 0.7 + Math.random() * 0.5,
       name: "CRAB PULSAR",
     };
-    // Atlas por consola: dónde cayó cada cosa en esta carga
+    // Console celestial atlas coordinates
     try {
       console.info(
         "[cosmos] " +
@@ -2256,7 +2253,7 @@ function initScrollBg() {
           " (docY px, con paralaje aparecen al hacer scroll)",
       );
     } catch (_) {
-      /* consola no disponible: el cielo sigue igual */
+      /* console unavailable: continue rendering */
     }
   };
 
@@ -2275,8 +2272,7 @@ function initScrollBg() {
     return dark ? "200,200,215" : "70,60,85";
   };
 
-  // Sprites pre-renderizados: el degradado se hornea una vez y por frame
-  // solo hay un drawImage barato (los gradientes por frame son caros)
+  // Pre-rendered sprites: gradients baked once, using fast drawImage per frame
   const glowCache = {};
   const glowSprite = (col, rad) => {
     const r = Math.max(2, Math.round(rad));
@@ -2303,10 +2299,10 @@ function initScrollBg() {
   const paint = (boost) => {
     const y = window.scrollY || 0;
     ctx.clearRect(0, 0, w, h);
-    spots.length = 0; // candidatos a etiqueta este frame
-    // Suma de luz: los brillos superpuestos se acumulan como en el cielo real
+    spots.length = 0; // Tooltip candidate entities this frame
+    // Additive blend mode: overlapping glows combine naturally
     if (dark) ctx.globalCompositeOperation = "lighter";
-    // Galaxias: sprites enormes que respiran muy lento
+    // Galaxies: large breathing sprites
     galaxies.forEach((g) => {
       const sy = g.docY - y * g.depth;
       if (sy < -g.rad || sy > h + g.rad) return;
@@ -2321,7 +2317,7 @@ function initScrollBg() {
       ctx.globalCompositeOperation = "source-over";
       return;
     }
-    // Constelaciones reales: líneas + nodos con magnitud + héroes de color
+    // Constellations: lines + magnitude nodes + colored hero stars
     constels.forEach((c) => {
       const off = y * c.depth;
       let vis = false;
@@ -2339,7 +2335,7 @@ function initScrollBg() {
         ctx.lineTo(sp[b][0], sp[b][1]);
       });
       ctx.stroke();
-      // Pléyades y cía: puntos sueltos sin unir, tal cual se ven
+      // Pleiades: cluster of loose stars without connector lines
       (c.extra || []).forEach(([px, py]) => {
         const sy = py - off;
         if (sy < -6 || sy > h + 6) return;
@@ -2370,7 +2366,7 @@ function initScrollBg() {
         }
       });
     });
-    // Planetas del espacio profundo: solo puntos brillantes
+    // Deep space planets: bright pinpoints
     wanderers.forEach((p) => {
       const sy = p.docY - y * p.depth;
       if (sy < -12 || sy > h + 12) return;
@@ -2389,14 +2385,14 @@ function initScrollBg() {
       ctx.fill();
       spots.push({ x: p.x, y: sy, rad: 24, text: p.name });
     });
-    // Púlsar: núcleo parpadeante + doble haz giratorio estilo faro
+    // Pulsar: flashing core + rotating dual beacon beams
     if (pulsar) {
       const ps = pulsar;
       const sy = ps.docY - y * ps.depth;
       if (sy > -130 && sy < h + 130) {
         const ang = t * ps.spin + ps.ph;
         const blink = 0.6 + 0.4 * Math.sin(t * 6 + ps.ph);
-        // Haces primero (detrás del núcleo)
+        // Beams first (behind the core)
         ctx.save();
         ctx.translate(ps.x, sy);
         ctx.rotate(ang);
@@ -2415,7 +2411,7 @@ function initScrollBg() {
           ctx.fill();
         }
         ctx.restore();
-        // Halo + núcleo
+        // Halo + core
         const halo = ctx.createRadialGradient(ps.x, sy, 0, ps.x, sy, 16);
         halo.addColorStop(0, `rgba(220,232,255, ${0.5 * blink})`);
         halo.addColorStop(1, "rgba(220,232,255, 0)");
@@ -2430,7 +2426,7 @@ function initScrollBg() {
         spots.push({ x: ps.x, y: sy, rad: 60, text: ps.name });
       }
     }
-    // Estrellas: ancladas al cielo con deriva lenta + parpadeo profundo
+    // Stars: anchored to celestial coordinates with slow drift and twinkling
     stars.forEach((d) => {
       const sy =
         d.docY - y * d.depth + Math.cos(t * d.dsp * 0.8 + d.dph) * d.damp;
@@ -2456,14 +2452,14 @@ function initScrollBg() {
     ctx.globalCompositeOperation = "source-over";
   };
 
-  // Meteorito: cabeza brillante + cola en degradado, diagonal aleatoria
+  // Meteor: glowing head + gradient tail at random diagonal angle
   const spawnMeteor = () => {
     const ang = Math.PI / 4 + (Math.random() - 0.5) * 0.6; // ~45° ± 17°
-    const dir = Math.random() < 0.5 ? 1 : -1; // cae hacia der o izq
+    const dir = Math.random() < 0.5 ? 1 : -1; // Trajectory angled left or right
     const speed = 9 + Math.random() * 7;
     meteors.push({
       x: Math.random() * w,
-      y: Math.random() * h * 0.7, // nace en cualquier parte del cielo
+      y: Math.random() * h * 0.7, // Spawns across celestial field
       vx: Math.cos(ang) * speed * dir,
       vy: Math.abs(Math.sin(ang)) * speed * 0.9 + 2,
       life: 1,
@@ -2495,7 +2491,7 @@ function initScrollBg() {
     ctx.lineTo(tx, ty);
     ctx.stroke();
     ctx.restore();
-    // Cabeza con halo en capas (barato, sin shadowBlur)
+    // Layered halo head (efficient, avoids shadowBlur overhead)
     ctx.beginPath();
     ctx.arc(m.x, m.y, m.wid * 2.6, 0, 6.2832);
     ctx.fillStyle = `rgba(${head}, ${0.18 * m.life})`;
@@ -2506,7 +2502,7 @@ function initScrollBg() {
     ctx.fill();
   };
 
-  // Etiqueta flotante para la entidad nombrada bajo el mouse
+  // Floating tooltip label for celestial entity under cursor
   const drawLabel = (sx, sy, text) => {
     ctx.save();
     ctx.letterSpacing = "2px";
@@ -2541,33 +2537,32 @@ function initScrollBg() {
 
   const draw = () => {
     t += 0.016;
-    // Scroll up/down: el signo arrastra en la dirección correspondiente
+    // Scroll direction vector
     const y = window.scrollY || 0;
     const vel = y - prevY;
     prevY = y;
     sVel += (vel - sVel) * 0.12;
     mouse.x += (mouse.tx - mouse.x) * 0.25;
     mouse.y += (mouse.ty - mouse.y) * 0.25;
-    // Cielo quieto: el scroll solo aviva el brillo un poco; el viaje lo
-    // pone la página al moverse entre las estrellas (nunca hay stretch aquí)
+    // Static sky: scroll subtly enhances meteor and twinkle rate
     const boost = Math.min(0.4, Math.abs(sVel) * 0.015);
     paint(boost);
-    // Meteoritos aleatorios: caen en cualquier momento y lugar (máx 3)
+    // Random meteors spawning periodically (max 3 concurrent)
     const now = performance.now();
     if (now >= nextMeteor) {
       spawnMeteor();
-      nextMeteor = now + 1200 + Math.random() * 3800; // cada 1–5s
+      nextMeteor = now + 1200 + Math.random() * 3800; // Interval: 1-5s
     }
     meteors = meteors.filter(
       (m) => m.life > 0 && m.x > -300 && m.x < w + 300 && m.y < h + 300,
     );
     meteors.forEach((m) => {
       m.x += m.vx;
-      m.y += m.vy + sVel * 0.05; // el scroll también los perturba un poco
+      m.y += m.vy + sVel * 0.05; // Scroll slightly increases meteor frequency
       m.life -= m.decay;
       if (m.life > 0) drawMeteor(m);
     });
-    // Etiqueta: la entidad nombrada más cercana al mouse
+    // Tooltip: closest named entity to cursor
     let best = null;
     let bestD = 1e9;
     spots.forEach((s) => {
@@ -2586,7 +2581,7 @@ function initScrollBg() {
   if (prefersReducedMotion) {
     readTheme();
     resize();
-    paint(0); // una sola capa estática
+    paint(0); // Single static layer
     window.addEventListener("resize", () => {
       readTheme();
       resize();
@@ -2622,13 +2617,13 @@ function initScrollBg() {
   readTheme();
   resize();
   prevY = window.scrollY || 0;
-  nextMeteor = performance.now() + 800; // el primero cae pronto
+  nextMeteor = performance.now() + 800; // First meteor spawns quickly after load
   raf = requestAnimationFrame(draw);
 }
 
-/* Stretch elástico retirado: la página ya no cede en los extremos. */
+/* Rubber-band overscroll removed for steady feel */
 
-/* ---------- Modal del Developer Pass (clic para ver en detalle) ---------- */
+/* ---------- Developer Pass Modal (click to inspect) ---------- */
 function initPassModal() {
   const pass = $("#developerPass");
   const modal = $("#passModal");
@@ -2638,8 +2633,7 @@ function initPassModal() {
   let lastFocus = null;
 
   const open = () => {
-    // Clon limpio: sin ids duplicados y sin estilos inline de la
-    // construcción progresiva (siempre se ve completo)
+    // Clean clone: avoids duplicate IDs and resets inline animation styles
     const clone = pass.cloneNode(true);
     clone.removeAttribute("id");
     clone.removeAttribute("style");
@@ -2688,7 +2682,7 @@ function initPassModal() {
   });
 }
 
-/* ---------- Modal de la imagen promocional UniStack ---------- */
+/* ---------- UniStack Promo Modal ---------- */
 function initPromoModal() {
   const modal = $("#promoModal");
   const modalImg = $("#promoModalImg");
@@ -2741,11 +2735,11 @@ function initPromoModal() {
   });
 }
 
-/* ---------- Typewriter: solo la primera vez que se ve ---------- */
+/* ---------- Typewriter: trigger on first viewport entry ---------- */
 function initTypewriter() {
   const els = $$("[data-typewriter]");
   if (!els.length) return;
-  if (prefersReducedMotion) return; // se muestra directo, sin teclear
+  if (prefersReducedMotion) return; // Show full text immediately if motion is reduced
 
   const typeEl = (el) => {
     const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
@@ -2798,7 +2792,7 @@ function initTypewriter() {
   els.forEach((el) => obs.observe(el));
 }
 
-/* ---------- Typewriter para el correo del terminal (Uplink) ---------- */
+/* ---------- Terminal Typewriter for Email Uplink ---------- */
 function initUplinkTypewriter() {
   const mailEl = $("#uplinkMail") || $(".uplink-mail");
   if (!mailEl) return;
@@ -2813,7 +2807,7 @@ function initUplinkTypewriter() {
     mailEl.insertBefore(textSpan, caret);
   }
 
-  // Se inicia vacío para que la animación escriba al llegar a la sección
+  // Initialized empty so typing begins once section enters viewport
   textSpan.textContent = "";
 
   let isTyping = false;
@@ -2831,7 +2825,7 @@ function initUplinkTypewriter() {
         textSpan.textContent += targetEmail[i];
         i++;
         const prevChar = targetEmail[i - 1];
-        // Pausa ligera y natural en '@' y '.'
+        // Natural slight pause on '@' and '.' characters
         const delay = (prevChar === "@" || prevChar === ".") ? 130 : 45 + Math.random() * 25;
         setTimeout(typeChar, delay);
       } else {
@@ -2859,7 +2853,7 @@ function initUplinkTypewriter() {
 
   obs.observe(uplinkCard);
 
-  // Replay interactivo al hacer clic en el correo
+  // Interactive typing replay on click
   mailEl.style.cursor = "pointer";
   mailEl.addEventListener("click", () => {
     if (!isTyping) {
@@ -2868,7 +2862,7 @@ function initUplinkTypewriter() {
   });
 }
 
-/* ---------- Arranque ---------- */
+/* ---------- Initialization ---------- */
 document.addEventListener("DOMContentLoaded", () => {
   try {
     localStorage.removeItem("lab_palette");
