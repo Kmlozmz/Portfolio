@@ -710,6 +710,7 @@ const WORK = [
     },
     made: ["Kotlin", "Jetpack Compose", "Room", "Hilt"],
     links: [
+      { label: { es: "DESCARGAR APK ↗", en: "DOWNLOAD APK ↗" }, href: "https://github.com/Kmlozmz/UniStack/releases/latest/download/UniStack.apk" },
       { label: { es: "CÓDIGO FUENTE ↗", en: "SOURCE CODE ↗" }, href: "https://github.com/Kmlozmz/UniStack" },
       { label: { es: "VISITAR SITIO ↗", en: "VISIT WEBSITE ↗" }, href: LANDING_URL, ghost: true },
     ],
