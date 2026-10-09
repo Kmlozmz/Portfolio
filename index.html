@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="dark" data-theme="nebula">
+<html lang="en" class="dark" data-theme="dark">
 
 <head>
 	<meta charset="UTF-8" />
@@ -31,7 +31,7 @@
 	<link
 		href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=Caveat:wght@500;600&display=swap"
 		rel="stylesheet" />
-	<link rel="stylesheet" href="css/styles.css?v=31" />
+	<link rel="stylesheet" href="css/styles.css?v=33" />
 
 	<!-- Theme initialization before render -->
 	<script>
@@ -40,10 +40,10 @@
 			document.documentElement.classList.add("dark");
 			if (t === "dark" || t === "nebula")
 				document.documentElement.setAttribute("data-theme", t);
-			else document.documentElement.setAttribute("data-theme", "nebula");
+			else document.documentElement.setAttribute("data-theme", "dark");
 		} catch (e) {
 			document.documentElement.classList.add("dark");
-			document.documentElement.setAttribute("data-theme", "nebula");
+			document.documentElement.setAttribute("data-theme", "dark");
 		}
 	</script>
 </head>
@@ -126,7 +126,7 @@
 					<!-- Banner with interactive lens -->
 					<div class="hero-visual-card">
 						<div class="lens" id="heroLens">
-							<img src="assets/hero-nebula.gif" alt="Hero Banner" class="hero-banner-image" width="1280" height="620" />
+							<img src="assets/hero-void.gif" alt="Hero Banner" class="hero-banner-image" width="1280" height="620" />
 						</div>
 					</div>
 
@@ -578,7 +578,7 @@
 	</div>
 
 	<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-	<script src="js/main.js?v=31"></script>
+	<script src="js/main.js?v=33"></script>
 </body>
 
 </html>

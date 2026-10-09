@@ -559,6 +559,7 @@ function initLanguage() {
           : el.getAttribute("data-aria-es");
       if (aria) el.setAttribute("aria-label", aria);
     });
+    if (typeof window.syncTheme === "function") window.syncTheme();
 
     $$("[data-title-es][data-title-en]").forEach((el) => {
       const title =
@@ -1158,21 +1159,33 @@ function initTheme() {
 
   const sync = () => {
     const neb = getTheme() === NEBULA;
+    let lang = "ES";
+    try {
+      if (typeof window.getCurrentLanguage === "function") {
+        const current = window.getCurrentLanguage();
+        if (current === "EN" || current === "ES") lang = current;
+      } else {
+        const storedLang = localStorage.getItem("idioma");
+        if (storedLang === "EN" || storedLang === "ES") lang = storedLang;
+      }
+    } catch (e) {}
+    const toVoid =
+      lang === "EN" ? "Switch to void theme" : "Cambiar a tema vacío";
+    const toNebula =
+      lang === "EN" ? "Switch to nebula theme" : "Cambiar a tema nebulosa";
     root.classList.add("dark");
     btn?.setAttribute("aria-pressed", String(neb));
-    btn?.setAttribute(
-      "aria-label",
-      neb ? "Switch to void theme" : "Switch to nebula theme",
-    );
+    btn?.setAttribute("aria-label", neb ? toVoid : toNebula);
     if (label) label.textContent = neb ? "VOID" : "NEBULA";
     updateBannerForTheme();
   };
+  window.syncTheme = sync;
 
   try {
     const stored = localStorage.getItem(KEY);
-    root.setAttribute("data-theme", stored === "dark" ? "dark" : NEBULA);
+    root.setAttribute("data-theme", stored === NEBULA ? NEBULA : "dark");
   } catch {
-    root.setAttribute("data-theme", NEBULA);
+    root.setAttribute("data-theme", "dark");
   }
   sync();
 
@@ -1260,7 +1273,6 @@ function initPassConstruction() {
   const manSubLabel = $("#manSubLabel");
   const manH3 = $("#manH3");
   const manBodyText = $("#manBodyText");
-  const manEm = $("#manEm");
   const telemClockCard = $("#telemClockCard");
   const telemClockSub = $("#telemClockSub");
   const telemCity = $("#telemCity");
@@ -1431,7 +1443,10 @@ function initPassConstruction() {
       if (manSubLabel) { manSubLabel.style.transform = "none"; manSubLabel.style.opacity = "1"; }
       if (manH3) { manH3.style.transform = "none"; manH3.style.opacity = "1"; }
       if (manBodyText) { manBodyText.style.transform = "none"; manBodyText.style.opacity = "1"; }
-      if (manEm) { manEm.style.setProperty("--em-width", "100%"); manEm.style.setProperty("--em-op", "1"); }
+      {
+        const emEl = $("#manEm");
+        if (emEl) { emEl.style.setProperty("--em-width", "100%"); emEl.style.setProperty("--em-op", "1"); }
+      }
       if (telemClockCard) { telemClockCard.style.transform = "none"; telemClockCard.style.opacity = "1"; }
       if (telemClockSub) { telemClockSub.style.transform = "none"; telemClockSub.style.opacity = "1"; }
       if (telemCity) { telemCity.style.transform = "none"; telemCity.style.opacity = "1"; }
@@ -1674,9 +1689,12 @@ function initPassConstruction() {
     }
     // Manifesto Em Highlight Glow
     const pManEm = step(p, 0.52, 0.72);
-    if (manEm) {
-      manEm.style.setProperty("--em-width", `${pManEm * 100}%`);
-      manEm.style.setProperty("--em-op", String(pManEm));
+    {
+      const emEl = $("#manEm");
+      if (emEl) {
+        emEl.style.setProperty("--em-width", `${pManEm * 100}%`);
+        emEl.style.setProperty("--em-op", String(pManEm));
+      }
     }
 
     // 4b. Local clock card
